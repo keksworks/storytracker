@@ -1,4 +1,6 @@
-# UI
+# Nivotal
+
+Pivotal Tracker replacement for project management in Codeborne.
 
 Built with Svelte, TypeScript, Vite
 
