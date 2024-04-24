@@ -5,6 +5,6 @@
   export let stories: Story[]
 </script>
 
-{#each stories as story}
+{#each stories as story (story.id)}
   <StoryView {story}/>
 {/each}

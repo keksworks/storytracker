@@ -8,10 +8,12 @@
     name: 'My project',
   }
 
-  let backlog: Story[] = [
-    {title: 'User can get stuff done', description: '* We need a lot of stuff\n* To be done\n* Maybe it should be split', tags: [], points: 2},
-    {title: 'Admin can get even more stuff done', description: '', tags: [], points: 3},
+  let stories: Story[] = [
+    {id: '1', title: 'User can get stuff done', description: '* We need a lot of stuff\n* To be done\n* Maybe it should be split', tags: ['user', 'stuff'], points: 2},
+    {id: '2', title: 'Admin can get even more stuff done', description: '', tags: ['admin'], points: 3},
   ]
+
+  let backlog = Array(10).fill(0).flatMap(() => stories).map((s, i) => ({...s, id: (i+1).toString()}))
 </script>
 
 <MainPageLayout>
