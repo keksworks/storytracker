@@ -6,19 +6,19 @@
   export let stories: Story[]
   export let velocity = 0
 
-  let velocities: (number|null)[] = []
+  let iterations: ({points: number, startTime: number}|null)[] = []
   $: if (velocity) {
-    let v = 0
-    velocities = []
+    let points = 0
+    iterations = []
     let date = new Date()
     for (const s of stories) {
-      if (v + s.points > velocity) {
-        v = 0
+      if (points + s.points > velocity) {
         date.setDate(date.getDate() + 7) // TODO: iteration length
-        velocities.push(date.getTime())
+        iterations.push({points, startTime: date.getTime()})
+        points = 0
       } else {
-        v += s.points
-        velocities.push(null)
+        points += s.points
+        iterations.push(null)
       }
     }
   }
@@ -33,8 +33,12 @@
 </script>
 
 {#each stories as story, i (story.id)}
-  {#if velocities[i]}
-    <div class="px-2 py-1">{formatDate(velocities[i])}</div>
+  {@const iteration = iterations[i]}
+  {#if iteration}
+    <div class="px-2 py-1 flex justify-between">
+      <div>{formatDate(iteration.startTime)}</div>
+      <div>{iteration.points}</div>
+    </div>
   {/if}
   <StoryView bind:story on:drag={onDrag}/>
 {/each}
