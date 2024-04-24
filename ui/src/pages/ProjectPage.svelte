@@ -9,7 +9,7 @@
   }
 
   let backlog: Story[] = [
-    {title: 'User can get stuff done', description: '', tags: [], points: 2},
+    {title: 'User can get stuff done', description: '* We need a lot of stuff\n* To be done\n* Maybe it should be split', tags: [], points: 2},
     {title: 'Admin can get even more stuff done', description: '', tags: [], points: 3},
   ]
 </script>
