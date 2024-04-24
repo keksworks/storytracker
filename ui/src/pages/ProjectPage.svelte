@@ -8,7 +8,7 @@
     name: 'My project',
   }
 
-  let stories: Story[] = [
+  let backlog: Story[] = [
     {title: 'User can get stuff done', description: '', tags: [], points: 2},
     {title: 'Admin can get even more stuff done', description: '', tags: [], points: 3},
   ]
@@ -18,7 +18,7 @@
   <div class="panels">
     <div class="panel">
       <h5 class="py-1 px-2 text-base">{t.panels.backlog}</h5>
-      <StoryList {stories}/>
+      <StoryList stories={backlog}/>
     </div>
   </div>
 </MainPageLayout>
