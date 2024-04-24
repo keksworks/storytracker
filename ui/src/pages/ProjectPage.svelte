@@ -6,6 +6,7 @@
 
   let project = {
     name: 'My project',
+    velocity: 10,
   }
 
   let stories: Story[] = [
@@ -20,7 +21,7 @@
   <div class="panels">
     <div class="panel">
       <h5 class="py-1 px-2 text-base">{t.panels.backlog}</h5>
-      <StoryList stories={backlog}/>
+      <StoryList stories={backlog} velocity={project.velocity}/>
     </div>
   </div>
 </MainPageLayout>
