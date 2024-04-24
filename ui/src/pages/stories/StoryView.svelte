@@ -3,6 +3,7 @@
   import type {Story} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
+  import {formatDateTime} from '@codeborne/i18n-json'
 
   export let story: Story
 </script>
@@ -19,8 +20,12 @@
     {/each}
   </ul>
   {#if story.open}
-    <div class="bg-white shadow-inner" transition:slide>
-      <div class="p-2 whitespace-pre-line" bind:innerHTML={story.description} contenteditable="true"></div>
+    <div class="bg-white p-2 shadow-inner" transition:slide>
+      <div class="flex justify-between text-sm text-muted pb-2">
+        <div>#{story.id}</div>
+        <div>{formatDateTime(story.createdAt)}</div>
+      </div>
+      <div class="whitespace-pre-line p-2 -m-2" bind:innerHTML={story.description} contenteditable="true"></div>
     </div>
   {/if}
 </div>
