@@ -16,7 +16,7 @@
   let backlog = Array(10).fill(0).flatMap(() => stories).map((s, i) => ({...s, id: (i+1).toString()}))
 </script>
 
-<MainPageLayout>
+<MainPageLayout title={project.name}>
   <div class="panels">
     <div class="panel">
       <h5 class="py-1 px-2 text-base">{t.panels.backlog}</h5>

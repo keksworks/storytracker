@@ -17,15 +17,7 @@
   <div class="absolute inset-0 flex items-center justify-center -z-10"></div>
 
   <Container {width}>
-    <Header/>
-
-    {#if title}
-      <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-3xl font-extrabold flex gap-6">{title}</h1>
-        <slot name="header"/>
-      </div>
-    {/if}
-
+    <Header {title}/>
     <slot/>
   </Container>
 </div>
