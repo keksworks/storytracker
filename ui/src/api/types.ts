@@ -5,4 +5,5 @@ export interface User {email: string; firstName: string; lastName: string; lang:
 export interface AuthenticatedUser {user: User}
 export interface Address {county: string; municipality: string; area?: string; street: string; building: string; apartment?: string; postalCode: string; details?: string; countryCode: CountryCode; id: string;}
 
-export interface Story {id: string, title: string, description: string, tags: string[], points: number, createdAt: string, open?: boolean}
+export type Id<T> = string
+export interface Story {id: Id<Story>, title: string, description: string, tags: string[], points: number, createdAt: string, open?: boolean}

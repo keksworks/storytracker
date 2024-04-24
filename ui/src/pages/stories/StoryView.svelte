@@ -1,14 +1,27 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import type {Story} from 'src/api/types'
+  import type {Id, Story} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
+  import {createEventDispatcher} from 'svelte'
 
   export let story: Story
+
+  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}}>()
+
+  let isDropTarget = false
+  function onDrop(e: DragEvent) {
+    dispatch('drag', {id: e.dataTransfer?.getData('id')!, beforeId: story.id})
+    isDropTarget = false
+  }
 </script>
 
-<div class="bg-yellow-50 hover:bg-yellow-100 flex flex-col border">
+<div class="bg-yellow-50 hover:bg-yellow-100 flex flex-col border"
+     class:cursor-move={!story.open} draggable={!story.open}
+     on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
+     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
+>
   <div class="flex gap-1 p-2 pb-0" on:click={() => story.open = !story.open}>
     <span class="title flex-1">{story.title}</span>
     <StoryPointsSelect bind:points={story.points}/>
