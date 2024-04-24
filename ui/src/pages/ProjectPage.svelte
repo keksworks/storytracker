@@ -2,6 +2,7 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import type {Story} from 'src/api/types'
+  import {t} from 'src/i18n'
 
   let project = {
     name: 'My project',
@@ -14,19 +15,20 @@
 </script>
 
 <MainPageLayout>
-  <div class="columns">
-    <div class="column">
+  <div class="panels">
+    <div class="panel">
+      <h5 class="py-1 px-2 text-base">{t.panels.backlog}</h5>
       <StoryList {stories}/>
     </div>
   </div>
 </MainPageLayout>
 
 <style>
-  .columns {
+  .panels {
     @apply flex gap-2
   }
 
-  .column {
-    @apply max-w-48 border overflow-y-auto flex flex-col
+  .panel {
+    @apply w-96 overflow-y-auto flex flex-col bg-gray-100
   }
 </style>
