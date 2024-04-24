@@ -22,16 +22,16 @@
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
-  <div class="flex gap-1 p-2 pb-0" on:click={() => story.open = !story.open}>
+  <div class="flex flex-wrap gap-1 p-2" on:click={() => story.open = !story.open}>
     <span class="title flex-1">{story.title}</span>
     <StoryPointsSelect bind:points={story.points}/>
     <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
+    <ul class="w-full flex gap-1 text-sm text-green-700 font-bold">
+      {#each story.tags as tag}
+        <li class="hover:text-green-600">{tag}</li>
+      {/each}
+    </ul>
   </div>
-  <ul class="flex gap-1 text-sm p-2 pt-0 text-green-700 font-bold">
-    {#each story.tags as tag}
-      <li class="hover:text-green-600">{tag}</li>
-    {/each}
-  </ul>
   {#if story.open}
     <div class="bg-white p-2 shadow-inner" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
