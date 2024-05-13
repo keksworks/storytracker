@@ -7,7 +7,7 @@
   export let title = ''
 </script>
 
-<header class="py-4 sm:py-8 flex justify-between items-center">
+<header class="py-4 flex justify-between items-center">
   {#if title}
     <h1 class="font-bold text-2xl mr-4">{title}</h1>
   {:else}

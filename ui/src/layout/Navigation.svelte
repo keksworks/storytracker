@@ -11,6 +11,6 @@
 </script>
 
 {#each menu.filter(m => m.roles.includes($user?.role)) as m}
-  <Link to={m.path} label={m.label} class="btn soft primary sm mr-2 {location.pathname.substring(1).startsWith(m.path) ? 'bg-primary-50' : ''}"/>
+  <Link to={m.path} label={m.label} class="btn sm mr-2 {location.pathname.substring(1).startsWith(m.path) ? 'bg-stone-100' : ''}"/>
 {/each}
 

@@ -18,15 +18,15 @@
   }
 
   h4, .h4 {
-    @apply text-xl font-semibold text-gray-900;
+    @apply text-xl font-semibold text-stone-900;
   }
 
   h5, .h5 {
-    @apply text-lg font-medium text-gray-900;
+    @apply text-lg font-medium text-stone-900;
   }
 
   h6, .h6 {
-    @apply text-base font-medium text-gray-900;
+    @apply text-base font-medium text-stone-900;
   }
 
   img, svg {
@@ -56,7 +56,7 @@
 
 @layer utilities {
   .text-muted {
-    @apply text-gray-400;
+    @apply text-stone-400;
   }
 
   .link-with-icon {
@@ -64,7 +64,7 @@
   }
 
   .card-title {
-    @apply text-lg font-medium leading-6 text-gray-900
+    @apply text-lg font-medium leading-6 text-stone-900
   }
 
   .modal-wide {
@@ -76,7 +76,7 @@
   }
 
   .input-label {
-    @apply text-sm font-medium text-gray-700
+    @apply text-sm font-medium text-stone-700
   }
 
   .common-grid {

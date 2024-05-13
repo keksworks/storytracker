@@ -35,9 +35,9 @@
 {#each stories as story, i (story.id)}
   {@const iteration = iterations[i]}
   {#if iteration}
-    <div class="px-2 py-1 flex justify-between">
-      <div>{formatDate(iteration.startTime)}</div>
-      <div>{iteration.points}</div>
+    <div class="bg-stone-100 px-3 py-2 flex justify-between border-t">
+      <div class="font-medium">{formatDate(iteration.startTime)}</div>
+      <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}
   <StoryView bind:story on:drag={onDrag}/>

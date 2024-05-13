@@ -17,12 +17,12 @@
   }
 </script>
 
-<div class="bg-yellow-50 hover:bg-yellow-100 flex flex-col border"
+<div class="bg-stone-50 hover:bg-yellow-100 flex flex-col border-t"
      class:cursor-move={!story.open} draggable={!story.open}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
-  <div class="flex flex-wrap gap-1 p-2" on:click={() => story.open = !story.open}>
+  <div class="flex flex-wrap gap-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
     <span class="title flex-1">{story.title}</span>
     <StoryPointsSelect bind:points={story.points}/>
     <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
@@ -33,12 +33,12 @@
     </ul>
   </div>
   {#if story.open}
-    <div class="bg-white p-2 shadow-inner" transition:slide>
+    <div class="bg-stone-100 px-3 py-2 shadow-inner" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
         <div>#{story.id}</div>
         <div>{formatDateTime(story.createdAt)}</div>
       </div>
-      <div class="whitespace-pre-line p-2 -m-2" bind:innerHTML={story.description} contenteditable="true"></div>
+      <div class="bg-white whitespace-pre-line p-2 -mx-3 -mb-2" bind:innerHTML={story.description} contenteditable="true"></div>
     </div>
   {/if}
 </div>
