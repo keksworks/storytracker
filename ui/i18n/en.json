@@ -1,5 +1,5 @@
 {
-  "title": "Nivotal",
+  "title": "FlowTracker",
   "addresses": {
     "country": "Country",
     "county": "County",
@@ -38,6 +38,7 @@
     "and": "and",
     "add": "Add",
     "cancel": "Cancel",
+    "submit": "Submit",
     "save": "Save",
     "saved": "Saved",
     "confirm": "Confirm",
@@ -70,6 +71,10 @@
   },
   "home": {
     "title": "Home"
+  },
+  "projects": {
+    "title": "Projects",
+    "project": "Project"
   },
   "samples": {
     "title": "Samples"

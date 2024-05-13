@@ -7,6 +7,7 @@
   import MockEmailsPage from 'src/prototyping/emails/MockEmailsPage.svelte'
   import MockEmailNotifications from 'src/prototyping/emails/MockEmailNotifications.svelte'
   import ProjectPage from 'src/pages/ProjectPage.svelte'
+  import HomePage from 'src/pages/HomePage.svelte'
 </script>
 
 <svelte:head>
@@ -17,7 +18,8 @@
 
 <Router primary={false}>
   <div class="App min-h-screen flex flex-col">
-    <Route path="/" component={ProjectPage}/>
+    <Route path="/" component={HomePage}/>
+    <Route path="/project" component={ProjectPage}/>
     <Route path="/samples/*path" let:params>
       {#await import('src/samples/SamplesPage.svelte')}
         <Spinner/>
