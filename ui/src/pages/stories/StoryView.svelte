@@ -22,15 +22,24 @@
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
-  <div class="flex flex-wrap gap-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
-    <span class="title flex-1">{story.title}</span>
+  <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
+    {#if Math.random() > 0.2}
+      <Icon name="star-filled" class="text-yellow-500"/>
+    {:else if Math.random() > 0.4}
+      <Icon name="settings-filled" class="text-neutral-500"/>
+    {:else}
+      <Icon name="bug" class="text-red-600"/>
+    {/if}
+    <div class="flex-grow">
+      <span class="title flex-1">{story.title}</span>
+      <ul class="w-full flex gap-1 text-sm text-green-700 font-bold">
+        {#each story.tags as tag}
+          <li class="hover:text-green-600">{tag}</li>
+        {/each}
+      </ul>
+    </div>
     <StoryPointsSelect bind:points={story.points}/>
     <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
-    <ul class="w-full flex gap-1 text-sm text-green-700 font-bold">
-      {#each story.tags as tag}
-        <li class="hover:text-green-600">{tag}</li>
-      {/each}
-    </ul>
   </div>
   {#if story.open}
     <div class="bg-stone-100 px-3 py-2 shadow-inner" transition:slide>
