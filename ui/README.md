@@ -1,4 +1,4 @@
-# Nivotal
+# FlowTracker
 
 Pivotal Tracker replacement for project management in Codeborne.
 
