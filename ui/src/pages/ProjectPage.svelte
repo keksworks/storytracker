@@ -15,23 +15,32 @@
   ]
 
   let backlog = Array(10).fill(0).flatMap(() => stories).map((s, i) => ({...s, id: (i+1).toString()}))
+  let icebox = Array(10).fill(0).flatMap(() => stories).map((s, i) => ({...s, id: (i+1).toString()}))
 </script>
 
 <MainPageLayout title={project.name}>
   <div class="panels">
     <div class="panel">
-      <h5 class="py-1 px-2 text-base">{t.panels.backlog}</h5>
+      <h5 class="panel-title">{t.panels.backlog}</h5>
       <StoryList stories={backlog} velocity={project.velocity}/>
+    </div>
+    <div class="panel">
+      <h5 class="panel-title">{t.panels.icebox}</h5>
+      <StoryList stories={icebox} velocity={project.velocity}/>
     </div>
   </div>
 </MainPageLayout>
 
 <style>
   .panels {
-    @apply flex gap-2
+    @apply grid grid-cols-2 gap-2
   }
 
   .panel {
-    @apply w-96 overflow-y-auto flex flex-col bg-gray-100
+    @apply w-full overflow-y-auto flex flex-col bg-gray-100 border border-gray-200 rounded
+  }
+
+  .panel-title {
+    @apply py-2 px-3 text-lg font-semibold
   }
 </style>

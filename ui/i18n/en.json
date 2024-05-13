@@ -80,7 +80,8 @@
     "title": "Samples"
   },
   "panels": {
-    "backlog": "Backlog"
+    "backlog": "Backlog",
+    "icebox": "Icebox"
   },
   "errors": {
     "technical": "Technical error, please try again",
