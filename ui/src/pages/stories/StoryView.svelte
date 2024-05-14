@@ -17,7 +17,7 @@
   }
 </script>
 
-<div class="bg-stone-50 hover:bg-yellow-100 flex flex-col border-t"
+<div class="bg-stone-50 hover:bg-yellow-100 flex flex-col border-b"
      class:cursor-move={!story.open} draggable={!story.open}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}

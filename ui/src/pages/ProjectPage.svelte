@@ -41,6 +41,6 @@
   }
 
   .panel-title {
-    @apply py-2 px-3 text-lg font-semibold
+    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-gray-100 border-b
   }
 </style>
