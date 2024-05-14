@@ -29,9 +29,8 @@
     </Route>
     <Route component={NotFoundPage}/>
 
-    <!--  👇 Prototype only  -->
     <Route path="emails" component={MockEmailsPage}/>
     <Route path="emails/:slug" component={MockEmailsPage}/>
-    <MockEmailNotifications />
+<!--    <MockEmailNotifications />-->
   </div>
 </Router>

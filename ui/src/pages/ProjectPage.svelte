@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MainPageLayout from 'src/layout/MainPageLayout.svelte'
+  import ProjectPageLayout from 'src/layout/ProjectPageLayout.svelte'
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import type {Story} from 'src/api/types'
   import {t} from 'src/i18n'
@@ -18,8 +18,8 @@
   let icebox = Array(10).fill(0).flatMap(() => stories).map((s, i) => ({...s, id: (i+1).toString()}))
 </script>
 
-<MainPageLayout title={project.name}>
-  <div class="panels mt-3">
+<ProjectPageLayout title={project.name}>
+  <div class="panels mt-3 w-full">
     <div class="panel">
       <h5 class="panel-title">{t.panels.backlog}</h5>
       <StoryList stories={backlog} velocity={project.velocity}/>
@@ -29,7 +29,7 @@
       <StoryList stories={icebox} velocity={project.velocity}/>
     </div>
   </div>
-</MainPageLayout>
+</ProjectPageLayout>
 
 <style>
   .panels {
