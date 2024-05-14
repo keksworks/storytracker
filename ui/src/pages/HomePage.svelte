@@ -14,7 +14,7 @@
 </script>
 
 <MainPageLayout title={t.title}>
-  <section class="grid gap-10">
+  <section class="grid gap-10 p-6 sm:p-12">
     <h1>
       FlowTracker - a Pivotal Tracker replacement
       <Badge class="success text-lg shadow relative -top-4">Coming soon!</Badge>
