@@ -19,7 +19,7 @@
 </script>
 
 <MainPageLayout title={project.name}>
-  <div class="panels">
+  <div class="panels mt-3">
     <div class="panel">
       <h5 class="panel-title">{t.panels.backlog}</h5>
       <StoryList stories={backlog} velocity={project.velocity}/>
