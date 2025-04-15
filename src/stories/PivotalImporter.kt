@@ -60,6 +60,7 @@ class PivotalImporter(
         )
         storyRepository.save(story)
         importTasks(story)
+        importComments(story)
         num++
         afterId = id
       }
@@ -75,6 +76,16 @@ class PivotalImporter(
         Instant.parse(it.getString("created_at")))
     })
     if (story.tasks.isNotEmpty())
+      storyRepository.save(story)
+  }
+
+  private suspend fun importComments(story: Story) {
+    val tasks = http.get<JsonList>("/projects/${story.projectId.value}/stories/${story.id.value}/comments")
+    val story = story.copy(comments = tasks.map {
+      Story.Comment(it.getString("text"), Id(it.getLong("person_id")),
+        Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
+    })
+    if (story.comments.isNotEmpty())
       storyRepository.save(story)
   }
 }

@@ -56,6 +56,7 @@ data class Story(
   data class Comment(
     val text: String,
     val createdBy: Id<User>,
+    val updatedAt: Instant = nowSec(),
     val createdAt: Instant = nowSec(),
   )
 }
