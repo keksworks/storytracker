@@ -9,6 +9,7 @@ import klite.jdbc.UpdatableEntity
 import klite.jdbc.create
 import klite.jdbc.nowSec
 import klite.toValues
+import stories.Story.Blocker
 import stories.Story.Comment
 import stories.Story.Status.UNSTARTED
 import stories.Story.Task
@@ -32,7 +33,7 @@ data class Story(
   val externalId: String? = null,
   val tasks: List<Task> = emptyList(),
   val comments: List<Comment> = emptyList(),
-  val blockerIds: List<Id<Story>> = emptyList(),
+  val blockers: List<Blocker> = emptyList(),
   val afterId: Id<Story>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
@@ -51,6 +52,13 @@ data class Story(
   data class Task(
     val text: String,
     val completedAt: Instant? = null,
+    val createdAt: Instant = nowSec(),
+  )
+
+  data class Blocker(
+    val text: String?,
+    val createdBy: Id<User>,
+    val resolvedAt: Instant? = null,
     val createdAt: Instant = nowSec(),
   )
 
@@ -73,6 +81,14 @@ data class Story(
 }
 
 class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
-  override fun Story.persister() = toValues(Story::tasks to jsonb(tasks), Story::comments to jsonb(comments))
-  override fun ResultSet.mapper() = create(Story::tasks to getJson<List<Task>>("tasks"), Story::comments to getJson<List<Comment>>("comments"))
+  override fun Story.persister() = toValues(
+    Story::tasks to jsonb(tasks),
+    Story::comments to jsonb(comments),
+    Story::blockers to jsonb(blockers),
+  )
+  override fun ResultSet.mapper() = create(
+    Story::tasks to getJson<List<Task>>("tasks"),
+    Story::comments to getJson<List<Comment>>("comments"),
+    Story::blockers to getJson<List<Blocker>>("blockers"),
+  )
 }

@@ -12,7 +12,7 @@ create table stories(
   afterId bigint,
   tasks jsonb not null default '[]',
   comments jsonb not null default '[]',
-  blockerIds bigint[] not null default '{}',
+  blockers jsonb not null default '[]',
   acceptedAt timestamptz,
   deadline date,
   updatedAt timestamptz not null default now(),

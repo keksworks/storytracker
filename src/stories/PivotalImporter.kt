@@ -44,7 +44,7 @@ class PivotalImporter(
     var num = 0
     var afterId: Id<Story>? = null
     while (num % 500 == 0) {
-      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "accepted_at", "updated_at", "created_at")
+      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "blockers", "accepted_at", "updated_at", "created_at")
       http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
@@ -68,6 +68,11 @@ class PivotalImporter(
           tasks = p.getList<JsonNode>("tasks").map {
             val completed = it.getBoolean("complete")
             Story.Task(it.getString("description"), if (completed) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
+              Instant.parse(it.getString("created_at")))
+          },
+          blockers = p.getList<JsonNode>("blockers").map {
+            val resolved = it.getBoolean("resolved")
+            Story.Blocker(it.getString("description"), Id(it.getLong("person_id")), if (resolved) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
               Instant.parse(it.getString("created_at")))
           },
           acceptedAt = p.getOrNull<String>("accepted_at")?.let { Instant.parse(it) },

@@ -9,6 +9,8 @@ export interface Story {id: Id<Story>, title: string, description: string, tags:
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: TSID<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
 // class stories.Story$Attachment
 export interface StoryAttachment {filename: string; height?: number; size: number; thumbnailUrl?: URI; url: URI; width?: number}
+// class stories.Story$Blocker
+export interface StoryBlocker {createdAt: Instant; createdBy: TSID<User>; resolvedAt?: Instant; text?: string}
 // class stories.Story$Comment
 export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: TSID<User>; text?: string; updatedAt: Instant}
 // class stories.Story$Status
@@ -18,7 +20,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; afterId?: TSID<Story>; blockerIds: Array<TSID<Story>>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: TSID<User>; deadline?: LocalDate; description?: string; externalId?: string; id: TSID<Story>; name: string; points?: number; projectId: TSID<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+export interface Story {acceptedAt?: Instant; afterId?: TSID<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: TSID<User>; deadline?: LocalDate; description?: string; externalId?: string; id: TSID<Story>; name: string; points?: number; projectId: TSID<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
