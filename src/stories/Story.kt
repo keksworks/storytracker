@@ -14,6 +14,7 @@ import stories.Story.Status.UNSTARTED
 import stories.Story.Task
 import stories.Story.Type.FEATURE
 import users.User
+import java.net.URI
 import java.sql.ResultSet
 import java.time.Instant
 import java.time.LocalDate
@@ -55,9 +56,19 @@ data class Story(
 
   data class Comment(
     val text: String,
+    val attachments: List<Attachment> = emptyList(),
     val createdBy: Id<User>,
     val updatedAt: Instant = nowSec(),
     val createdAt: Instant = nowSec(),
+  )
+
+  data class Attachment(
+    val filename: String,
+    val size: Int,
+    val url: URI,
+    val thumbnailUrl: URI? = null,
+    val width: Int? = null,
+    val height: Int? = null,
   )
 }
 

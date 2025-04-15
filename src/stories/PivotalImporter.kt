@@ -8,6 +8,7 @@ import klite.json.*
 import klite.logger
 import stories.Story.Status
 import stories.Story.Type
+import java.net.URI
 import java.time.DayOfWeek
 import java.time.Instant
 
@@ -42,8 +43,9 @@ class PivotalImporter(
   suspend fun importStories(projectId: Id<Project>) {
     var num = 0
     var afterId: Id<Story>? = null
-    while (num % 500 == 0) {
-      http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num").forEach { p ->
+    while (num % 100 == 0) {
+      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "accepted_at", "updated_at", "created_at")
+      http.get<JsonList>("/projects/${projectId.value}/stories?limit=100&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
         log.info("Importing story ${id.value} $name")
@@ -53,39 +55,30 @@ class PivotalImporter(
           Status.valueOf(p.getString("current_state").uppercase()),
           afterId = afterId,
           points = p.getOrNull<Int>("estimate"),
-          tags = p.getOrNull<JsonList>("labels")?.map { it.getString("name") } ?: emptyList(),
+          tags = p.getList<JsonNode>("labels").map { it.getString("name") },
+          comments = p.getList<JsonNode>("comments").map {
+            val attachments = it.getList<JsonNode>("file_attachments").map {
+              val url = URI(it.getString("big_url"))
+              val thumbnailUrl = URI(it.getString("thumbnail_url"))
+              Story.Attachment(it.getString("filename"), it.getInt("size"), url, thumbnailUrl, it.getInt("width"), it.getInt("height"))
+            }
+            Story.Comment(it.getString("text"), attachments, Id(it.getLong("person_id")),
+              Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
+         },
+          tasks = p.getList<JsonNode>("tasks").map {
+            val completed = it.getBoolean("complete")
+            Story.Task(it.getString("description"), if (completed) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
+              Instant.parse(it.getString("created_at")))
+          },
           acceptedAt = p.getOrNull<String>("accepted_at")?.let { Instant.parse(it) },
           updatedAt = Instant.parse(p.getString("updated_at")),
           createdAt = Instant.parse(p.getString("created_at"))
         )
         storyRepository.save(story)
-        importTasks(story)
-        importComments(story)
         num++
         afterId = id
       }
       log.info("Imported $num stories")
     }
-  }
-
-  private suspend fun importTasks(story: Story) {
-    val tasks = http.get<JsonList>("/projects/${story.projectId.value}/stories/${story.id.value}/tasks")
-    val story = story.copy(tasks = tasks.map {
-      val completed = it.getBoolean("complete")
-      Story.Task(it.getString("description"), if (completed) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
-        Instant.parse(it.getString("created_at")))
-    })
-    if (story.tasks.isNotEmpty())
-      storyRepository.save(story)
-  }
-
-  private suspend fun importComments(story: Story) {
-    val tasks = http.get<JsonList>("/projects/${story.projectId.value}/stories/${story.id.value}/comments")
-    val story = story.copy(comments = tasks.map {
-      Story.Comment(it.getString("text"), Id(it.getLong("person_id")),
-        Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
-    })
-    if (story.comments.isNotEmpty())
-      storyRepository.save(story)
   }
 }

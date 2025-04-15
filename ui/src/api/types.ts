@@ -7,8 +7,10 @@ export interface Story {id: Id<Story>, title: string, description: string, tags:
 
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: TSID<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
+// class stories.Story$Attachment
+export interface StoryAttachment {filename: string; height?: number; size: number; thumbnailUrl?: URI; url: URI; width?: number}
 // class stories.Story$Comment
-export interface StoryComment {createdAt: Instant; createdBy: TSID<User>; text: string}
+export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: TSID<User>; text: string; updatedAt: Instant}
 // class stories.Story$Status
 export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
 // class stories.Story$Task
