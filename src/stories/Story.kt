@@ -16,7 +16,7 @@ data class Story(
   override val id: Id<Story> = Id(),
   val projectId: Id<Project>,
   val name: String,
-  val description: String,
+  val description: String? = null,
   val type: Type = FEATURE,
   val status: Status = UNSTARTED,
   val tags: List<String> = emptyList(),
@@ -28,10 +28,10 @@ data class Story(
   val afterId: Id<Story>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
-  override var updatedAt: Instant? = nowSec(),
+  val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
-): Entity<Story>, UpdatableEntity {
+): Entity<Story>/*, UpdatableEntity */ {
   enum class Type {
     FEATURE, BUG, CHORE, RELEASE
   }

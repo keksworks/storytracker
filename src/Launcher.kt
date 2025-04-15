@@ -1,4 +1,5 @@
 import auth.*
+import db.Id
 import db.initDB
 import klite.*
 import klite.annotations.annotated
@@ -54,7 +55,7 @@ fun startServer() = Server(
     annotated<UserRoutes>("/users")
   }
 
-  AppScope.launch { require<PivotalImporter>().importProjects() }
+  AppScope.launch { require<PivotalImporter>().importStories(Id(2532424)) }
   start()
 }
 
