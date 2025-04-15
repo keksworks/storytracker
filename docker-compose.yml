@@ -1,12 +1,27 @@
-version: '3.1'
-
 services:
-  svelte-sample:
-    restart: always
+  tracker:
     build: .
-    networks:
-      - proxy
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      - ENV=demo
+      - DB_URL=jdbc:postgresql://db/$DB_USER
 
-networks:
-  proxy:
-    external: true
+  db:
+    restart: unless-stopped
+    image: postgres:17-alpine
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASS
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+
+volumes:
+  data:

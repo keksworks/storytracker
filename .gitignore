@@ -1,2 +1,5 @@
+.gradle/
 build/
+logs/
 .DS_Store
+/uploads/*

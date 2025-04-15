@@ -1,0 +1,14 @@
+# For demo deployment to arti.codeborne.com
+services:
+  tracker:
+    networks:
+      - proxy
+      - default
+
+  db:
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+
+networks:
+  proxy:
+    external: true

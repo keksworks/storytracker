@@ -1,0 +1,103 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  kotlin("jvm") version "2.1.10"
+}
+
+repositories {
+  mavenCentral()
+  maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:1.6.16"
+  implementation(klite("server"))
+  implementation(klite("json"))
+  implementation(klite("i18n"))
+  implementation(klite("jdbc"))
+  implementation(klite("oauth"))
+  implementation(klite("slf4j"))
+  implementation(klite("jobs"))
+  implementation(klite("csv"))
+  implementation("org.postgresql:postgresql:42.7.5")
+  implementation("org.xhtmlrenderer:flying-saucer-pdf:9.11.3")
+  implementation("com.github.web-eid:web-eid-authtoken-validation-java:3.1.0")
+
+  testImplementation(klite("jdbc-test"))
+  testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+  testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-1")
+  testImplementation("io.mockk:mockk:1.13.16")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+  api("com.codeborne:selenide:7.5.1")
+}
+
+sourceSets {
+  main {
+    kotlin.srcDirs("src")
+    resources.srcDirs("src", "db", "ui/i18n").exclude("**/*.kt")
+  }
+  test {
+    kotlin.srcDirs("test")
+    resources.srcDirs("test").exclude("**/*.kt")
+  }
+}
+
+tasks.test {
+  useJUnitPlatform()
+  exclude("e2e/**")
+  // enable JUnitAssertionImprover from klite.jdbc-test
+  jvmArgs("-DENV=test", "-Djunit.jupiter.extensions.autodetection.enabled=true", "--add-opens=java.base/java.lang=ALL-UNNAMED", "-XX:-OmitStackTraceInFastThrow")
+}
+
+tasks.register<Test>("e2eTest") {
+  outputs.upToDateWhen { false }
+  useJUnitPlatform()
+  include("e2e/**")
+  if (project.hasProperty("headless")) {
+    systemProperties["chromeoptions.args"] = "--headless,--no-sandbox"
+    systemProperties["webdriver.chrome.driver"] = "/usr/bin/chromedriver"
+  }
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "21"
+  if (System.getProperty("user.name") != "root") finalizedBy("types.ts")
+}
+
+tasks.register<Copy>("deps") {
+  into("$buildDir/libs/deps")
+  from(configurations.runtimeClasspath)
+}
+
+val mainClassName = "LauncherKt"
+
+tasks.jar {
+  dependsOn("deps")
+  doFirst {
+    manifest {
+      attributes(
+        "Main-Class" to mainClassName,
+        "Class-Path" to File("$buildDir/libs/deps").listFiles()?.joinToString(" ") { "deps/${it.name}"}
+      )
+    }
+  }
+}
+
+tasks.register<JavaExec>("run") {
+  workingDir(rootDir)
+  jvmArgs("--add-exports=java.base/sun.net.www=ALL-UNNAMED")
+  mainClass.set(mainClassName)
+  classpath = sourceSets.main.get().runtimeClasspath
+}
+
+tasks.register<JavaExec>("types.ts") {
+  dependsOn("testClasses")
+  mainClass.set("klite.json.TSGenerator")
+  classpath = sourceSets.test.get().runtimeClasspath
+  args("${project.buildDir}/classes/kotlin/main",
+    "-o", project.file("ui/src/api/types.ts"),
+    "-p", "// Generated automatically by ./gradlew types.ts\n" + project.file("ui/src/api/types.prepend.ts").readText(),
+    "-t", "db.TestData"
+  )
+}
