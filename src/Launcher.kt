@@ -55,7 +55,12 @@ fun startServer() = Server(
     annotated<UserRoutes>("/users")
   }
 
-  AppScope.launch { require<PivotalImporter>().importStories(Id(2532424)) }
+  AppScope.launch {
+    require<PivotalImporter>().apply {
+      importProjects()
+      importStories(Id(2532424))
+    }
+  }
   start()
 }
 

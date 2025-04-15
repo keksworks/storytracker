@@ -46,12 +46,12 @@ class PivotalImporter(
       http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num").forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
-        log.info("Importing story $name")
+        log.info("Importing story ${id.value} $name")
         val story = Story(
           id, projectId, name, p.getOrNull<String>("description"),
           Type.valueOf(p.getString("story_type").uppercase()),
           Status.valueOf(p.getString("current_state").uppercase()),
-          afterId = id,
+          afterId = afterId,
           points = p.getOrNull<Int>("estimate"),
           tags = p.getOrNull<JsonList>("labels")?.map { it.getString("name") } ?: emptyList(),
           acceptedAt = p.getOrNull<String>("accepted_at")?.let { Instant.parse(it) },

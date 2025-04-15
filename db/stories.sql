@@ -9,7 +9,7 @@ create table stories(
   tags text[] not null default '{}',
   points int,
   externalId text,
-  afterId bigint not null default 0,
+  afterId bigint,
   tasks jsonb not null default '[]',
   comments jsonb not null default '[]',
   blockerIds bigint[] not null default '{}',
