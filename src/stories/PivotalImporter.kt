@@ -59,10 +59,22 @@ class PivotalImporter(
           createdAt = Instant.parse(p.getString("created_at"))
         )
         storyRepository.save(story)
+        importTasks(story)
         num++
         afterId = id
       }
       log.info("Imported $num stories")
     }
+  }
+
+  private suspend fun importTasks(story: Story) {
+    val tasks = http.get<JsonList>("/projects/${story.projectId.value}/stories/${story.id.value}/tasks")
+    val story = story.copy(tasks = tasks.map {
+      val completed = it.getBoolean("complete")
+      Story.Task(it.getString("description"), if (completed) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
+        Instant.parse(it.getString("created_at")))
+    })
+    if (story.tasks.isNotEmpty())
+      storyRepository.save(story)
   }
 }

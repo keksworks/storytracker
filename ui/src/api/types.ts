@@ -12,7 +12,7 @@ export interface StoryComment {createdAt: Instant; createdBy: TSID<User>; text: 
 // class stories.Story$Status
 export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
 // class stories.Story$Task
-export interface StoryTask {completedAt?: Instant; createdAt: Instant; createdBy: TSID<User>; text: string}
+export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: string}
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story

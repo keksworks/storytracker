@@ -3,11 +3,18 @@ package stories
 import db.CrudRepository
 import db.Entity
 import db.Id
+import db.getJson
+import db.jsonb
 import klite.jdbc.UpdatableEntity
+import klite.jdbc.create
 import klite.jdbc.nowSec
+import klite.toValues
+import stories.Story.Comment
 import stories.Story.Status.UNSTARTED
+import stories.Story.Task
 import stories.Story.Type.FEATURE
 import users.User
+import java.sql.ResultSet
 import java.time.Instant
 import java.time.LocalDate
 import javax.sql.DataSource
@@ -43,7 +50,6 @@ data class Story(
   data class Task(
     val text: String,
     val completedAt: Instant? = null,
-    val createdBy: Id<User>,
     val createdAt: Instant = nowSec(),
   )
 
@@ -54,4 +60,7 @@ data class Story(
   )
 }
 
-class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories")
+class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
+  override fun Story.persister() = toValues(Story::tasks to jsonb(tasks), Story::comments to jsonb(comments))
+  override fun ResultSet.mapper() = create(Story::tasks to getJson<List<Task>>("tasks"), Story::comments to getJson<List<Comment>>("comments"))
+}
