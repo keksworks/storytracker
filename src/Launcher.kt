@@ -10,6 +10,8 @@ import klite.oauth.AuthRoutes
 import klite.oauth.GoogleOAuthClient
 import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
+import kotlinx.coroutines.launch
+import stories.PivotalImporter
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -52,6 +54,7 @@ fun startServer() = Server(
     annotated<UserRoutes>("/users")
   }
 
+  AppScope.launch { require<PivotalImporter>().importProjects() }
   start()
 }
 

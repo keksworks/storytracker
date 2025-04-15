@@ -1,5 +1,6 @@
 package stories
 
+import db.CrudRepository
 import db.Entity
 import db.Id
 import klite.jdbc.UpdatableEntity
@@ -9,6 +10,7 @@ import stories.Story.Type.FEATURE
 import users.User
 import java.time.Instant
 import java.time.LocalDate
+import javax.sql.DataSource
 
 data class Story(
   override val id: Id<Story> = Id(),
@@ -51,3 +53,5 @@ data class Story(
     val createdAt: Instant = nowSec(),
   )
 }
+
+class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories")
