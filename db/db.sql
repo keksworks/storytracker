@@ -4,9 +4,5 @@
 --include app_user.sql
 --include change_history.sql
 --include users.sql
---include courses.sql
---include enrollments.sql
---include course_sessions.sql
---include course_attendances.sql
---include invoices.sql
---include teacher_feedbacks.sql
+--include projects.sql
+--include stories.sql

@@ -6,7 +6,7 @@ export type TSID<T extends Entity<T>> = Id<T>
 export interface Story {id: Id<Story>, title: string, description: string, tags: string[], points: number, createdAt: string, open?: boolean}
 
 // class stories.Project
-export interface Project {createdAt: Instant; description: string; id: TSID<Project>; iterationWeeks: number; name: string; startDay: DayOfWeek; updatedAt?: Instant}
+export interface Project {createdAt: Instant; description: string; externalId?: string; id: TSID<Project>; iterationWeeks: number; name: string; startDay: DayOfWeek; updatedAt?: Instant}
 // class stories.Story$Comment
 export interface StoryComment {createdAt: Instant; createdBy: TSID<User>; text: string}
 // class stories.Story$Status

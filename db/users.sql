@@ -18,6 +18,3 @@ create trigger users_history after update on users for each row execute function
 
 --changeset users:demo-admin context:!prod onFail:MARK_RAN
 insert into users (id, firstName, lastName, email, role) values (1, 'Demo', 'Admin', 'tk@codeborne.com', 'ADMIN');
-
---changeset users.updatedAt
-alter table users add column updatedAt timestamptz;

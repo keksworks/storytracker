@@ -1,0 +1,24 @@
+--changeset stories
+create table stories(
+  ${id},
+  projectId int not null references projects(id) on delete cascade,
+  name text not null,
+  description text,
+  type text not null default 'FEATURE',
+  status text not null default 'UNSTARTED',
+  tags text[] not null default '{}',
+  points int,
+  externalId text,
+  afterId bigint not null default 0,
+  tasks jsonb not null default '[]',
+  comments jsonb not null default '[]',
+  blockerIds bigint[] not null default '{}',
+  acceptedAt timestamptz,
+  deadline date,
+  updatedAt timestamptz not null default now(),
+  createdAt timestamptz not null default now(),
+  ${createdBy}
+);
+
+--changeset stories_history
+create trigger stories_history after update on stories for each row execute function add_change_history();

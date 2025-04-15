@@ -13,6 +13,7 @@ data class Project(
   val description: String,
   val iterationWeeks: Int,
   val startDay: DayOfWeek,
+  val externalId: String? = null,
   override var updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
 ): Entity<Project>, UpdatableEntity
