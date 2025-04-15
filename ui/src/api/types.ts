@@ -10,7 +10,7 @@ export interface Project {bugsEstimatable: boolean; createdAt: Instant; descript
 // class stories.Story$Attachment
 export interface StoryAttachment {filename: string; height?: number; size: number; thumbnailUrl?: URI; url: URI; width?: number}
 // class stories.Story$Comment
-export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: TSID<User>; text: string; updatedAt: Instant}
+export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: TSID<User>; text?: string; updatedAt: Instant}
 // class stories.Story$Status
 export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
 // class stories.Story$Task

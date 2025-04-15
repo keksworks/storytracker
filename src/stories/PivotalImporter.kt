@@ -43,9 +43,9 @@ class PivotalImporter(
   suspend fun importStories(projectId: Id<Project>) {
     var num = 0
     var afterId: Id<Story>? = null
-    while (num % 100 == 0) {
+    while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "accepted_at", "updated_at", "created_at")
-      http.get<JsonList>("/projects/${projectId.value}/stories?limit=100&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
+      http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
         log.info("Importing story ${id.value} $name")
@@ -60,9 +60,9 @@ class PivotalImporter(
             val attachments = it.getList<JsonNode>("file_attachments").map {
               val url = URI(it.getString("big_url"))
               val thumbnailUrl = URI(it.getString("thumbnail_url"))
-              Story.Attachment(it.getString("filename"), it.getInt("size"), url, thumbnailUrl, it.getInt("width"), it.getInt("height"))
+              Story.Attachment(it.getString("filename"), it.getInt("size"), url, thumbnailUrl, it.getOrNull("width"), it.getOrNull("height"))
             }
-            Story.Comment(it.getString("text"), attachments, Id(it.getLong("person_id")),
+            Story.Comment(it.getOrNull("text"), attachments, Id(it.getLong("person_id")),
               Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
          },
           tasks = p.getList<JsonNode>("tasks").map {

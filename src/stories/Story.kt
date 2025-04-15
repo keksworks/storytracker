@@ -55,7 +55,7 @@ data class Story(
   )
 
   data class Comment(
-    val text: String,
+    val text: String?,
     val attachments: List<Attachment> = emptyList(),
     val createdBy: Id<User>,
     val updatedAt: Instant = nowSec(),
