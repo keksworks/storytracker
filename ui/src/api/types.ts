@@ -5,26 +5,35 @@ export type TSID<T extends Entity<T>> = Id<T>
 
 export interface Story {id: Id<Story>, title: string, description: string, tags: string[], points: number, createdAt: string, open?: boolean}
 
-// class users.Address
-export interface Address {apartment?: string; area?: string; building?: string; countryCode: string; county?: string; details?: string; id: string; municipality?: string; postalCode: string; street?: string}
+// class stories.Project
+export interface Project {createdAt: Instant; description: string; id: TSID<Project>; iterationWeeks: number; name: string; startDay: DayOfWeek; updatedAt?: Instant}
+// class stories.Story$Comment
+export interface StoryComment {createdAt: Instant; createdBy: TSID<User>; text: string}
+// class stories.Story$Status
+export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
+// class stories.Story$Task
+export interface StoryTask {completedAt?: Instant; createdAt: Instant; createdBy: TSID<User>; text: string}
+// class stories.Story$Type
+export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
+// class stories.Story
+export interface Story {acceptedAt?: Instant; afterId?: TSID<Story>; blockerIds: Array<TSID<Story>>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: TSID<User>; deadline?: LocalDate; description: string; externalId?: string; id: TSID<Story>; name: string; points?: number; projectId: TSID<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
 export enum Role {ADMIN = 'ADMIN', VIEWER = 'VIEWER'}
 // class users.User
-export interface User {address?: Address; age?: number; avatarUrl?: URI; department?: string; email: Email; firstName: string; fullName: string; id: TSID<User>; lang: string; lastName: string; lastOnlineAt?: Instant; personalCode?: string; phone?: Phone; role: Role; updatedAt?: Instant}
+export interface User {avatarUrl?: URI; email: Email; firstName: string; fullName: string; id: TSID<User>; lang: string; lastName: string; lastOnlineAt?: Instant; role: Role; updatedAt?: Instant}
 
+// java.time.LocalDate
+export type LocalDate = `${number}-${number}-${number}`
 // java.time.Instant
 export type Instant = `${number}-${number}-${number}T${number}:${number}:${number}Z`
 // java.net.URI
 export type URI = `${string}://${string}`
 // klite.Email
 export type Email = `${string}@${string}`
-// klite.Phone
-export type Phone = `+${number}`
 
 // db.TestData
-export const address = {"building":"1/3","countryCode":"EE","county":"Harju maakond","details":"Karusambla tee 1/3, Rae vald","id":"3429052","municipality":"Rae vald","postalCode":"75304","street":"Karusambla tee"} as Address
 export const date = "2025-03-03" as LocalDate
-export const user = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavo","lang":"et","lastName":"Admin","role":"ADMIN"} as User
-export const viewer = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavp","lang":"et","lastName":"Admin","role":"VIEWER"} as User
+export const user = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavo","lang":"en","lastName":"Admin","role":"ADMIN"} as User
+export const viewer = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavp","lang":"en","lastName":"Admin","role":"VIEWER"} as User
