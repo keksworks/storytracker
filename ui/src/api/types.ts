@@ -24,9 +24,9 @@ export interface Story {acceptedAt?: Instant; afterId?: TSID<Story>; blockers: A
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
-export enum Role {ADMIN = 'ADMIN', VIEWER = 'VIEWER'}
+export enum Role {OWNER = 'OWNER', ADMIN = 'ADMIN', VIEWER = 'VIEWER'}
 // class users.User
-export interface User {avatarUrl?: URI; email: Email; firstName: string; fullName: string; id: TSID<User>; lang: string; lastName: string; lastOnlineAt?: Instant; role: Role; updatedAt?: Instant}
+export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: TSID<User>; initials?: string; lang: string; lastName: string; lastOnlineAt?: Instant; name: string; role: Role; updatedAt?: Instant; username?: string}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`
@@ -39,5 +39,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavo","lang":"en","lastName":"Admin","role":"ADMIN"} as User
-export const viewer = {"email":"admin@artun.ee","firstName":"Test","fullName":"Test Admin","id":"26vvzavp","lang":"en","lastName":"Admin","role":"VIEWER"} as User
+export const user = {"createdAt":"2025-04-16T09:44:37Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavo","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-16T09:44:37Z"} as User
+export const viewer = {"createdAt":"2025-04-16T09:44:37Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavp","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-16T09:44:37Z"} as User

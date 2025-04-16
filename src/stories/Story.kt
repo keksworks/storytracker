@@ -34,6 +34,7 @@ data class Story(
   val tasks: List<Task> = emptyList(),
   val comments: List<Comment> = emptyList(),
   val blockers: List<Blocker> = emptyList(),
+  // TODO reviews, code commits?
   val afterId: Id<Story>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,

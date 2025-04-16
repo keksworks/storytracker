@@ -2,12 +2,17 @@ package stories
 
 import db.Id
 import klite.Config
+import klite.Email
 import klite.Registry
 import klite.info
+import klite.jdbc.nowSec
 import klite.json.*
 import klite.logger
 import stories.Story.Status
 import stories.Story.Type
+import users.Role
+import users.User
+import users.UserRepository
 import java.net.URI
 import java.time.DayOfWeek
 import java.time.Instant
@@ -16,6 +21,7 @@ class PivotalImporter(
   registry: Registry,
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
+  private val userRepository: UserRepository,
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
@@ -44,7 +50,7 @@ class PivotalImporter(
     var num = 0
     var afterId: Id<Story>? = null
     while (num % 500 == 0) {
-      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "blockers", "accepted_at", "updated_at", "created_at")
+      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id")
       http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
@@ -77,7 +83,8 @@ class PivotalImporter(
           },
           acceptedAt = p.getOrNull<String>("accepted_at")?.let { Instant.parse(it) },
           updatedAt = Instant.parse(p.getString("updated_at")),
-          createdAt = Instant.parse(p.getString("created_at"))
+          createdAt = Instant.parse(p.getString("created_at")),
+          createdBy = Id(p.getLong("requested_by_id")),
         )
         storyRepository.save(story)
         num++
@@ -85,5 +92,23 @@ class PivotalImporter(
       }
       log.info("Imported $num stories")
     }
+  }
+
+  suspend fun importAccountMembers(accountId: Id<Any>) {
+    var num = 0
+    http.get<JsonList>("/accounts/${accountId.value}/memberships").forEach { m ->
+      val person = m.getNode("person")
+      val role = if (m.getBoolean("owner")) Role.OWNER else if (m.getBoolean("admin")) Role.ADMIN else Role.VIEWER
+      val name = person.getString("name")
+      log.info("Importing member $name $role")
+      val user = User(name, Email(person.getString("email")), role,
+        initials = person.getString("initials"), username = person.getString("username"),
+        updatedAt = m.getOrNull<String>("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
+        createdAt = m.getOrNull<String>("created_at")?.let { Instant.parse(it) } ?: nowSec(),
+        id = Id(person.getLong("id")))
+      userRepository.save(user)
+      num++
+    }
+    log.info("Imported $num account members")
   }
 }

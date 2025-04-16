@@ -5,7 +5,6 @@ import klite.oauth.OAuthTokenResponse
 import klite.oauth.OAuthUser
 import klite.oauth.OAuthUserProvider
 import klite.oauth.UserProfile
-import users.Role
 import users.Role.ADMIN
 import users.Role.VIEWER
 import users.User
@@ -18,7 +17,8 @@ class AuthUserProvider(
     var user = userRepository.by(User::email to profile.email)
     if (user == null) {
       val role = if (profile.email.domain in listOf("codeborne.com")) ADMIN else VIEWER
-      user = User(profile.firstName, profile.lastName, profile.email, role, avatarUrl = profile.avatarUrl)
+      user = User(profile.firstName + " " + profile.lastName, profile.email, role, avatarUrl = profile.avatarUrl,
+        initials = profile.firstName[0] + "" + profile.lastName[0])
       userRepository.save(user)
     }
     return user

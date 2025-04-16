@@ -2,8 +2,9 @@
 create table users(
   ${id},
   role text not null,
-  firstName text not null,
-  lastName text not null,
+  name text not null,
+  initials text not null,
+  username text not null,
   email text unique not null,
   avatarUrl text,
   lang text not null default 'en',
@@ -15,6 +16,3 @@ create table users(
 
 --changeset users_history
 create trigger users_history after update on users for each row execute function add_change_history();
-
---changeset users:demo-admin context:!prod onFail:MARK_RAN
-insert into users (id, firstName, lastName, email, role) values (1, 'Demo', 'Admin', 'tk@codeborne.com', 'ADMIN');
