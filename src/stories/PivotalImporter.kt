@@ -99,27 +99,35 @@ class PivotalImporter(
   suspend fun importAccountMembers(accountId: Id<Any>) {
     var num = 0
     http.get<JsonList>("/accounts/${accountId.value}/memberships").forEach { m ->
-      val person = m.getNode("person")
       val role = if (m.getBoolean("owner")) Role.OWNER else if (m.getBoolean("admin")) Role.ADMIN else Role.VIEWER
-      val name = person.getString("name")
-      log.info("Importing member $name $role")
-      val user = User(name, Email(person.getString("email")), role,
-        initials = person.getString("initials"), username = person.getString("username"),
-        updatedAt = m.getStringOrNull("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
-        createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec(),
-        id = Id(person.getLong("id")))
-      userRepository.save(user)
+      ensureUserExists(m, role)
       num++
     }
     log.info("Imported $num account members")
   }
 
+  private fun PivotalImporter.ensureUserExists(m: JsonNode, role: Role): Id<User> {
+    val person = m.getNode("person")
+    val name = person.getString("name")
+    log.info("Importing user $name $role")
+    val id = Id<User>(person.getLong("id"))
+    userRepository.by(User::id to id) ?: return id
+    val user = User(
+      name, Email(person.getString("email")), role,
+      initials = person.getString("initials"), username = person.getString("username"),
+      updatedAt = m.getStringOrNull("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
+      createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec(),
+      id = id)
+    userRepository.save(user)
+    return id;
+  }
+
   suspend fun importProjectMembers(projectId: Id<Project>) {
     var num = 0
     http.get<JsonList>("/projects/${projectId.value}/memberships").forEach { m ->
-      val person = m.getNode("person")
-      log.info("Importing project member $person")
-      val member = ProjectMember(Id(m.getLong("id")), projectId, Id(person.getLong("id")),
+      val userId = ensureUserExists(m, Role.VIEWER)
+      log.info("Importing project member ${userId.value}")
+      val member = ProjectMember(Id(m.getLong("id")), projectId, userId,
         role = ProjectMember.Role.valueOf(m.getString("role").uppercase()),
         commentNotifications = m.getBoolean("wants_comment_notification_emails"),
         mentionNotifications = m.getBoolean("will_receive_mention_notifications_or_emails"),
