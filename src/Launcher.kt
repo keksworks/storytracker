@@ -13,6 +13,7 @@ import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
 import kotlinx.coroutines.launch
 import stories.PivotalImporter
+import stories.ProjectRepository
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -59,7 +60,11 @@ fun startServer() = Server(
     require<PivotalImporter>().apply {
       importProjects()
       importAccountMembers(Id(84056))
-      importStories(Id(2532424))
+      require<ProjectRepository>().list().forEach {
+        importStories(it.id)
+        importProjectMembers(it.id)
+      }
+      // TODO: download all attachments from S3
     }
   }
   start()

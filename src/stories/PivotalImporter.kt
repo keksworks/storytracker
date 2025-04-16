@@ -22,6 +22,7 @@ class PivotalImporter(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val userRepository: UserRepository,
+  private val projectMemberRepository: ProjectMemberRepository,
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
@@ -111,6 +112,24 @@ class PivotalImporter(
       num++
     }
     log.info("Imported $num account members")
+  }
+
+  suspend fun importProjectMembers(projectId: Id<Project>) {
+    var num = 0
+    http.get<JsonList>("/projects/${projectId.value}/memberships").forEach { m ->
+      val person = m.getNode("person")
+      log.info("Importing project member $person")
+      val member = ProjectMember(Id(m.getLong("id")), projectId, Id(person.getLong("id")),
+        role = ProjectMember.Role.valueOf(m.getString("role").uppercase()),
+        commentNotifications = m.getBoolean("wants_comment_notification_emails"),
+        mentionNotifications = m.getBoolean("will_receive_mention_notifications_or_emails"),
+        lastViewedAt = m.getStringOrNull("last_viewed_at")?.let { Instant.parse(it) },
+        updatedAt = m.getStringOrNull("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
+        createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec())
+      num++
+      projectMemberRepository.save(member)
+    }
+    log.info("Imported $num project members")
   }
 
   private fun JsonNode.getString(key: String) = getStringOrNull(key)!!

@@ -5,4 +5,5 @@
 --include change_history.sql
 --include users.sql
 --include projects.sql
+--include project_members.sql
 --include stories.sql

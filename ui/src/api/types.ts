@@ -7,6 +7,10 @@ export interface Story {id: Id<Story>, title: string, description: string, tags:
 
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: TSID<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
+// class stories.ProjectMember$Role
+export enum ProjectMemberRole {OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
+// class stories.ProjectMember
+export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: TSID<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: TSID<Project>; role: ProjectMemberRole; updatedAt?: Instant; userId: TSID<User>}
 // class stories.Story$Attachment
 export interface StoryAttachment {filename: string; height?: number; size: number; thumbnailUrl?: URI; url: URI; width?: number}
 // class stories.Story$Blocker
@@ -39,5 +43,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-16T09:44:37Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavo","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-16T09:44:37Z"} as User
-export const viewer = {"createdAt":"2025-04-16T09:44:37Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavp","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-16T09:44:37Z"} as User
+export const user = {"createdAt":"2025-04-16T13:34:50Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavo","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-16T13:34:50Z"} as User
+export const viewer = {"createdAt":"2025-04-16T13:34:50Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavp","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-16T13:34:50Z"} as User
