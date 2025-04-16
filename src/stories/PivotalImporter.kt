@@ -91,6 +91,7 @@ class PivotalImporter(
         afterId = id
       }
       log.info("Imported $num stories")
+      if (num == 0) break
     }
   }
 
