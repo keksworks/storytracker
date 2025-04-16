@@ -34,7 +34,7 @@ class PivotalImporter(
     http.get<JsonList>("/projects").forEach { p ->
       val name = p.getString("name")
       log.info("Importing project $name")
-      val project = Project(Id(p.getLong("id")), name, p.getOrNull<String>("description"),
+      val project = Project(Id(p.getLong("id")), name, p.getStringOrNull("description"),
         DayOfWeek.valueOf(p.getString("week_start_day").uppercase()),
         p.getOrNull<Int>("iteration_weeks") ?: 1, p.getBoolean("bugs_and_chores_are_estimatable"),
         p.getNode("time_zone").getString("olson_name"),
@@ -56,7 +56,7 @@ class PivotalImporter(
         val name = p.getString("name")
         log.info("Importing story ${id.value} $name")
         val story = Story(
-          id, projectId, name, p.getOrNull<String>("description"),
+          id, projectId, name, p.getStringOrNull("description"),
           Type.valueOf(p.getString("story_type").uppercase()),
           Status.valueOf(p.getString("current_state").uppercase()),
           afterId = afterId,
@@ -68,20 +68,20 @@ class PivotalImporter(
               val thumbnailUrl = URI(it.getString("thumbnail_url"))
               Story.Attachment(it.getString("filename"), it.getInt("size"), url, thumbnailUrl, it.getOrNull("width"), it.getOrNull("height"))
             }
-            Story.Comment(it.getOrNull("text"), attachments, Id(it.getLong("person_id")),
+            Story.Comment(it.getStringOrNull("text"), attachments, Id(it.getLong("person_id")),
               Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
          },
           tasks = p.getList<JsonNode>("tasks").map {
             val completed = it.getBoolean("complete")
-            Story.Task(it.getString("description"), if (completed) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
+            Story.Task(it.getString("description"), if (completed) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
               Instant.parse(it.getString("created_at")))
           },
           blockers = p.getList<JsonNode>("blockers").map {
             val resolved = it.getBoolean("resolved")
-            Story.Blocker(it.getString("description"), Id(it.getLong("person_id")), if (resolved) it.getOrNull<String>("updated_at")?.let { Instant.parse(it) } else null,
+            Story.Blocker(it.getString("description"), Id(it.getLong("person_id")), if (resolved) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
               Instant.parse(it.getString("created_at")))
           },
-          acceptedAt = p.getOrNull<String>("accepted_at")?.let { Instant.parse(it) },
+          acceptedAt = p.getStringOrNull("accepted_at")?.let { Instant.parse(it) },
           updatedAt = Instant.parse(p.getString("updated_at")),
           createdAt = Instant.parse(p.getString("created_at")),
           createdBy = Id(p.getLong("requested_by_id")),
@@ -104,12 +104,15 @@ class PivotalImporter(
       log.info("Importing member $name $role")
       val user = User(name, Email(person.getString("email")), role,
         initials = person.getString("initials"), username = person.getString("username"),
-        updatedAt = m.getOrNull<String>("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
-        createdAt = m.getOrNull<String>("created_at")?.let { Instant.parse(it) } ?: nowSec(),
+        updatedAt = m.getStringOrNull("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
+        createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec(),
         id = Id(person.getLong("id")))
       userRepository.save(user)
       num++
     }
     log.info("Imported $num account members")
   }
+
+  private fun JsonNode.getString(key: String) = getStringOrNull(key)!!
+  private fun JsonNode.getStringOrNull(key: String) = getOrNull<String>(key)?.replace("\u0000", "")
 }
