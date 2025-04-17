@@ -106,14 +106,15 @@ class PivotalImporter(
     log.info("Imported $num account members")
   }
 
-  private fun PivotalImporter.ensureUserExists(m: JsonNode, role: Role): Id<User> {
+  private fun PivotalImporter.ensureUserExists(m: JsonNode, role: Role): Id<User>? {
     val person = m.getNode("person")
     val name = person.getString("name")
     log.info("Importing user $name $role")
     val id = Id<User>(person.getLong("id"))
-    userRepository.by(User::id to id) ?: return id
+    if (userRepository.by(User::id to id) != null) return id
+    val email = person.getStringOrNull("email")?.let { Email(it) } ?: return null
     val user = User(
-      name, Email(person.getString("email")), role,
+      name, email, role,
       initials = person.getString("initials"), username = person.getString("username"),
       updatedAt = m.getStringOrNull("updated_at")?.let { Instant.parse(it) } ?: nowSec(),
       createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec(),
@@ -125,7 +126,7 @@ class PivotalImporter(
   suspend fun importProjectMembers(projectId: Id<Project>) {
     var num = 0
     http.get<JsonList>("/projects/${projectId.value}/memberships").forEach { m ->
-      val userId = ensureUserExists(m, Role.VIEWER)
+      val userId = ensureUserExists(m, Role.VIEWER) ?: return@forEach
       log.info("Importing project member ${userId.value}")
       val member = ProjectMember(Id(m.getLong("id")), projectId, userId,
         role = ProjectMember.Role.valueOf(m.getString("role").uppercase()),
