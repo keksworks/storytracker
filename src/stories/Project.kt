@@ -3,7 +3,6 @@ package stories
 import db.CrudRepository
 import db.Entity
 import db.Id
-import klite.jdbc.UpdatableEntity
 import klite.jdbc.nowSec
 import java.time.DayOfWeek
 import java.time.Instant

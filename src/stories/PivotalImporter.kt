@@ -23,6 +23,7 @@ class PivotalImporter(
   private val storyRepository: StoryRepository,
   private val userRepository: UserRepository,
   private val projectMemberRepository: ProjectMemberRepository,
+  private val epicRepository: EpicRepository,
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
@@ -139,6 +140,21 @@ class PivotalImporter(
       projectMemberRepository.save(member)
     }
     log.info("Imported $num project members")
+  }
+
+  suspend fun importEpics(projectId: Id<Project>) {
+    var num = 0
+    http.get<JsonList>("/projects/${projectId.value}/epics").forEach { p ->
+      val name = p.getString("name")
+      log.info("Importing epic $name")
+      val epic = Epic(
+        Id(p.getLong("id")), projectId, name, p.getStringOrNull("description"),
+        p.getNode("label").getString("name"),
+        updatedAt = Instant.parse(p.getString("updated_at")), createdAt = Instant.parse(p.getString("created_at")))
+      epicRepository.save(epic)
+      num++
+    }
+    log.info("Imported $num epics")
   }
 
   private fun JsonNode.getString(key: String) = getStringOrNull(key)!!
