@@ -48,7 +48,7 @@ class PivotalImporter(
     log.info("Imported $num projects")
   }
 
-  suspend fun importStories(projectId: Id<Project>) {
+  suspend fun importStories(projectId: Id<Project>, downloadAttachments: Boolean = false) {
     var num = 0
     var afterId: Id<Story>? = null
     while (num % 500 == 0) {

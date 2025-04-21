@@ -1,6 +1,5 @@
 package db
 
-import klite.TSID
 import klite.i18n.Lang
 import klite.jdbc.BaseCrudRepository
 import klite.jdbc.BaseEntity
@@ -9,8 +8,12 @@ import klite.json.parse
 import java.sql.ResultSet
 import javax.sql.DataSource
 
-/** Use TSID by default for all ids */
-typealias Id<T> = TSID<T>
+@JvmInline value class Id<T>(val value: Long) {
+  constructor(value: String): this(value.toLong())
+  constructor(): this(System.currentTimeMillis() / 1000L - (Math.random() * 10000L).toLong()) // TODO: implement something similar to TSID
+  override fun toString() = value.toString()
+}
+
 typealias Entity<T> = BaseEntity<Id<T>>
 
 abstract class CrudRepository<T: Entity<T>>(db: DataSource, table: String): BaseCrudRepository<T, Id<T>>(db, table) {
