@@ -1,6 +1,7 @@
 package stories
 
 import db.Id
+import klite.AppScope
 import klite.Config
 import klite.Email
 import klite.Registry
@@ -8,6 +9,7 @@ import klite.info
 import klite.jdbc.nowSec
 import klite.json.*
 import klite.logger
+import kotlinx.coroutines.launch
 import stories.Story.Status
 import stories.Story.Type
 import users.Role
@@ -24,6 +26,7 @@ class PivotalImporter(
   private val userRepository: UserRepository,
   private val projectMemberRepository: ProjectMemberRepository,
   private val epicRepository: EpicRepository,
+  private val attachmentRepository: AttachmentRepository
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
@@ -66,9 +69,12 @@ class PivotalImporter(
           tags = p.getList<JsonNode>("labels").map { it.getString("name") },
           comments = p.getList<JsonNode>("comments").map {
             val attachments = it.getList<JsonNode>("file_attachments").map {
-              val url = URI(it.getString("big_url"))
-              val thumbnailUrl = URI(it.getString("thumbnail_url"))
-              Story.Attachment(it.getString("filename"), it.getInt("size"), url, thumbnailUrl, it.getOrNull("width"), it.getOrNull("height"))
+              // Only thumbnailable attachmnets can be downloaded directly because of a bug in Pivotal API, otherwise download_url is used, but requires Pivotal session cookie
+              val url = if (it.getBoolean("thumbnailable")) URI(it.getString("big_url"))
+                        else URI("https://www.pivotaltracker.com" + it.getString("download_url"))
+              Story.Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
+                if (downloadAttachments) AppScope.launch { attachmentRepository.download(projectId, id, it, url) }
+              }
             }
             Story.Comment(it.getStringOrNull("text"), attachments, Id(it.getLong("person_id")),
               Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))

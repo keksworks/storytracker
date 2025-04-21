@@ -1,5 +1,5 @@
 // Generated automatically by ./gradlew types.ts
-export type Id<T extends Entity<T>> = string & {_of?: T}
+export type Id<T extends Entity<T>> = number & {_of?: T}
 export type Entity<T extends Entity<T>> = {id: Id<T>}
 export type TSID<T extends Entity<T>> = Id<T>
 
@@ -16,7 +16,7 @@ export enum ProjectMemberRole {OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIE
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: ProjectMemberRole; updatedAt?: Instant; userId: Id<User>}
 // class stories.Story$Attachment
-export interface StoryAttachment {filename: string; height?: number; size: number; thumbnailUrl?: URI; url: URI; width?: number}
+export interface StoryAttachment {filename: string; height?: number; id?: number; size: number; width?: number}
 // class stories.Story$Blocker
 export interface StoryBlocker {createdAt: Instant; createdBy: Id<User>; resolvedAt?: Instant; text?: string}
 // class stories.Story$Comment
@@ -47,5 +47,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-21T11:38:37Z","email":"admin@artun.ee","firstName":"Test","id":"1745235517146","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-21T11:38:37Z"} as User
-export const viewer = {"createdAt":"2025-04-21T11:38:37Z","email":"admin@artun.ee","firstName":"Test","id":"1745235510130","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-21T11:38:37Z"} as User
+export const user = {"createdAt":"2025-04-21T12:47:57Z","email":"admin@artun.ee","firstName":"Test","id":"1745238902","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-21T12:47:57Z"} as User
+export const viewer = {"createdAt":"2025-04-21T12:47:57Z","email":"admin@artun.ee","firstName":"Test","id":"1745233074","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-21T12:47:57Z"} as User

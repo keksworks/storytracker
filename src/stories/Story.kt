@@ -74,10 +74,9 @@ data class Story(
   data class Attachment(
     val filename: String,
     val size: Int,
-    val url: URI,
-    val thumbnailUrl: URI? = null,
     val width: Int? = null,
     val height: Int? = null,
+    val id: Long? = null,
   )
 }
 
