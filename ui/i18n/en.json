@@ -81,6 +81,7 @@
     "title": "Samples"
   },
   "panels": {
+    "done": "Done",
     "backlog": "Backlog",
     "icebox": "Icebox"
   },
