@@ -4,10 +4,9 @@
   import Toasts from './components/Toasts.svelte'
   import NotFoundPage from './layout/NotFoundPage.svelte'
   import Spinner from 'src/components/Spinner.svelte'
-  import MockEmailsPage from 'src/prototyping/emails/MockEmailsPage.svelte'
-  import MockEmailNotifications from 'src/prototyping/emails/MockEmailNotifications.svelte'
   import ProjectPage from 'src/pages/ProjectPage.svelte'
   import HomePage from 'src/pages/HomePage.svelte'
+  import ProjectsPage from 'src/pages/ProjectsPage.svelte'
 </script>
 
 <svelte:head>
@@ -19,7 +18,8 @@
 <Router primary={false}>
   <div class="App min-h-screen flex flex-col">
     <Route path="/" component={HomePage}/>
-    <Route path="/project" component={ProjectPage}/>
+    <Route path="/projects" component={ProjectsPage}/>
+    <Route path="/projects/:id" component={ProjectPage}/>
     <Route path="/samples/*path" let:params>
       {#await import('src/samples/SamplesPage.svelte')}
         <Spinner/>
@@ -28,9 +28,5 @@
       {/await}
     </Route>
     <Route component={NotFoundPage}/>
-
-    <Route path="emails" component={MockEmailsPage}/>
-    <Route path="emails/:slug" component={MockEmailsPage}/>
-<!--    <MockEmailNotifications />-->
   </div>
 </Router>

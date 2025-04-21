@@ -88,6 +88,7 @@ tasks.register<JavaExec>("types.ts") {
       export type TSID<T extends Entity<T>> = Id<T>
       export type Entity<T extends Entity<T>> = {id: Id<T>}
     """.trimIndent() + "\n",
+    "java.time.DayOfWeek",
     "-t", "db.TestData"
   )
 }

@@ -14,6 +14,7 @@ import klite.oauth.OAuthUserProvider
 import kotlinx.coroutines.launch
 import stories.PivotalImporter
 import stories.ProjectRepository
+import stories.ProjectRoutes
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -54,16 +55,18 @@ fun startServer() = Server(
 
     annotated<AuthRoutes>(annotations = listOf(Public()))
     annotated<UserRoutes>("/users")
+    annotated<ProjectRoutes>("/projects")
   }
 
   AppScope.launch {
     require<PivotalImporter>().apply {
-      importProjects()
-      importAccountMembers(Id(84056))
-      require<ProjectRepository>().list().forEach {
-        importStories(it.id)
-        importProjectMembers(it.id)
-      }
+//      importProjects()
+//      importAccountMembers(Id(84056))
+//      require<ProjectRepository>().list().forEach {
+//        importStories(it.id)
+//        importEpics(it.id)
+//        importProjectMembers(it.id)
+//      }
       // TODO: download all attachments from S3
     }
   }

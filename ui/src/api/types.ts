@@ -3,8 +3,10 @@ export type Id<T extends Entity<T>> = string & {_of?: T}
 export type Entity<T extends Entity<T>> = {id: Id<T>}
 export type TSID<T extends Entity<T>> = Id<T>
 
-export interface Story {id: Id<Story>, title: string, description: string, tags: string[], points: number, createdAt: string, open?: boolean}
+export type DayOfWeek = string
 
+// class stories.Epic
+export interface Epic {createdAt: Instant; createdBy?: TSID<User>; description?: string; id: TSID<Epic>; name: string; projectId: TSID<Project>; tag: string; updatedAt?: Instant}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: TSID<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
 // class stories.ProjectMember$Role
@@ -43,5 +45,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-16T13:34:50Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavo","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-16T13:34:50Z"} as User
-export const viewer = {"createdAt":"2025-04-16T13:34:50Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavp","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-16T13:34:50Z"} as User
+export const user = {"createdAt":"2025-04-21T10:20:39Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavo","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-21T10:20:39Z"} as User
+export const viewer = {"createdAt":"2025-04-21T10:20:39Z","email":"admin@artun.ee","firstName":"Test","id":"26vvzavp","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-21T10:20:39Z"} as User

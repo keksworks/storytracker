@@ -74,7 +74,8 @@
   },
   "projects": {
     "title": "Projects",
-    "project": "Project"
+    "project": "Project",
+    "iterations": "Iterations"
   },
   "samples": {
     "title": "Samples"
