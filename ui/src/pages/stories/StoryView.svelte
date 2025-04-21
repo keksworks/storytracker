@@ -6,7 +6,7 @@
   import {formatDateTime} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
 
-  export let story: Story
+  export let story: Story & {open?: boolean}
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}}>()
 
@@ -31,7 +31,7 @@
       <Icon name="bug" class="text-red-600"/>
     {/if}
     <div class="flex-grow">
-      <span class="title flex-1">{story.title}</span>
+      <span class="title flex-1">{story.name}</span>
       <ul class="w-full flex gap-1 text-sm text-green-700 font-bold">
         {#each story.tags as tag}
           <li class="hover:text-green-600">{tag}</li>

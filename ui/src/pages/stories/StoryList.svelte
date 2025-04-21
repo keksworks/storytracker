@@ -12,12 +12,12 @@
     iterations = []
     let date = new Date()
     for (const s of stories) {
-      if (points + s.points > velocity) {
+      if (points + s.points! > velocity) {
         date.setDate(date.getDate() + 7) // TODO: iteration length
         iterations.push({points, startTime: date.getTime()})
         points = 0
       } else {
-        points += s.points
+        points += s.points ?? 0
         iterations.push(null)
       }
     }
