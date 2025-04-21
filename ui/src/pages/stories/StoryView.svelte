@@ -15,10 +15,12 @@
     dispatch('drag', {id: e.dataTransfer?.getData('id')!, beforeId: story.id})
     isDropTarget = false
   }
+
+  $: movable = !story.open || !story.acceptedAt
 </script>
 
-<div class="bg-stone-50 hover:bg-yellow-100 flex flex-col border-b"
-     class:cursor-move={!story.open} draggable={!story.open}
+<div class="{story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'} flex flex-col border-b"
+     class:cursor-move={movable} draggable={movable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
