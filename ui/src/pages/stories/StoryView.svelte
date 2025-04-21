@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import type {Id, Story} from 'src/api/types'
+  import {type Id, type Story, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -19,17 +19,17 @@
   $: movable = !story.open || !story.acceptedAt
 </script>
 
-<div class="{story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'} flex flex-col border-b"
+<div class="{story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'} flex flex-col border-b"
      class:cursor-move={movable} draggable={movable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
   <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
-    {#if Math.random() > 0.2}
+    {#if story.type == StoryType.FEATURE}
       <Icon name="star-filled" class="text-yellow-500"/>
-    {:else if Math.random() > 0.4}
+    {:else if story.type == StoryType.CHORE}
       <Icon name="settings-filled" class="text-neutral-500"/>
-    {:else}
+    {:else if story.type == StoryType.BUG}
       <Icon name="bug" class="text-red-600"/>
     {/if}
     <div class="flex-grow">
