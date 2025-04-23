@@ -4,8 +4,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-    volumes:
-      - ./uploads:/app/uploads
     environment:
       - ENV=demo
       - DB_URL=jdbc:postgresql://db/$DB_USER

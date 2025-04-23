@@ -3,7 +3,7 @@ pipeline {
   agent any
 
   environment {
-    APP = "nivotal"
+    APP = "tracker"
     BUILD = "${JOB_NAME.replace('/', '-')}-${BUILD_NUMBER}"
     EMAIL = sh(script: "git show -s --format='%ae' HEAD", returnStdout: true)
     GIT_LAST_CHANGE = sh(script: "git show", returnStdout: true)

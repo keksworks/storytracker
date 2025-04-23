@@ -1,6 +1,8 @@
 # For demo deployment to arti.codeborne.com
 services:
   tracker:
+    volumes:
+      - attachments:/app/attachments
     networks:
       - proxy
       - default
@@ -12,3 +14,6 @@ services:
 networks:
   proxy:
     external: true
+
+volumes:
+  attachments:

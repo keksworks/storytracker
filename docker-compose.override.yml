@@ -1,4 +1,8 @@
 services:
+  tracker:
+    volumes:
+      - ./attachments:/app/attachments
+
   db:
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
