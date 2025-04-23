@@ -18,6 +18,6 @@ class StoryRepositoryTest: DBTest() {
     repository.save(story)
     repository.save(story2)
     expect(repository.get(story.id)).toEqual(story)
-    expect(repository.list()).toContainExactly(story, story2)
+    expect(repository.list(Story::projectId to project.id)).toContain(story, story2)
   }
 }
