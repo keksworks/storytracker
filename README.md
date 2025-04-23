@@ -2,40 +2,61 @@
 
 Pivotal Tracker replacement for project management in Codeborne.
 
-Built with Svelte, TypeScript, Vite
+Built with:
+* [Database](db): PostgreSQL
+* [Backend](src): Kotlin/Klite
+* [Unit tests](test): JUnit
+* [Frontend](ui): Svelte/TailwindCSS/TypeScript, including:
+  * Internationalization
+  * TypeScript types generation
+  * Unit tests
+* [Development config](.env)
 
-## Available Scripts
+Prerequisites (install these first):
+* JDK 21+
+* Node 20+
+* Docker
 
-In the ui directory:
+## Building
 
-### npm start
+See [Dockerfile](Dockerfile) for more information
 
-Runs the app in the development mode.
-Open http://localhost:8000 to view it in the browser.
+### Build server
 
-The page will reload if you make edits.
+`./gradlew jar`
 
-### npm check
+### Build UI
 
-Will run svelte-check to validate all types with TypeScript.
+Inside of `ui` directory:
 
-### npm test
+Install the dependencies using: `npm install` and
 
-Runs unit tests using Vitest.
+Build UI using: `npm run build`
 
-### npm run build
+## Development
 
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
+Start API by running the [Launcher](src/Launcher.kt).
 
-# Design
+It will automatically try to start the database using `docker compose up -d db`
+To access DB via IDE use credentials from [.env](.env) file.
 
-### Developing styles
-Tailwind CSS is used as the CSS framework. For IntelliJ Idea, the `Tailwind CSS Smart Completions` plugin is recommended for autocompleting available utility classes.
+Start UI using: `cd ui && npm run dev`
 
-### Icons
-Tablericons
-https://tablericons.com/
+## Running tests
 
-1. Copy svg code
-2. Paste it to a new icon in the Icon.ts, strip the svg attribute and change it to a `<g>` to preserve some crucial attributes. Change the `stroke` hardcoded color to `currentColor`
+Server tests:
+`./gradlew test`
+
+Repository tests are integration tests, connecting to the real database, which runs in Docker.
+The test database name is `cos_test`.
+
+UI tests:
+`cd ui && npm test`
+
+## Deployment instructions
+
+The easiest way to deploy is via Docker compose:
+
+`docker compose up -d`
+
+This will build and start the application and the database.
