@@ -76,7 +76,9 @@
   "projects": {
     "title": "Projects",
     "project": "Project",
-    "iterations": "Iterations"
+    "iterations": "Iterations",
+    "velocity": "Velocity",
+    "velocityOverride": "Temporary velocity override"
   },
   "samples": {
     "title": "Samples"

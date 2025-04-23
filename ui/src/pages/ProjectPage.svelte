@@ -13,6 +13,12 @@
   let project: Project | undefined
   let stories: Story[] = []
   let done: Story[] = []
+  let velocity = 10
+
+  function changeVelocity() {
+    const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString()))
+    if (v) velocity = v
+  }
 
   async function loadProject() {
     project = await api.get('projects/' + id)
@@ -57,8 +63,12 @@
         {/if}
         {#if show.backlog}
           <div class="panel">
-            <h5 class="panel-title"><Icon name="backlog" size="lg"/> {t.panels.backlog}</h5>
-            <StoryList stories={backlog} velocity={project.velocityAveragedWeeks}/>
+            <h5 class="panel-title">
+              <Icon name="backlog" size="lg"/>
+              {t.panels.backlog}
+              <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
+            </h5>
+            <StoryList stories={backlog} {velocity}/>
           </div>
         {/if}
         {#if show.icebox}
