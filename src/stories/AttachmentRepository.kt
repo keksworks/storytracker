@@ -17,7 +17,7 @@ class AttachmentRepository {
 
   fun download(projectId: Id<Project>, ownerId: Id<out Any>, a: Story.Attachment, url: URI) {
     val file = (path / projectId.toString() / ownerId.toString() / a.filename).toFile()
-    if (!file.exists()) {
+    if (!file.exists() || file.length() < a.size) {
       file.parentFile.mkdirs()
       try {
         file.outputStream().use { out ->

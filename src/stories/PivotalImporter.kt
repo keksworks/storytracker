@@ -20,11 +20,10 @@ import java.net.URI
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
-import javax.sql.DataSource
+import java.util.concurrent.Executors
 
 class PivotalImporter(
   registry: Registry,
-  private val db: DataSource,
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val userRepository: UserRepository,
@@ -35,6 +34,7 @@ class PivotalImporter(
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
+  private val downloadPool = Executors.newVirtualThreadPerTaskExecutor()
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
   }, registry = registry)
@@ -121,7 +121,7 @@ class PivotalImporter(
       val url = if (it.getBoolean("thumbnailable")) URI(it.getString("big_url"))
       else URI("https://www.pivotaltracker.com" + it.getString("download_url"))
       Story.Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
-        if (downloadAttachments) AppScope.launch { attachmentRepository.download(projectId, ownerId, it, url) }
+        if (downloadAttachments) downloadPool.execute { attachmentRepository.download(projectId, ownerId, it, url) }
       }
     }
     Story.Comment(
