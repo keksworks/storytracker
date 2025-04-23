@@ -38,7 +38,7 @@ class PivotalImporter(
   private val downloadPool = Executors.newVirtualThreadPerTaskExecutor()
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
-  }, registry = registry, retryCount = 5, retryAfter = 5.seconds)
+  }, registry = registry, retryCount = 2, retryAfter = 30.seconds)
 
   suspend fun importProjects() {
     var num = 0
