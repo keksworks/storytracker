@@ -22,11 +22,12 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     Story::blockers to getJson<List<Story.Blocker>>("blockers"),
   )
 
-  override fun list(vararg where: PropValue<Story>?, suffix: String): List<Story> =
-    db.query("""with recursive ordered_stories as (
-      select s.* from $table s where s.afterId is null
-      union all
-      select next.* from stories next join ordered_stories os on next.afterId = os.id
-    )
-    select * from ordered_stories""") { mapper() }
+// TODO: recursive select is noticeable slower, maybe we could build the linked list in Kotlin
+//  override fun list(vararg where: PropValue<Story>?, suffix: String): List<Story> =
+//    db.query("""with recursive ordered_stories as (
+//      select s.* from $table s where s.afterId is null
+//      union all
+//      select next.* from stories next join ordered_stories os on next.afterId = os.id
+//    )
+//    select * from ordered_stories""") { mapper() }
 }

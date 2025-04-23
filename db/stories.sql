@@ -22,6 +22,12 @@ create table stories(
 
 --changeset stories.afterId:index
 create index on stories(afterId);
+
+--changeset stories.afterId:index:drop
+drop index if exists stories_afterId_idx;
+
+--changeset stories:mainIndex
+create index on stories(projectId, afterId);
 --TODO index null value somehow
 
 --changeset stories_history
