@@ -21,6 +21,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.seconds
 
 class PivotalImporter(
   registry: Registry,
@@ -37,7 +38,7 @@ class PivotalImporter(
   private val downloadPool = Executors.newVirtualThreadPerTaskExecutor()
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
-  }, registry = registry)
+  }, registry = registry, retryCount = 5, retryAfter = 5.seconds)
 
   suspend fun importProjects() {
     var num = 0
