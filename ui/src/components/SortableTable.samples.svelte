@@ -1,12 +1,11 @@
 <script lang="ts">
   import SortableTable from 'src/components/SortableTable.svelte'
-  import type {Address} from 'src/api/types'
   import {t} from 'src/i18n'
 
   let addresses = [
     {county: 'Harjumaa', municipality: 'Tallinn', street: 'Sepise', building: '8'},
     {county: 'Saaremaa', municipality: 'Leisi', street: 'Soodi', building: '3'},
-  ] as Address[]
+  ]
 </script>
 
 <SortableTable labels={t.addresses} columns={['county', 'municipality', 'street', 'building']} items={addresses} let:item={a}>
