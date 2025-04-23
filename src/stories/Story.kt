@@ -1,25 +1,13 @@
 package stories
 
-import db.CrudRepository
 import db.Entity
 import db.Id
-import db.getJson
-import db.jsonb
-import klite.jdbc.UpdatableEntity
-import klite.jdbc.create
 import klite.jdbc.nowSec
-import klite.toValues
-import stories.Story.Blocker
-import stories.Story.Comment
 import stories.Story.Status.UNSTARTED
-import stories.Story.Task
 import stories.Story.Type.FEATURE
 import users.User
-import java.net.URI
-import java.sql.ResultSet
 import java.time.Instant
 import java.time.LocalDate
-import javax.sql.DataSource
 
 data class Story(
   override val id: Id<Story> = Id(),
@@ -77,18 +65,5 @@ data class Story(
     val width: Int? = null,
     val height: Int? = null,
     val id: Long? = null,
-  )
-}
-
-class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
-  override fun Story.persister() = toValues(
-    Story::tasks to jsonb(tasks),
-    Story::comments to jsonb(comments),
-    Story::blockers to jsonb(blockers),
-  )
-  override fun ResultSet.mapper() = create(
-    Story::tasks to getJson<List<Task>>("tasks"),
-    Story::comments to getJson<List<Comment>>("comments"),
-    Story::blockers to getJson<List<Blocker>>("blockers"),
   )
 }

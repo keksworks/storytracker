@@ -20,5 +20,9 @@ create table stories(
   ${createdBy}
 );
 
+--changeset stories.afterId:index
+create index on stories(afterId);
+--TODO index null value somehow
+
 --changeset stories_history
 create trigger stories_history after update on stories for each row execute function add_change_history();
