@@ -17,3 +17,6 @@ create table projects(
 
 --changeset projects_history
 create trigger projects_history after update on projects for each row execute function add_change_history();
+
+--changeset projects.reviewTypes
+alter table projects add column reviewTypes text[] not null default '{}';

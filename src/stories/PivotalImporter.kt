@@ -11,7 +11,10 @@ import klite.jdbc.update
 import klite.json.*
 import klite.logger
 import kotlinx.coroutines.launch
+import stories.Story.Blocker
+import stories.Story.Review
 import stories.Story.Status
+import stories.Story.Task
 import stories.Story.Type
 import users.Role
 import users.User
@@ -47,9 +50,10 @@ class PivotalImporter(
       log.info("Importing project $name")
       val project = Project(Id(p.getLong("id")), name, p.getStringOrNull("description"),
         DayOfWeek.valueOf(p.getString("week_start_day").uppercase()),
-        p.getOrNull<Int>("iteration_weeks") ?: 1, p.getBoolean("bugs_and_chores_are_estimatable"),
+        p.getOrNull("iteration_weeks") ?: 1, p.getBoolean("bugs_and_chores_are_estimatable"),
         p.getNode("time_zone").getString("olson_name"),
-        p.getInt("velocity_averaged_over"), p.getInt("version"), p.getInt("current_iteration_number"),
+        p.getInt("velocity_averaged_over"), reviewTypes = emptySet(),
+        p.getInt("version"), p.getInt("current_iteration_number"),
         Instant.parse(p.getString("updated_at")), Instant.parse(p.getString("created_at")))
       projectRepository.save(project)
       num++
@@ -57,32 +61,38 @@ class PivotalImporter(
     log.info("Imported $num projects")
   }
 
-  suspend fun importStories(projectId: Id<Project>, downloadAttachments: Boolean = false) {
+  suspend fun importStories(project: Project, downloadAttachments: Boolean = false) {
     var num = 0
     var afterId: Id<Story>? = null
+    val reviewTypes = mutableSetOf<String>()
     while (num % 500 == 0) {
-      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id")
-      http.get<JsonList>("/projects/${projectId.value}/stories?limit=500&offset=$num&fields=" + fields.joinToString("%2C")).forEach { p ->
+      val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id")
+      http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
         log.info("Importing story ${id.value} $name")
         val story = Story(
-          id, projectId, name, p.getStringOrNull("description"),
+          id, project.id, name, p.getStringOrNull("description"),
           Type.valueOf(p.getString("story_type").uppercase()),
           Status.valueOf(p.getString("current_state").uppercase()),
           afterId = afterId,
-          points = p.getOrNull<Int>("estimate"),
-          tags = p.getList<JsonNode>("labels").map { it.getString("name") },
-          comments = getComments(p.getList<JsonNode>("comments"), projectId, id, downloadAttachments),
+          points = p.getOrNull("estimate"),
+          tags = p.getList<JsonNode>("labels").map { it.getString("name") }.toSet(),
+          comments = getComments(p.getList("comments"), project.id, id, downloadAttachments),
           tasks = p.getList<JsonNode>("tasks").map {
             val completed = it.getBoolean("complete")
-            Story.Task(it.getString("description"), if (completed) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
+            Task(it.getString("description"), if (completed) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
               Instant.parse(it.getString("created_at")))
           },
           blockers = p.getList<JsonNode>("blockers").map {
             val resolved = it.getBoolean("resolved")
-            Story.Blocker(it.getString("description"), Id(it.getLong("person_id")), if (resolved) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
+            Blocker(it.getString("description"), Id(it.getLong("person_id")), if (resolved) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
               Instant.parse(it.getString("created_at")))
+          },
+          reviews = p.getList<JsonNode>("reviews").map {
+            Review(it.getNode("review_type").getString("name"), Review.Status.valueOf(it.getString("status").uppercase()),
+              it.getOrNull<Number>("reviewer_id")?.let { Id(it.toLong()) },
+              Instant.parse(it.getString("created_at")), Instant.parse(it.getString("updated_at")))
           },
           acceptedAt = p.getStringOrNull("accepted_at")?.let { Instant.parse(it) },
           updatedAt = Instant.parse(p.getString("updated_at")),
@@ -90,11 +100,18 @@ class PivotalImporter(
           createdBy = Id(p.getLong("requested_by_id")),
         )
         storyRepository.save(story)
+        reviewTypes.addAll(story.reviews.map { it.type })
         num++
         afterId = id
       }
       log.info("Imported $num stories")
       if (num == 0) break
+    }
+
+    if (!project.reviewTypes.containsAll(reviewTypes)) {
+      val updatedReviewTypes = project.reviewTypes + reviewTypes
+      projectRepository.save(project.copy(reviewTypes = updatedReviewTypes))
+      log.info("Updated review types for project ${project.id} to $updatedReviewTypes")
     }
   }
 
@@ -179,7 +196,7 @@ class PivotalImporter(
   suspend fun importEpics(projectId: Id<Project>, downloadAttachments: Boolean = false) {
     var num = 0
     val fields = listOf(":default", "comment_ids")
-    http.get<JsonList>("/projects/$projectId/epics?fields=" + fields.joinToString("%2C")).forEach { p ->
+    http.get<JsonList>("/projects/$projectId/epics?fields=" + fields.joinToString(",")).forEach { p ->
       val name = p.getString("name")
       log.info("Importing epic $name")
       val id = Id<Epic>(p.getLong("id"))

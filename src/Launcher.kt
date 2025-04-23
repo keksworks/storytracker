@@ -61,13 +61,16 @@ fun startServer() = Server(
   AppScope.launch {
 //    if (require<ProjectRepository>().count() > 0L) return@launch
     require<PivotalImporter>().apply {
-      importProjects()
-      importAccountMembers(Id(84056))
+//      importProjects()
+//      importAccountMembers(Id(84056))
       require<ProjectRepository>().list().forEach {
-        importProjectMembers(it.id)
-        importEpics(it.id, downloadAttachments = true)
-        importStories(it.id, downloadAttachments = true)
-        importIterations(it)
+//        importProjectMembers(it.id)
+//        importEpics(it.id, downloadAttachments = true)
+        if (it.id.value == 2732581L) {
+          importStories(it, downloadAttachments = true)
+        }
+//        importStories(it, downloadAttachments = true)
+//        importIterations(it)
       }
     }
   }

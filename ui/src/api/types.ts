@@ -9,7 +9,7 @@ export interface Epic {comments: Array<StoryComment>; createdAt: Instant; create
 // class stories.Iteration
 export interface Iteration {acceptedPoints?: number; endDate?: LocalDate; length: number; number: number; points?: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number; velocity: number}
 // class stories.Project
-export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: Id<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
+export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: Id<Project>; iterationWeeks: number; iterations: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
 // class stories.ProjectMember$Role
 export enum ProjectMemberRole {OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class stories.ProjectMember
@@ -20,6 +20,10 @@ export interface StoryAttachment {filename: string; height?: number; id?: number
 export interface StoryBlocker {createdAt: Instant; createdBy: Id<User>; resolvedAt?: Instant; text?: string}
 // class stories.Story$Comment
 export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: Id<User>; text?: string; updatedAt: Instant}
+// class stories.Story$Review$Status
+export enum StoryReviewStatus {UNSTARTED = 'UNSTARTED', IN_REVIEW = 'IN_REVIEW', PASS = 'PASS', REVISE = 'REVISE'}
+// class stories.Story$Review
+export interface StoryReview {createdAt: Instant; reviewerId?: Id<User>; status: StoryReviewStatus; type: string; updatedAt: Instant}
 // class stories.Story$Status
 export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
 // class stories.Story$Task
@@ -27,7 +31,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; points?: number; projectId: Id<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
@@ -48,8 +52,8 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const project = {"bugsEstimatable":false,"createdAt":"2025-04-23T10:19:04Z","description":"Description","id":"1","iterationWeeks":1,"iterations":0,"name":"Project 1","startDay":"MONDAY","timezone":"UTC","updatedAt":"2025-04-23T10:19:04Z","velocityAveragedWeeks":3,"version":0} as unknown as Project
-export const story = {"blockers":[],"comments":[],"createdAt":"2025-04-23T10:19:04Z","id":"171717188822","name":"Story 1","projectId":"1","status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-04-23T10:19:04Z"} as unknown as Story
-export const story2 = {"afterId":"171717188822","blockers":[],"comments":[],"createdAt":"2025-04-23T10:19:04Z","id":"171717188823","name":"Story 2","projectId":"1","status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-04-23T10:19:04Z"} as unknown as Story
-export const user = {"createdAt":"2025-04-23T10:19:04Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T10:19:04Z"} as unknown as User
-export const viewer = {"createdAt":"2025-04-23T10:19:04Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T10:19:04Z"} as unknown as User
+export const project = {"bugsEstimatable":false,"createdAt":"2025-04-23T17:05:52Z","description":"Description","id":"1","iterationWeeks":1,"iterations":0,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","timezone":"UTC","updatedAt":"2025-04-23T17:05:52Z","velocityAveragedWeeks":3,"version":0} as Project
+export const story = {"blockers":[],"comments":[],"createdAt":"2025-04-23T17:05:52Z","id":"171717188822","name":"Story 1","projectId":"1","reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-04-23T17:05:52Z"} as Story
+export const story2 = {"afterId":"171717188822","blockers":[],"comments":[],"createdAt":"2025-04-23T17:05:52Z","id":"171717188823","name":"Story 2","projectId":"1","reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-04-23T17:05:52Z"} as Story
+export const user = {"createdAt":"2025-04-23T17:05:52Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T17:05:52Z"} as User
+export const viewer = {"createdAt":"2025-04-23T17:05:52Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T17:05:52Z"} as User

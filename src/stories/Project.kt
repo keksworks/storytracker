@@ -16,6 +16,7 @@ data class Project(
   val bugsEstimatable: Boolean = false,
   val timezone: String = "UTC",
   val velocityAveragedWeeks: Int = 3,
+  val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
   val version: Int = 0,
   val iterations: Int = 0,
   val updatedAt: Instant? = nowSec(),

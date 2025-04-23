@@ -18,11 +18,13 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     Story::tasks to jsonb(tasks),
     Story::comments to jsonb(comments),
     Story::blockers to jsonb(blockers),
+    Story::reviews to jsonb(reviews),
   )
   override fun ResultSet.mapper() = create(
     Story::tasks to getJson<List<Story.Task>>("tasks"),
     Story::comments to getJson<List<Story.Comment>>("comments"),
     Story::blockers to getJson<List<Story.Blocker>>("blockers"),
+    Story::reviews to getJson<List<Story.Blocker>>("reviews"),
   )
 
   fun setIteration(iteration: Iteration, storyIds: List<Int>) =

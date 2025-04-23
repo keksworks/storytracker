@@ -16,14 +16,14 @@ data class Story(
   val description: String? = null,
   val type: Type = FEATURE,
   val status: Status = UNSTARTED,
-  val tags: List<String> = emptyList(),
+  val tags: Set<String> = emptySet(),
   val points: Int? = null,
   val externalId: String? = null,
   val iteration: Int? = null,
   val tasks: List<Task> = emptyList(),
   val comments: List<Comment> = emptyList(),
   val blockers: List<Blocker> = emptyList(),
-  // TODO reviews, code commits?
+  val reviews: List<Review> = emptyList(),
   val afterId: Id<Story>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
@@ -51,6 +51,18 @@ data class Story(
     val resolvedAt: Instant? = null,
     val createdAt: Instant = nowSec(),
   )
+
+  data class Review(
+    val type: String,
+    val status: Status = Status.UNSTARTED,
+    val reviewerId: Id<User>? = null,
+    val createdAt: Instant = nowSec(),
+    val updatedAt: Instant = nowSec(),
+  ) {
+    enum class Status {
+      UNSTARTED, IN_REVIEW, PASS, REVISE
+    }
+  }
 
   data class Comment(
     val text: String?,
