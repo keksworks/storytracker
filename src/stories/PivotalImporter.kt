@@ -67,18 +67,7 @@ class PivotalImporter(
           afterId = afterId,
           points = p.getOrNull<Int>("estimate"),
           tags = p.getList<JsonNode>("labels").map { it.getString("name") },
-          comments = p.getList<JsonNode>("comments").map {
-            val attachments = it.getList<JsonNode>("file_attachments").map {
-              // Only thumbnailable attachmnets can be downloaded directly because of a bug in Pivotal API, otherwise download_url is used, but requires Pivotal session cookie
-              val url = if (it.getBoolean("thumbnailable")) URI(it.getString("big_url"))
-                        else URI("https://www.pivotaltracker.com" + it.getString("download_url"))
-              Story.Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
-                if (downloadAttachments) AppScope.launch { attachmentRepository.download(projectId, id, it, url) }
-              }
-            }
-            Story.Comment(it.getStringOrNull("text"), attachments, Id(it.getLong("person_id")),
-              Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at")))
-         },
+          comments = getComments(p.getList<JsonNode>("comments"), projectId, id, downloadAttachments),
           tasks = p.getList<JsonNode>("tasks").map {
             val completed = it.getBoolean("complete")
             Story.Task(it.getString("description"), if (completed) it.getStringOrNull("updated_at")?.let { Instant.parse(it) } else null,
@@ -101,6 +90,21 @@ class PivotalImporter(
       log.info("Imported $num stories")
       if (num == 0) break
     }
+  }
+
+  private fun getComments(nodes: List<JsonNode>, projectId: Id<Project>, ownerId: Id<out Any>, downloadAttachments: Boolean): List<Story.Comment> = nodes.map {
+    val attachments = it.getList<JsonNode>("file_attachments").map {
+      // Only thumbnailable attachmnets can be downloaded directly because of a bug in Pivotal API, otherwise download_url is used, but requires Pivotal session cookie
+      val url = if (it.getBoolean("thumbnailable")) URI(it.getString("big_url"))
+      else URI("https://www.pivotaltracker.com" + it.getString("download_url"))
+      Story.Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
+        if (downloadAttachments) AppScope.launch { attachmentRepository.download(projectId, ownerId, it, url) }
+      }
+    }
+    Story.Comment(
+      it.getStringOrNull("text"), attachments, Id(it.getLong("person_id")),
+      Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at"))
+    )
   }
 
   suspend fun importAccountMembers(accountId: Id<Any>) {
@@ -148,14 +152,19 @@ class PivotalImporter(
     log.info("Imported $num project members")
   }
 
-  suspend fun importEpics(projectId: Id<Project>) {
+  suspend fun importEpics(projectId: Id<Project>, downloadAttachments: Boolean = false) {
     var num = 0
-    http.get<JsonList>("/projects/${projectId.value}/epics").forEach { p ->
+    val fields = listOf(":default", "comment_ids")
+    http.get<JsonList>("/projects/$projectId/epics?fields=" + fields.joinToString("%2C")).forEach { p ->
       val name = p.getString("name")
       log.info("Importing epic $name")
+      val id = Id<Epic>(p.getLong("id"))
+      val commentIds = p.getList<Int>("comment_ids")
+      val commentsNodes = if (commentIds.isNotEmpty()) http.get<JsonList>("/projects/$projectId/epics/$id/comments?fields=:default,file_attachments") else emptyList()
       val epic = Epic(
-        Id(p.getLong("id")), projectId, name, p.getStringOrNull("description"),
+        id, projectId, name, p.getStringOrNull("description"),
         p.getNode("label").getString("name"),
+        comments = getComments(commentsNodes, projectId, id, downloadAttachments),
         updatedAt = Instant.parse(p.getString("updated_at")), createdAt = Instant.parse(p.getString("created_at")))
       epicRepository.save(epic)
       num++

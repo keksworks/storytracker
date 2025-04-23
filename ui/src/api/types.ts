@@ -8,7 +8,7 @@ export type DayOfWeek = string
 // class db.Id
 export type Id<T> = number
 // class stories.Epic
-export interface Epic {createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: Id<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
 // class stories.ProjectMember$Role
@@ -47,5 +47,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-23T07:45:12Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T07:45:12Z"} as User
-export const viewer = {"createdAt":"2025-04-23T07:45:12Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T07:45:12Z"} as User
+export const user = {"createdAt":"2025-04-23T08:27:35Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T08:27:35Z"} as User
+export const viewer = {"createdAt":"2025-04-23T08:27:35Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T08:27:35Z"} as User

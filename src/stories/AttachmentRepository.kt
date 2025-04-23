@@ -15,8 +15,8 @@ class AttachmentRepository {
   private val cookie = Config.optional("PIVOTAL_COOKIE")
   private val log = logger()
 
-  fun download(projectId: Id<Project>, storyId: Id<Story>, a: Story.Attachment, url: URI) {
-    val file = (path / projectId.toString() / storyId.toString() / a.filename).toFile()
+  fun download(projectId: Id<Project>, ownerId: Id<out Any>, a: Story.Attachment, url: URI) {
+    val file = (path / projectId.toString() / ownerId.toString() / a.filename).toFile()
     if (!file.exists()) {
       file.parentFile.mkdirs()
       try {
