@@ -34,12 +34,12 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
 
   fun list(projectId: Id<Project>, fromIteration: Int = 0): List<Story> {
-    val condition = "s.projectId = $projectId and (s.iteration is null or s.iteration >= $fromIteration)"
+    val condition = "s.projectId = $projectId"
     return db.query("""with recursive ordered as (
       select s.* from $table s where s.afterId is null and $condition
       union all
       select s.* from stories s join ordered os on s.afterId = os.id where $condition
-    ) select * from ordered""") { mapper() }
+    ) select * from ordered where (iteration is null or iteration >= $fromIteration)""") { mapper() }
   }
 
   fun lastUpdated(id: Id<Project>): Instant? =
