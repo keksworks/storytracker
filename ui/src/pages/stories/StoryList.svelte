@@ -6,7 +6,7 @@
   export let stories: Story[]
   export let velocity = 0
 
-  let iterations: ({points: number, startTime: number}|null)[] = []
+  let iterations: ({points: number, startDate: number}|null)[] = []
   $: if (velocity) {
     let points = 0
     iterations = []
@@ -14,7 +14,7 @@
     for (const s of stories) {
       if (points + s.points! > velocity) {
         date.setDate(date.getDate() + 7) // TODO: iteration length
-        iterations.push({points, startTime: date.getTime()})
+        iterations.push({points, startDate: date.getTime()})
         points = 0
       } else {
         points += s.points ?? 0
@@ -36,7 +36,7 @@
   {@const iteration = iterations[i]}
   {#if iteration}
     <div class="bg-stone-200 px-3 py-2 flex justify-between border-t">
-      <div class="font-medium">{formatDate(iteration.startTime)}</div>
+      <div class="font-medium">{formatDate(iteration.startDate)}</div>
       <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}

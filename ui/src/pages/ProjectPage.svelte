@@ -52,7 +52,7 @@
         {#if show.done}
           <div class="panel">
             <h5 class="panel-title"><Icon name="done" size="lg"/> {t.panels.done}</h5>
-            <StoryList stories={done} velocity={project.velocityAveragedWeeks}/>
+            <StoryList stories={done}/>
           </div>
         {/if}
         {#if show.backlog}
@@ -64,7 +64,7 @@
         {#if show.icebox}
           <div class="panel">
             <h5 class="panel-title"><Icon name="icebox" size="lg"/> {t.panels.icebox}</h5>
-            <StoryList stories={icebox} velocity={project.velocityAveragedWeeks}/>
+            <StoryList stories={icebox}/>
           </div>
         {/if}
       </div>
