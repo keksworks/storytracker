@@ -11,6 +11,7 @@ import klite.oauth.UserProfile
 import org.junit.jupiter.api.Test
 import users.Role
 import users.Role.ADMIN
+import users.Role.OWNER
 import users.Role.VIEWER
 import users.User
 
@@ -32,7 +33,7 @@ class AuthUserProviderTest: BaseMocks() {
     val user = provider.provide(profile, tokenResponse, exchange) as User
 
     expect(user.email).toEqual(user.email)
-    expect(user.role).toEqual(ADMIN)
+    expect(user.role).toEqual(OWNER)
     verify { userRepository.save(user) }
   }
 }

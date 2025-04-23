@@ -37,7 +37,7 @@ class AccessCheckerTest: BaseMocks() {
 
   @Test fun `forbids access without matching role`() = runTest {
     every { exchange.session["userId"] } returns viewer.id.toString()
-    every { exchange.route.annotations } returns listOf(Access(VIEWER))
+    every { exchange.route.annotations } returns listOf(Access(OWNER))
     assertThrows<ForbiddenException> { checker.before(exchange) }
     verify { exchange.attr("user", viewer) }
   }
