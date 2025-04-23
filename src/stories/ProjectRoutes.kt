@@ -1,11 +1,14 @@
 package stories
 
-import auth.Public
+import auth.Access
 import db.Id
 import klite.annotations.GET
 import klite.annotations.PathParam
+import users.Role
+import users.Role.ADMIN
+import users.Role.OWNER
 
-@Public
+@Access(ADMIN, OWNER)
 class ProjectRoutes(
   val projectRepository: ProjectRepository,
   val storyRepository: StoryRepository,
