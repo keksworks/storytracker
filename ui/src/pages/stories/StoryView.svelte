@@ -5,6 +5,7 @@
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
+  import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
 
   export let story: Story & {open?: boolean}
 
@@ -40,8 +41,11 @@
         {/each}
       </ul>
     </div>
-    <StoryPointsSelect bind:points={story.points}/>
-    <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
+    <div class="flex items-center gap-3">
+      <StoryStatus bind:status={story.status} bind:type={story.type}/>
+      <StoryPointsSelect bind:points={story.points}/>
+      <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
+    </div>
   </div>
   {#if story.open}
     <div class="bg-stone-100 px-3 py-2 shadow-inner" transition:slide>
