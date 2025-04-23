@@ -15,6 +15,6 @@ object TestData {
 
   val date = LocalDate.of(2025, 3, 3)
 
-  val user = User("Test Admin", Email("admin@artun.ee"), ADMIN)
-  val viewer = User("Test Viewer", Email("admin@artun.ee"), VIEWER)
+  val user = User("Test Admin", Email("pivotal@codeborne.com"), ADMIN)
+  val viewer = User("Test Viewer", Email("viewer@codeborne.com"), VIEWER)
 }

@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:1.6.16"
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:4232ee2e" // 1.6.16+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))

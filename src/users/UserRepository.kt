@@ -16,5 +16,5 @@ class UserRepository(db: DataSource): CrudRepository<User>(db, "users") {
   }
 
   fun list(ids: List<Id<User>>) = if (ids.isEmpty()) emptyList() else
-    list(User::id to ids, suffix = "order by firstName, lastName")
+    list(User::id to ids, suffix = "order by name")
 }
