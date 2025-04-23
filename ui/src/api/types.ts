@@ -46,5 +46,5 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-23T08:57:42Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T08:57:42Z"} as unknown as User
-export const viewer = {"createdAt":"2025-04-23T08:57:42Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T08:57:42Z"} as unknown as User
+export const user = {"createdAt":"2025-04-23T09:19:26Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T09:19:26Z"} as User
+export const viewer = {"createdAt":"2025-04-23T09:19:26Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T09:19:26Z"} as User

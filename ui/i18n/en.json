@@ -65,6 +65,7 @@
   },
   "login": {
     "link": "Login",
+    "google": "Google Login",
     "logout": "Logout",
     "failed": "Invalid credentials",
     "noUser": "Invalid credentials"

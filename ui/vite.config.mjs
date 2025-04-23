@@ -30,11 +30,11 @@ export default defineConfig({
   ],
   server: {
     port: isTest ? 8678 : 8000,
-    proxy: isTest ? undefined : {
-      '/api': {
+    proxy: {
+      '^/(api|oauth)': {
         target: 'http://localhost:8080',
         changeOrigin: false
-      }
+      },
     }
   },
   build: {
