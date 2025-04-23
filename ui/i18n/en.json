@@ -86,6 +86,14 @@
     "backlog": "Backlog",
     "icebox": "Icebox"
   },
+  "storyActions": {
+    "start": "Start",
+    "finish": "Finish",
+    "deliver": "Deliver",
+    "accept": "Accept",
+    "reject": "Reject",
+    "restart": "Restart"
+  },
   "errors": {
     "technical": "Technical error, please try again",
     "paymentGatewayTimeout": "Card payment gateway did not respond, please try again after a few minutes",
