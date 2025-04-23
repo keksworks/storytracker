@@ -1,12 +1,14 @@
 package stories
 
 import db.CrudRepository
+import db.Id
 import db.getJson
 import db.jsonb
 import klite.PropValue
 import klite.jdbc.create
 import klite.jdbc.query
 import klite.jdbc.update
+import klite.publicProperties
 import klite.toValues
 import java.sql.ResultSet
 import javax.sql.DataSource
@@ -31,12 +33,12 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     if (storyIds.isEmpty()) 0 else
     db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
 
-  // TODO: make it faster, especially if filtered by projectId
-//  override fun list(vararg where: PropValue<Story>?, suffix: String): List<Story> =
-//    db.query("""with recursive ordered_stories as (
-//      select s.* from $table s where s.afterId is null
-//      union all
-//      select next.* from stories next join ordered_stories os on next.afterId = os.id
-//    )
-//    select * from ordered_stories""", where.filterNotNull(), suffix) { mapper() }
+  fun list(projectId: Id<Project>): List<Story> {
+    val condition = "s.projectId = $projectId"
+    return db.query("""with recursive ordered as (
+      select s.* from $table s where s.afterId is null and $condition
+      union all
+      select s.* from stories s join ordered os on s.afterId = os.id where $condition
+    ) select * from ordered""") { mapper() }
+  }
 }
