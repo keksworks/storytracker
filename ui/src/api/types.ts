@@ -6,6 +6,8 @@ export type Entity<T extends Entity<T>> = {id: Id<T>}
 export type Id<T> = number
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+// class stories.Iteration
+export interface Iteration {acceptedPoints?: number; endDate?: LocalDate; length: number; number: number; points?: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number; velocity: number}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; description?: string; id: Id<Project>; iterationWeeks: number; iterations: number; name: string; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number; version: number}
 // class stories.ProjectMember$Role
@@ -25,7 +27,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; name: string; points?: number; projectId: Id<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; points?: number; projectId: Id<Project>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role

@@ -7,6 +7,7 @@ import klite.Email
 import klite.Registry
 import klite.info
 import klite.jdbc.nowSec
+import klite.jdbc.update
 import klite.json.*
 import klite.logger
 import kotlinx.coroutines.launch
@@ -18,12 +19,16 @@ import users.UserRepository
 import java.net.URI
 import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDate
+import javax.sql.DataSource
 
 class PivotalImporter(
   registry: Registry,
+  private val db: DataSource,
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val userRepository: UserRepository,
+  private val iterationRepository: IterationRepository,
   private val projectMemberRepository: ProjectMemberRepository,
   private val epicRepository: EpicRepository,
   private val attachmentRepository: AttachmentRepository
@@ -90,6 +95,24 @@ class PivotalImporter(
       log.info("Imported $num stories")
       if (num == 0) break
     }
+  }
+
+  suspend fun importIterations(project: Project) {
+    var num = 0
+    var numStories = 0
+    while (num < project.iterations) {
+      http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
+        val iteration = Iteration(
+          project.id, p.getInt("number"), p.getInt("length"), ((p.get("team_strength") as Number).toDouble() * 100.0).toInt(),
+          LocalDate.parse(p.getString("start").substringBefore("T")), p.getStringOrNull("finish")?.let { LocalDate.parse(it.substringBefore("T")) },
+          p.getOrNull("points"), p.getOrNull("accepted_points"), p.getInt("velocity"))
+        iterationRepository.save(iteration)
+        val storyIds = p.getList<Int>("story_ids")
+        numStories += storyRepository.setIteration(iteration, storyIds)
+        num++
+      }
+    }
+    log.info("Imported $num iterations, updated $numStories stories")
   }
 
   private fun getComments(nodes: List<JsonNode>, projectId: Id<Project>, ownerId: Id<out Any>, downloadAttachments: Boolean): List<Story.Comment> = nodes.map {

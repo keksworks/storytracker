@@ -30,5 +30,9 @@ drop index if exists stories_afterId_idx;
 create index on stories(projectId, afterId);
 --TODO index null value somehow
 
+--changeset stories.iteration
+alter table stories add column iteration int,
+  add foreign key (projectId, iteration) references iterations(projectId, number) on delete set null;
+
 --changeset stories_history
 create trigger stories_history after update on stories for each row execute function add_change_history();

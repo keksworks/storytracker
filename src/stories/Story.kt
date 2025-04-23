@@ -19,6 +19,7 @@ data class Story(
   val tags: List<String> = emptyList(),
   val points: Int? = null,
   val externalId: String? = null,
+  val iteration: Int? = null,
   val tasks: List<Task> = emptyList(),
   val comments: List<Comment> = emptyList(),
   val blockers: List<Blocker> = emptyList(),

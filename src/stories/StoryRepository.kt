@@ -6,6 +6,7 @@ import db.jsonb
 import klite.PropValue
 import klite.jdbc.create
 import klite.jdbc.query
+import klite.jdbc.update
 import klite.toValues
 import java.sql.ResultSet
 import javax.sql.DataSource
@@ -23,6 +24,10 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     Story::comments to getJson<List<Story.Comment>>("comments"),
     Story::blockers to getJson<List<Story.Blocker>>("blockers"),
   )
+
+  fun setIteration(iteration: Iteration, storyIds: List<Int>) =
+    if (storyIds.isEmpty()) 0 else
+    db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
 
   // TODO: make it faster, especially if filtered by projectId
 //  override fun list(vararg where: PropValue<Story>?, suffix: String): List<Story> =

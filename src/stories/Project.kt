@@ -1,13 +1,11 @@
 package stories
 
-import db.CrudRepository
 import db.Entity
 import db.Id
 import klite.jdbc.nowSec
 import java.time.DayOfWeek
 import java.time.DayOfWeek.MONDAY
 import java.time.Instant
-import javax.sql.DataSource
 
 data class Project(
   override val id: Id<Project> = Id(),
@@ -23,5 +21,3 @@ data class Project(
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
 ): Entity<Project>//, UpdatableEntity
-
-class ProjectRepository(db: DataSource): CrudRepository<Project>(db, "projects")

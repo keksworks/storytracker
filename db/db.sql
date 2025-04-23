@@ -5,6 +5,7 @@
 --include change_history.sql
 --include users.sql
 --include projects.sql
+--include iterations.sql
 --include project_members.sql
 --include epics.sql
 --include stories.sql
