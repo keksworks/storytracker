@@ -1,4 +1,4 @@
-# FlowTracker
+# StoryTracker
 
 Pivotal Tracker replacement for project management in Codeborne.
 
