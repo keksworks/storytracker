@@ -12,7 +12,7 @@
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    dispatch('drag', {id: e.dataTransfer?.getData('id')!, beforeId: story.id})
+    dispatch('drag', {id: parseInt(e.dataTransfer?.getData('id')!), beforeId: story.id})
     isDropTarget = false
   }
 
@@ -21,7 +21,7 @@
 
 <div class="{story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'} flex flex-col border-b"
      class:cursor-move={movable} draggable={movable}
-     on:dragstart={e => e.dataTransfer?.setData('id', story.id)} on:drop={onDrop}
+     on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
   <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => story.open = !story.open}>

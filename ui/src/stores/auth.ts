@@ -1,11 +1,11 @@
 import {writable} from 'svelte/store'
-import type {AuthenticatedUser, User} from 'src/api/types'
+import type {User} from 'src/api/types'
 import api from 'src/api/api'
 
 export const user = writable<User>()
 
-export function initSession(auth: AuthenticatedUser) {
-  user.set(auth.user)
+export function initSession(auth: User) {
+  user.set(auth)
 }
 
 export async function logout() {
