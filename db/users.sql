@@ -19,3 +19,6 @@ alter table users alter column initials drop not null, alter column username dro
 
 --changeset users_history
 create trigger users_history after update on users for each row execute function add_change_history();
+
+--changeset users:codeborne-owners
+update users set role = 'OWNER' where email like '%@codeborne.com';
