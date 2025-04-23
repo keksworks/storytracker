@@ -1,8 +1,6 @@
 // Generated automatically by ./gradlew types.ts
-export type Id<T extends Entity<T>> = number & {_of?: T}
+// TODO export type Id<T extends Entity<T>> = number & {_of?: T}
 export type Entity<T extends Entity<T>> = {id: Id<T>}
-export type TSID<T extends Entity<T>> = Id<T>
-
 export type DayOfWeek = string
 
 // class db.Id
@@ -47,5 +45,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-23T08:27:35Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T08:27:35Z"} as User
-export const viewer = {"createdAt":"2025-04-23T08:27:35Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T08:27:35Z"} as User
+export const user = {"createdAt":"2025-04-23T08:43:27Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T08:43:27Z"} as User
+export const viewer = {"createdAt":"2025-04-23T08:43:27Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T08:43:27Z"} as User

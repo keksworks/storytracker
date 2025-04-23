@@ -17,7 +17,7 @@ dependencies {
   implementation(klite("i18n"))
   implementation(klite("jdbc"))
   implementation(klite("slf4j"))
-  implementation(klite("csv"))
+  implementation(klite("oauth"))
   implementation("org.postgresql:postgresql:42.7.5")
 
   testImplementation(klite("jdbc-test"))
@@ -85,7 +85,6 @@ tasks.register<JavaExec>("types.ts") {
     "-o", project.file("ui/src/api/types.ts"),
     "-p", """
       export type Id<T extends Entity<T>> = string & {_of?: T}
-      export type TSID<T extends Entity<T>> = Id<T>
       export type Entity<T extends Entity<T>> = {id: Id<T>}
     """.trimIndent() + "\n",
     "java.time.DayOfWeek",
