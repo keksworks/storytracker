@@ -31,7 +31,7 @@ class AttachmentRepository {
         log.error("Failed to download ${a.filename}: $e")
         file.delete()
         if (e.message?.contains("code: 429") == true) {
-          Thread.sleep((Math.random() * 30000).toLong())
+          Thread.sleep((Math.random() * 60000 + 10000).toLong())
           download(projectId, ownerId, a, url)
         }
       }
