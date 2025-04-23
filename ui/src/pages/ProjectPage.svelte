@@ -43,7 +43,7 @@
     {#if !project || !stories}
       <Spinner/>
     {:else}
-      <div class="grid grid-cols-3 gap-2 ml-16 mt-3 w-full">
+      <div class="grid gap-2 ml-1 mt-3 w-full grid-cols-{Object.values(show).filter(v=>!!v).length}">
         {#if show.done}
           <div class="panel">
             <h5 class="panel-title"><Icon name="done" size="lg"/> {t.panels.done}</h5>
