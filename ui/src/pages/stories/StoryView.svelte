@@ -48,12 +48,12 @@
     </div>
   </div>
   {#if story.open}
-    <div class="bg-stone-100 px-3 py-2 shadow-inner" transition:slide>
+    <div class="bg-stone-200 p-2 shadow-inner" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
         <div>#{story.id}</div>
         <div>{formatDateTime(story.createdAt)}</div>
       </div>
-      <div class="bg-white whitespace-pre-line p-2 -mx-3 -mb-2" bind:innerHTML={story.description} contenteditable="true"></div>
+      <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
     </div>
   {/if}
 </div>
