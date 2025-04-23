@@ -63,11 +63,10 @@ fun startServer() = Server(
 //      importProjects()
 //      importAccountMembers(Id(84056))
 //      require<ProjectRepository>().list().forEach {
-//        importStories(it.id)
-//        importEpics(it.id)
 //        importProjectMembers(it.id)
+//        importEpics(it.id)
+//        importStories(it.id, downloadAttachments = true)
 //      }
-      // TODO: download all attachments from S3
     }
   }
   start()

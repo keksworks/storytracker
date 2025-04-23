@@ -47,5 +47,5 @@ export type Email = `${string}@${string}`
 
 // db.TestData
 export const date = "2025-03-03" as LocalDate
-export const user = {"createdAt":"2025-04-23T07:41:58Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T07:41:58Z"} as User
-export const viewer = {"createdAt":"2025-04-23T07:41:58Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T07:41:58Z"} as User
+export const user = {"createdAt":"2025-04-23T07:45:12Z","email":"pivotal@codeborne.com","firstName":"Test","id":"171717188820","lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-04-23T07:45:12Z"} as User
+export const viewer = {"createdAt":"2025-04-23T07:45:12Z","email":"viewer@codeborne.com","firstName":"Test","id":"171717188821","lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-04-23T07:45:12Z"} as User

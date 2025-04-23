@@ -1,5 +1,6 @@
 package db
 
+import klite.TSID
 import klite.i18n.Lang
 import klite.jdbc.BaseCrudRepository
 import klite.jdbc.BaseEntity
@@ -10,7 +11,7 @@ import javax.sql.DataSource
 
 @JvmInline value class Id<T>(val value: Long) {
   constructor(value: String): this(value.toLong())
-  constructor(): this(System.currentTimeMillis() / 1000L - (Math.random() * 10000L).toLong()) // TODO: implement something similar to TSID
+  constructor(): this(TSID.generateValue())
   override fun toString() = value.toString()
 }
 
