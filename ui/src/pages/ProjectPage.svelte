@@ -12,13 +12,15 @@
 
   let project: Project | undefined
   let stories: Story[] = []
+  let done: Story[] = []
 
-  async function load() {
+  async function loadProject() {
     project = await api.get('projects/' + id)
-    stories = await api.get<Story[]>('projects/' + id + '/stories?fromIteration=' + (project!.iterations - 4))
   }
 
-  $: load()
+  async function loadStories(done: boolean) {
+    return await api.get<Story[]>('projects/' + id + '/stories?done=' + done)
+  }
 
   let show: Record<string, boolean> = {
     done: false,
@@ -26,7 +28,10 @@
     icebox: true
   }
 
-  $: done = stories.filter(s => s.acceptedAt)
+  $: loadProject()
+  $: loadStories(false).then(r => stories = r)
+  $: if (show.done && !done.length) loadStories(true).then(r => done = r)
+
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => !s.acceptedAt && s.status !== StoryStatus.UNSCHEDULED)
 </script>

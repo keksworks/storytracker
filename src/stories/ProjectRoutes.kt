@@ -15,6 +15,6 @@ class ProjectRoutes(
 ) {
   @GET fun list() = projectRepository.list()
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
-  @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int = 0) =
-    storyRepository.list(id, fromIteration)
+  @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam done: Boolean? = null) =
+    storyRepository.list(id, done)
 }

@@ -6,6 +6,7 @@ import db.getJson
 import db.jsonb
 import klite.jdbc.create
 import klite.jdbc.getInstantOrNull
+import klite.jdbc.notNull
 import klite.jdbc.query
 import klite.jdbc.update
 import klite.toValues
@@ -33,13 +34,19 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     if (storyIds.isEmpty()) 0 else
     db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
 
-  fun list(projectId: Id<Project>, fromIteration: Int = 0): List<Story> {
+  fun list(projectId: Id<Project>, done: Boolean? = null): List<Story> {
     val condition = "s.projectId = $projectId"
     return db.query("""with recursive ordered as (
       select s.* from $table s where s.afterId is null and $condition
       union all
       select s.* from stories s join ordered os on s.afterId = os.id where $condition
-    ) select * from ordered where (iteration is null or iteration >= $fromIteration)""") { mapper() }
+    ) select * from ordered""",
+      when (done) {
+        false -> Story::acceptedAt to null
+        true -> Story::acceptedAt to notNull
+        else -> null
+      }
+    ) { mapper() }
   }
 
   fun lastUpdated(id: Id<Project>): Instant? =
