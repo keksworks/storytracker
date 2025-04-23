@@ -16,7 +16,7 @@
   let velocity = 10
 
   function changeVelocity() {
-    const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString()))
+    const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
     if (v) velocity = v
   }
 
