@@ -20,7 +20,7 @@
 
   $: load()
 
-  let show = {
+  let show: Record<string, boolean> = {
     done: false,
     backlog: true,
     icebox: true
@@ -32,16 +32,18 @@
 </script>
 
 <ProjectPageLayout title={project?.name}>
-  <div class="relative flex flex-grow-0 overflow-hidden px-2 sm:px-3 w-full">
-    <div class="w-16 absolute flex flex-col items-center pt-6 gap-6">
-      {#each Object.keys(show) as key}
-        <Button icon={key} size="lg" on:click={() => show[key] = !show[key]} variant="ghost"/>
-      {/each}
-    </div>
+  <div class="flex h-screen px-4">
+    <aside class="w-16 sticky top-0 h-screen pt-6">
+      <div class="flex flex-col items-center gap-4">
+        {#each Object.keys(show) as key}
+          <Button icon={key} size="lg" on:click={() => show[key] = !show[key]} variant={show[key] ? 'outlined' : 'ghost'}/>
+        {/each}
+      </div>
+    </aside>
     {#if !project || !stories}
       <Spinner/>
     {:else}
-      <div class="grid grid-cols-3 gap-2 ml-16 mt-3 w-full">
+      <div class="grid gap-2 ml-1 mt-3 w-full grid-cols-{Object.values(show).filter(v=>!!v).length}">
         {#if show.done}
           <div class="panel">
             <h5 class="panel-title"><Icon name="done" size="lg"/> {t.panels.done}</h5>
