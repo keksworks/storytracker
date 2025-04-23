@@ -54,6 +54,13 @@
         <div>{formatDateTime(story.createdAt)}</div>
       </div>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
+
+      {#each story.comments as comment}
+        <div>
+          <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
+          <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
+        </div>
+      {/each}
     </div>
   {/if}
 </div>
