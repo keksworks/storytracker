@@ -6,6 +6,7 @@ import klite.error
 import klite.info
 import klite.logger
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.div
@@ -26,9 +27,13 @@ class AttachmentRepository {
           conn.inputStream.use { it.copyTo(out) }
           log.info("Downloaded $file")
         }
-      } catch (e: FileNotFoundException) {
+      } catch (e: IOException) {
         log.error("Failed to download ${a.filename}: $e")
         file.delete()
+        if (e.message?.contains("code: 429") == true) {
+          Thread.sleep((Math.random() * 30000).toLong())
+          download(projectId, ownerId, a, url)
+        }
       }
     }
   }

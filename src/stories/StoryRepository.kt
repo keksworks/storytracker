@@ -4,13 +4,13 @@ import db.CrudRepository
 import db.Id
 import db.getJson
 import db.jsonb
-import klite.PropValue
 import klite.jdbc.create
+import klite.jdbc.getInstantOrNull
 import klite.jdbc.query
 import klite.jdbc.update
-import klite.publicProperties
 import klite.toValues
 import java.sql.ResultSet
+import java.time.Instant
 import javax.sql.DataSource
 
 class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
@@ -41,4 +41,7 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
       select s.* from stories s join ordered os on s.afterId = os.id where $condition
     ) select * from ordered""") { mapper() }
   }
+
+  fun lastUpdated(id: Id<Project>): Instant? =
+    db.query("select max(updatedAt) as max from $table", Story::projectId to id) { getInstantOrNull("max") }.firstOrNull()
 }

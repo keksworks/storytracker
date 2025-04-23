@@ -12,9 +12,14 @@ import klite.oauth.GoogleOAuthClient
 import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
 import kotlinx.coroutines.launch
+import stories.Epic
+import stories.EpicRepository
 import stories.PivotalImporter
+import stories.ProjectMember
+import stories.ProjectMemberRepository
 import stories.ProjectRepository
 import stories.ProjectRoutes
+import users.UserRepository
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -59,18 +64,15 @@ fun startServer() = Server(
   }
 
   AppScope.launch {
-//    if (require<ProjectRepository>().count() > 0L) return@launch
     require<PivotalImporter>().apply {
-//      importProjects()
-//      importAccountMembers(Id(84056))
-      require<ProjectRepository>().list().forEach {
-//        importProjectMembers(it.id)
-//        importEpics(it.id, downloadAttachments = true)
-        if (it.id.value == 2732581L) {
-          importStories(it, downloadAttachments = true)
-        }
-//        importStories(it, downloadAttachments = true)
-//        importIterations(it)
+      val projectRepository = require<ProjectRepository>()
+      if (projectRepository.count() == 0L) importProjects()
+      if (require<UserRepository>().count() < 5L) importAccountMembers(Id(84056))
+      projectRepository.list().forEach {
+        if (require<ProjectMemberRepository>().count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
+        if (require<EpicRepository>().count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
+        importStories(it, downloadAttachments = true)
+        importIterations(it)
       }
     }
   }

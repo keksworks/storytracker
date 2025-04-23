@@ -38,7 +38,7 @@ class PivotalImporter(
 ) {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
-  private val downloadPool = Executors.newVirtualThreadPerTaskExecutor()
+  private val downloadPool = Executors.newFixedThreadPool(10)
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
   }, registry = registry, retryCount = 2, retryAfter = 30.seconds)
@@ -65,9 +65,10 @@ class PivotalImporter(
     var num = 0
     var afterId: Id<Story>? = null
     val reviewTypes = mutableSetOf<String>()
+    val lastUpdated = storyRepository.lastUpdated(project.id)
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id")
-      http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",")).forEach { p ->
+      http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
         val id = Id<Story>(p.getLong("id"))
         val name = p.getString("name")
         log.info("Importing story ${id.value} $name")
@@ -116,8 +117,9 @@ class PivotalImporter(
   }
 
   suspend fun importIterations(project: Project) {
-    var num = 0
     var numStories = 0
+    val lastIteration = iterationRepository.list(project.id, "order by number desc limit 1").firstOrNull()?.number
+    var num = lastIteration ?: 0
     while (num < project.iterations) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
         val iteration = Iteration(
