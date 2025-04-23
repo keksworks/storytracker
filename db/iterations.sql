@@ -12,3 +12,6 @@ create table iterations(
   createdAt timestamptz not null default now(),
   primary key (projectId, number)
 );
+
+--changeset iterations.endDate:not-null
+alter table iterations alter column endDate set not null;

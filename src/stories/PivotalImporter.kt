@@ -1,16 +1,14 @@
 package stories
 
 import db.Id
-import klite.AppScope
+import db.today
 import klite.Config
 import klite.Email
 import klite.Registry
 import klite.info
 import klite.jdbc.nowSec
-import klite.jdbc.update
 import klite.json.*
 import klite.logger
-import kotlinx.coroutines.launch
 import stories.Story.Blocker
 import stories.Story.Review
 import stories.Story.Status
@@ -118,13 +116,13 @@ class PivotalImporter(
 
   suspend fun importIterations(project: Project) {
     var numStories = 0
-    val lastIteration = iterationRepository.list(project.id, "order by number desc limit 1").firstOrNull()?.number
-    var num = lastIteration ?: 0
+    val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
+    var num = currentIteration ?: 0
     while (num < project.iterations) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
         val iteration = Iteration(
           project.id, p.getInt("number"), p.getInt("length"), ((p.get("team_strength") as Number).toDouble() * 100.0).toInt(),
-          LocalDate.parse(p.getString("start").substringBefore("T")), p.getStringOrNull("finish")?.let { LocalDate.parse(it.substringBefore("T")) },
+          LocalDate.parse(p.getString("start").substringBefore("T")), LocalDate.parse(p.getString("finish").substringBefore("T")),
           p.getOrNull("points"), p.getOrNull("accepted_points"), p.getInt("velocity"))
         iterationRepository.save(iteration)
         val storyIds = p.getList<Int>("story_ids")

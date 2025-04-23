@@ -13,9 +13,9 @@
   let project: Project | undefined
   let stories: Story[] = []
 
-  function load() {
-    api.get<Project>('projects/' + id).then(r => project = r)
-    api.get<Story[]>('projects/' + id + '/stories').then(r => stories = r)
+  async function load() {
+    project = await api.get('projects/' + id)
+    stories = await api.get<Story[]>('projects/' + id + '/stories?fromIteration=' + (project!.iterations - 4))
   }
 
   $: load()
