@@ -25,6 +25,7 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 val Config.isE2E get() = isActive("e2e")
 
@@ -63,24 +64,12 @@ fun startServer() = Server(
     annotated<ProjectRoutes>("/projects")
   }
 
-  AppScope.launch {
-    require<PivotalImporter>().apply {
-      val projectRepository = require<ProjectRepository>()
-      if (projectRepository.count() == 0L) importProjects()
-      if (require<UserRepository>().count() < 5L) importAccountMembers(Id(84056))
-      projectRepository.list().forEach {
-        if (require<ProjectMemberRepository>().count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
-        if (require<EpicRepository>().count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
-        importStories(it, downloadAttachments = true)
-        importIterations(it)
-      }
-    }
-  }
   start()
 }
 
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
+    schedule(require<PivotalImporter>(), period = 3.hours, delay = 0.hours)
   })
 }
 

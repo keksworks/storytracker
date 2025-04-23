@@ -7,8 +7,10 @@ import klite.Email
 import klite.Registry
 import klite.info
 import klite.jdbc.nowSec
+import klite.jobs.Job
 import klite.json.*
 import klite.logger
+import klite.require
 import stories.Story.Blocker
 import stories.Story.Review
 import stories.Story.Status
@@ -33,13 +35,24 @@ class PivotalImporter(
   private val projectMemberRepository: ProjectMemberRepository,
   private val epicRepository: EpicRepository,
   private val attachmentRepository: AttachmentRepository
-) {
+): Job {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
   private val downloadPool = Executors.newFixedThreadPool(10)
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
   }, registry = registry, retryCount = 2, retryAfter = 30.seconds)
+
+  override suspend fun run() {
+    if (projectRepository.count() == 0L) importProjects()
+    if (userRepository.count() < 5L) importAccountMembers(Id(84056))
+    projectRepository.list().forEach {
+      if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
+      if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
+      importStories(it, downloadAttachments = true)
+      importIterations(it)
+    }
+  }
 
   suspend fun importProjects() {
     var num = 0
