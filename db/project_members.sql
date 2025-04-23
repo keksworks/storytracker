@@ -12,5 +12,8 @@ create table project_members(
   ${createdBy}
 );
 
+--changeset project_members_idx
+create unique index on project_members(projectId, userId);
+
 --changeset project_members_history
 create trigger project_members_history after update on project_members for each row execute function add_change_history();
