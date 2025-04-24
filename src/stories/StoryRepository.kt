@@ -37,7 +37,7 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
       union all
       select s.* from stories s join ordered os on s.afterId = os.id where $condition
     ) select * from ordered""",
-      fromIteration?.let { Story::iteration to NullOrOp("=", it) }
+      fromIteration?.let { Story::iteration to NullOrOp(">=", it) }
     ) { mapper() }
   }
 
