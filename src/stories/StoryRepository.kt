@@ -9,6 +9,7 @@ import klite.toValues
 import java.sql.ResultSet
 import java.time.Instant
 import javax.sql.DataSource
+import kotlin.reflect.KProperty1
 
 class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
   override val defaultOrder get() = ""
@@ -41,6 +42,9 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
       q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) }
     ) { mapper() }
   }
+
+  fun save(story: Story, skipUpdate: Set<KProperty1<Story, *>>) =
+    db.upsert(table, story.persister(), skipUpdateFields = skipUpdate.map { it.name }.toSet())
 
   fun lastUpdated(id: Id<Project>): Instant? =
     db.query("select max(updatedAt) as max from $table", Story::projectId to id) { getInstantOrNull("max") }.firstOrNull()

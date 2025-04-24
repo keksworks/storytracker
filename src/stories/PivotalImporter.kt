@@ -1,20 +1,11 @@
 package stories
 
 import db.Id
-import db.today
-import klite.Config
-import klite.Email
-import klite.Registry
-import klite.info
+import klite.*
 import klite.jdbc.nowSec
 import klite.jobs.Job
 import klite.json.*
-import klite.logger
-import stories.Story.Blocker
-import stories.Story.Review
-import stories.Story.Status
-import stories.Story.Task
-import stories.Story.Type
+import stories.Story.*
 import users.Role
 import users.User
 import users.UserRepository
@@ -23,7 +14,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.util.concurrent.Executors
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 
 class PivotalImporter(
   registry: Registry,
@@ -37,17 +28,17 @@ class PivotalImporter(
 ): Job {
   private val log = logger()
   private val token = Config["PIVOTAL_API_TOKEN"]
-  private val downloadPool = Executors.newFixedThreadPool(10)
+  private val downloadPool = Executors.newFixedThreadPool(6)
   private val http = JsonHttpClient("https://www.pivotaltracker.com/services/v5", reqModifier = {
     setHeader("X-TrackerToken", token)
-  }, registry = registry, retryCount = 2, retryAfter = 60.seconds)
+  }, registry = registry, retryCount = 3, retryAfter = 3.minutes)
 
   override suspend fun run() {
     if (projectRepository.count() == 0L) importProjects()
     if (userRepository.count() < 5L) importAccountMembers(Id(84056))
     projectRepository.list().forEach {
       if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
-      if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
+//      if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
       importStories(it, downloadAttachments = true)
       importIterations(it)
     }
@@ -109,7 +100,7 @@ class PivotalImporter(
           createdAt = Instant.parse(p.getString("created_at")),
           createdBy = Id(p.getLong("requested_by_id")),
         )
-        storyRepository.save(story)
+        storyRepository.save(story, skipUpdate = setOf(Story::iteration))
         reviewTypes.addAll(story.reviews.map { it.type })
         num++
       }
@@ -126,7 +117,7 @@ class PivotalImporter(
 
   suspend fun importIterations(project: Project) {
     var numStories = 0
-    val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
+    val currentIteration = 0// TODO iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
     var num = currentIteration ?: 0
     while (num < project.currentIterationNum) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
