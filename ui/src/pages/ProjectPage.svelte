@@ -66,7 +66,7 @@
     const toStory = stories[toIndex]
     stories.splice(toIndex, 0, story)
     if (toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
-    else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.PLANNED
+    else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSTARTED
     stories = stories
   }
 </script>
