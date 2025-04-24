@@ -83,10 +83,12 @@
     {#if !project || !stories}
       <Spinner/>
     {:else}
-      <div class="grid gap-2 ml-1 mt-3 w-full grid-cols-{Object.values(show).filter(v=>!!v).length}">
+      <div class="flex gap-2 ml-1 mt-3 w-full">
         {#if show.done}
           <div class="panel">
-            <h5 class="panel-title"><Icon name="done" size="lg"/> {t.panels.done}</h5>
+            <h5 class="panel-title">
+              <span><Icon name="done" size="lg"/> {t.panels.done}</span>
+            </h5>
             <StoryList stories={done} on:search={e => search(e.detail)}/>
           </div>
         {/if}
@@ -132,7 +134,7 @@
 
 <style lang="postcss">
   .panel {
-    @apply w-full overflow-y-auto flex flex-col bg-gray-100 border border-gray-200 rounded;
+    @apply w-full max-w-6xl overflow-y-auto flex flex-col bg-gray-100 border border-gray-200 rounded;
   }
 
   .panel-title {
