@@ -90,6 +90,10 @@
   },
   "stories": {
     "description": "Description",
+    "search": {
+      "title": "Search",
+      "placeholder": "Search stories..."
+    },
     "status": "Status",
     "statuses": {
       "ACCEPTED": "Accepted",

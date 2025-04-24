@@ -19,6 +19,7 @@
   </div>
 
   <div class="flex sm:gap-3 items-center">
+    <slot/>
     <LangSelect/>
     <UserMenu/>
   </div>

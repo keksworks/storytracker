@@ -8,6 +8,7 @@
   import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
 
   export let story: Story & {open?: boolean}
+  export let movable = true
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}}>()
 
@@ -17,11 +18,11 @@
     isDropTarget = false
   }
 
-  $: movable = !story.open && !story.acceptedAt
+  $: reallyMovable = movable && !story.open && !story.acceptedAt
 </script>
 
 <div class="{story.open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
-      flex flex-col border-b {movable ? 'cursor-move' : 'cursor-default'}" draggable={movable}
+      flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >

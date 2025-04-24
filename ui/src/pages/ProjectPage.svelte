@@ -8,11 +8,13 @@
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
   import {onMount} from 'svelte'
+  import FormField from 'src/forms/FormField.svelte'
 
   export let id: Id<Project>
 
   let project: Project | undefined
   let stories: Story[] = []
+  let searchResults: Story[] | undefined
   let velocity = 10
 
   function changeVelocity() {
@@ -24,10 +26,21 @@
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
   }
 
+  async function search(e: FormEvent) {
+    const q = e.currentTarget.value
+    if (q) {
+      show.search = true
+      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${q}`)
+    } else {
+      show.search = false
+    }
+  }
+
   let show: Record<string, boolean> = {
     done: false,
     backlog: true,
-    icebox: true
+    icebox: true,
+    search: false
   }
 
   let pastLoaded = false
@@ -54,7 +67,9 @@
 </svelte:head>
 
 <div class="h-screen overflow-hidden flex flex-col">
-  <Header title={project?.name}/>
+  <Header title={project?.name}>
+    <FormField type="search" placeholder={t.stories.search.placeholder} on:change={search}/>
+  </Header>
   <div class="flex h-screen px-4">
     <aside class="w-16 sticky top-0 h-screen pt-6">
       <div class="flex flex-col items-center gap-4">
@@ -87,6 +102,12 @@
           <div class="panel">
             <h5 class="panel-title"><Icon name="icebox" size="lg"/> {t.panels.icebox}</h5>
             <StoryList stories={icebox}/>
+          </div>
+        {/if}
+        {#if searchResults}
+          <div class="panel">
+            <h5 class="panel-title"><Icon name="search" size="lg"/> {t.stories.search.title}</h5>
+            <StoryList stories={searchResults} movable={false}/>
           </div>
         {/if}
       </div>

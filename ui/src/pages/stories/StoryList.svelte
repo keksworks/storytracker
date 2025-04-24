@@ -4,6 +4,7 @@
   import {formatDate} from '@codeborne/i18n-json'
 
   export let stories: Story[]
+  export let movable = true
   export let velocity = 0
 
   let iterations: ({points: number, startDate: number}|null)[] = []
@@ -40,5 +41,5 @@
       <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}
-  <StoryView bind:story on:drag={onDrag}/>
+  <StoryView bind:story {movable} on:drag={onDrag}/>
 {/each}

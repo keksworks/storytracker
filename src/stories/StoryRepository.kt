@@ -30,14 +30,15 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     if (storyIds.isEmpty()) 0 else
     db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
 
-  fun list(projectId: Id<Project>, fromIteration: Int? = null): List<Story> {
+  fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> {
     val condition = "s.projectId = $projectId"
     return db.query("""with recursive ordered as (
       select s.* from $table s where s.afterId is null and $condition
       union all
       select s.* from stories s join ordered os on s.afterId = os.id where $condition
     ) select * from ordered""",
-      fromIteration?.let { Story::iteration to NullOrOp(">=", it) }
+      fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
+      q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) }
     ) { mapper() }
   }
 
