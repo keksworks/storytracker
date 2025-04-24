@@ -72,10 +72,10 @@
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex h-screen px-4">
-    <aside class="w-16 sticky top-0 h-screen pt-6">
+    <aside class="w-14 sticky top-0 h-screen pt-3 -ml-3">
       <div class="flex flex-col items-center gap-4">
         {#each Object.keys(show) as key}
-          <Button icon={key} size="lg" on:click={() => show[key] = !show[key]} variant={show[key] ? 'outlined' : 'ghost'}/>
+          <Button icon={key} size="lg" on:click={() => show[key] = !show[key]} variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
       </div>
     </aside>
@@ -87,7 +87,7 @@
           <div class="panel">
             <h5 class="panel-title">
               <span><Icon name="done" size="lg"/> {t.panels.done}</span>
-              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
+              <Button title={t.general.close} on:click={() => show.done = false} variant="ghost">✕</Button>
             </h5>
             <StoryList stories={done} on:search={e => search(e.detail)}/>
           </div>
