@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ProjectPageLayout from 'src/layout/ProjectPageLayout.svelte'
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import {type Id, type Project, type Story, StoryStatus} from 'src/api/types'
   import {t} from 'src/i18n'
@@ -7,6 +6,7 @@
   import Spinner from 'src/components/Spinner.svelte'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
+  import Header from 'src/layout/Header.svelte'
 
   export let id: Id<Project>
 
@@ -42,7 +42,14 @@
   $: backlog = stories.filter(s => !s.acceptedAt && s.status !== StoryStatus.UNSCHEDULED)
 </script>
 
-<ProjectPageLayout title={project?.name}>
+<svelte:head>
+  {#if project?.name}
+    <title>{project?.name} - {t.title}</title>
+  {/if}
+</svelte:head>
+
+<div class="h-screen overflow-hidden flex flex-col">
+  <Header title={project?.name}/>
   <div class="flex h-screen px-4">
     <aside class="w-16 sticky top-0 h-screen pt-6">
       <div class="flex flex-col items-center gap-4">
@@ -80,7 +87,7 @@
       </div>
     {/if}
   </div>
-</ProjectPageLayout>
+</div>
 
 <style lang="postcss">
   .panel {

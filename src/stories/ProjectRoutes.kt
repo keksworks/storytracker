@@ -10,11 +10,15 @@ import users.Role.OWNER
 
 @Access(ADMIN, OWNER)
 class ProjectRoutes(
-  val projectRepository: ProjectRepository,
-  val storyRepository: StoryRepository,
+  private val projectRepository: ProjectRepository,
+  private val storyRepository: StoryRepository,
+  private val attachmentRepository: AttachmentRepository,
 ) {
   @GET fun list() = projectRepository.list()
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
+
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam done: Boolean? = null) =
     storyRepository.list(id, done)
+
+  // @GET("/:id/:storyId/attachments/:name") fun attachment(@PathParam id: Id<Project>) =
 }
