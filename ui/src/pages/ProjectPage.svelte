@@ -1,18 +1,18 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import {type Id, type Project, type Story, StoryStatus} from 'src/api/types'
-  import {t} from 'src/i18n'
+  import {t, today} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
+  import {onMount} from 'svelte'
 
   export let id: Id<Project>
 
   let project: Project | undefined
   let stories: Story[] = []
-  let done: Story[] = []
   let velocity = 10
 
   function changeVelocity() {
@@ -20,12 +20,8 @@
     if (v) velocity = v
   }
 
-  async function loadProject() {
-    project = await api.get('projects/' + id)
-  }
-
-  async function loadStories(done: boolean) {
-    return await api.get<Story[]>('projects/' + id + '/stories?done=' + done)
+  async function loadStories(fromIteration: number) {
+    stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
   }
 
   let show: Record<string, boolean> = {
@@ -34,12 +30,21 @@
     icebox: true
   }
 
-  $: loadProject()
-  $: loadStories(false).then(r => stories = r)
-  $: if (show.done && !done.length) loadStories(true).then(r => done = r)
+  let pastLoaded = false
 
+  onMount(async () => {
+    project = await api.get('projects/' + id)
+    await loadStories(project!.iterations)
+  })
+
+  $: if (show.done && !pastLoaded) {
+    loadStories(0)
+    pastLoaded = true
+  }
+
+  $: done = stories.filter(s => s.iteration! < project!.iterations)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
-  $: backlog = stories.filter(s => !s.acceptedAt && s.status !== StoryStatus.UNSCHEDULED)
+  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.iterations))
 </script>
 
 <svelte:head>
