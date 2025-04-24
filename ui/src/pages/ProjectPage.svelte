@@ -93,22 +93,31 @@
         {#if show.backlog}
           <div class="panel">
             <h5 class="panel-title">
-              <Icon name="backlog" size="lg"/>
-              {t.panels.backlog}
-              <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
+              <span>
+                <Icon name="backlog" size="lg"/> {t.panels.backlog}
+                <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
+              </span>
+              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">🗙</Button>
             </h5>
             <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)}/>
           </div>
         {/if}
         {#if show.icebox}
           <div class="panel">
-            <h5 class="panel-title"><Icon name="icebox" size="lg"/> {t.panels.icebox}</h5>
+            <h5 class="panel-title">
+              <span><Icon name="icebox" size="lg"/> {t.panels.icebox}</span>
+              <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">🗙</Button>
+            </h5>
             <StoryList stories={icebox} on:search={e => search(e.detail)}/>
           </div>
         {/if}
         {#if show.search}
           <div class="panel">
-            <h5 class="panel-title"><Icon name="search" size="lg"/> {t.stories.search.title}: {searchQuery}</h5>
+            <h5 class="panel-title">
+              <span><Icon name="search" size="lg"/> {t.stories.search.title}</span>
+              {searchQuery}
+              <Button title={t.general.close} on:click={() => show.search = false} variant="ghost">🗙</Button>
+            </h5>
             {#if searchResults}
               <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)}/>
             {:else}
@@ -127,6 +136,6 @@
   }
 
   .panel-title {
-    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-gray-100 border-b;
+    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-gray-100 border-b flex justify-between items-center;
   }
 </style>
