@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type {Id, Story} from 'src/api/types'
+  import {type Id, type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
 
@@ -12,7 +12,7 @@
     iterations = []
     let date = new Date()
     for (const s of stories) {
-      if (points + s.points! > velocity) {
+      if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
         date.setDate(date.getDate() + 7) // TODO: iteration length
         iterations.push({points, startDate: date.getTime()})
         points = 0
