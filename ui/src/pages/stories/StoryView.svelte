@@ -36,7 +36,7 @@
     {/if}
     <div class="flex-grow">
       <span class="title flex-1">{story.name}</span>
-      <ul class="w-full flex gap-1 text-sm text-green-700 font-bold">
+      <ul class="w-full flex gap-3 text-sm text-green-700 font-bold">
         {#each story.tags as tag}
           <li class="hover:text-green-600 cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
         {/each}
