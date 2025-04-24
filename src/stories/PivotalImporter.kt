@@ -1,6 +1,7 @@
 package stories
 
 import db.Id
+import db.today
 import klite.*
 import klite.jdbc.nowSec
 import klite.jobs.Job
@@ -38,7 +39,7 @@ class PivotalImporter(
     if (userRepository.count() < 5L) importAccountMembers(Id(84056))
     projectRepository.list().forEach {
       if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
-//      if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
+      if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
       importStories(it, downloadAttachments = true)
       importIterations(it)
     }
@@ -65,7 +66,7 @@ class PivotalImporter(
   suspend fun importStories(project: Project, downloadAttachments: Boolean = false) {
     var num = 0
     val reviewTypes = mutableSetOf<String>()
-    val lastUpdated = null// TODO storyRepository.lastUpdated(project.id)
+    val lastUpdated = storyRepository.lastUpdated(project.id)
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id", "after_id")
       http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
@@ -117,7 +118,7 @@ class PivotalImporter(
 
   suspend fun importIterations(project: Project) {
     var numStories = 0
-    val currentIteration = 0// TODO iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
+    val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
     var num = currentIteration ?: 0
     while (num < project.currentIterationNum) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
@@ -134,16 +135,16 @@ class PivotalImporter(
     log.info("Imported $num iterations, updated $numStories stories")
   }
 
-  private fun getComments(nodes: List<JsonNode>, projectId: Id<Project>, ownerId: Id<out Any>, downloadAttachments: Boolean): List<Story.Comment> = nodes.map {
+  private fun getComments(nodes: List<JsonNode>, projectId: Id<Project>, ownerId: Id<out Any>, downloadAttachments: Boolean): List<Comment> = nodes.map {
     val attachments = it.getList<JsonNode>("file_attachments").map {
       // Only thumbnailable attachmnets can be downloaded directly because of a bug in Pivotal API, otherwise download_url is used, but requires Pivotal session cookie
       val url = if (it.getBoolean("thumbnailable")) URI(it.getString("big_url"))
       else URI("https://www.pivotaltracker.com" + it.getString("download_url"))
-      Story.Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
+      Attachment(it.getString("filename"), it.getInt("size"), it.getOrNull("width"), it.getOrNull("height"), it.getLong("id")).also {
         if (downloadAttachments) downloadPool.execute { attachmentRepository.download(projectId, ownerId, it, url) }
       }
     }
-    Story.Comment(
+    Comment(
       it.getStringOrNull("text"), attachments, Id(it.getLong("person_id")),
       Instant.parse(it.getString("updated_at")), Instant.parse(it.getString("created_at"))
     )
@@ -173,7 +174,7 @@ class PivotalImporter(
       createdAt = m.getStringOrNull("created_at")?.let { Instant.parse(it) } ?: nowSec(),
       id = id)
     userRepository.save(user)
-    return id;
+    return id
   }
 
   suspend fun importProjectMembers(projectId: Id<Project>) {
