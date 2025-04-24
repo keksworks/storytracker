@@ -24,7 +24,7 @@
 <div class="{story.open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
-     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
+     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
     {#if story.type == StoryType.FEATURE}
@@ -65,3 +65,9 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .drop-target {
+    box-shadow: inset 0 1px 0 0 black;
+  }
+</style>
