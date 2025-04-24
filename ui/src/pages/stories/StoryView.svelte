@@ -20,7 +20,7 @@
   $: movable = !story.open && !story.acceptedAt
 </script>
 
-<div class="{story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
+<div class="{story.open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {movable ? 'cursor-move' : 'cursor-default'}" draggable={movable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
@@ -48,7 +48,7 @@
     </div>
   </div>
   {#if story.open}
-    <div class="bg-stone-200 p-2 shadow-inner" transition:slide>
+    <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
         <div>#{story.id}</div>
         <div>{formatDateTime(story.createdAt)}</div>

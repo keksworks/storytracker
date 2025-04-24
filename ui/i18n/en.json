@@ -88,6 +88,9 @@
     "backlog": "Backlog",
     "icebox": "Icebox"
   },
+  "stories": {
+    "description": "Description"
+  },
   "storyActions": {
     "start": "Start",
     "finish": "Finish",
