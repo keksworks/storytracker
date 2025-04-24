@@ -60,6 +60,16 @@
         <div>
           <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
           <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
+          {#each comment.attachments as attachment}
+            {@const url = `/api/projects/${story.projectId}/stories/${story.id}/attachments/${encodeURIComponent(attachment.filename)}`}
+            <a href={url} target="_blank">
+              {#if attachment.width && attachment.height}
+                <img src={url} class="max-h-32 mt-2">
+              {:else}
+                {attachment.filename}
+              {/if}
+            </a>
+          {/each}
         </div>
       {/each}
     </div>

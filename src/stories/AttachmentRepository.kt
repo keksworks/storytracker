@@ -2,19 +2,26 @@ package stories
 
 import db.Id
 import klite.Config
+import klite.NotFoundException
 import klite.error
 import klite.info
 import klite.logger
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.div
+import kotlin.io.path.exists
 
 class AttachmentRepository {
-  private val path =  Path.of("attachments")
+  val path =  Path.of("attachments")
   private val cookie = Config.optional("PIVOTAL_COOKIE")
   private val log = logger()
+
+  fun file(projectId: Id<Project>, storyId: Id<Story>, filename: String): Path {
+    val file = (path / projectId.toString() / storyId.toString() / filename)
+    if (!file.exists()) throw NotFoundException(filename)
+    return file
+  }
 
   fun download(projectId: Id<Project>, ownerId: Id<out Any>, a: Story.Attachment, url: URI) {
     val file = (path / projectId.toString() / ownerId.toString() / a.filename).toFile()
