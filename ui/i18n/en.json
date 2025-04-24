@@ -90,6 +90,17 @@
   },
   "stories": {
     "description": "Description",
+    "status": "Status",
+    "statuses": {
+      "ACCEPTED": "Accepted",
+      "DELIVERED": "Delivered",
+      "FINISHED": "Finished",
+      "STARTED": "Started",
+      "REJECTED": "Rejected",
+      "PLANNED": "Planned",
+      "UNSTARTED": "Unstarted",
+      "UNSCHEDULED": "Unscheduled"
+    },
     "actions": {
       "start": "Start",
       "finish": "Finish",
