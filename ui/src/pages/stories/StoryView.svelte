@@ -42,7 +42,7 @@
       </ul>
     </div>
     <div class="flex items-center gap-3">
-      <StoryStatus bind:status={story.status} bind:type={story.type}/>
+      <StoryStatus bind:story/>
       <StoryPointsSelect bind:points={story.points}/>
       <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
     </div>
