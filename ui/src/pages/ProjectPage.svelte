@@ -14,6 +14,7 @@
 
   let project: Project | undefined
   let stories: Story[] = []
+  let searchQuery: string | undefined
   let searchResults: Story[] | undefined
   let velocity = 10
 
@@ -26,8 +27,9 @@
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
   }
 
-  async function search(e: FormEvent) {
-    const q = e.currentTarget.value
+  async function search(q?: string) {
+    searchQuery = q
+    searchResults = undefined
     if (q) {
       show.search = true
       searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${q}`)
@@ -68,7 +70,7 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    <FormField type="search" placeholder={t.stories.search.placeholder} on:change={search}/>
+    <FormField type="search" placeholder={t.stories.search.placeholder} on:change={e => search(e.currentTarget.value)}/>
   </Header>
   <div class="flex h-screen px-4">
     <aside class="w-16 sticky top-0 h-screen pt-6">
@@ -85,7 +87,7 @@
         {#if show.done}
           <div class="panel">
             <h5 class="panel-title"><Icon name="done" size="lg"/> {t.panels.done}</h5>
-            <StoryList stories={done}/>
+            <StoryList stories={done} on:search={e => search(e.detail)}/>
           </div>
         {/if}
         {#if show.backlog}
@@ -95,19 +97,23 @@
               {t.panels.backlog}
               <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
             </h5>
-            <StoryList stories={backlog} {velocity}/>
+            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)}/>
           </div>
         {/if}
         {#if show.icebox}
           <div class="panel">
             <h5 class="panel-title"><Icon name="icebox" size="lg"/> {t.panels.icebox}</h5>
-            <StoryList stories={icebox}/>
+            <StoryList stories={icebox} on:search={e => search(e.detail)}/>
           </div>
         {/if}
-        {#if searchResults}
+        {#if show.search}
           <div class="panel">
-            <h5 class="panel-title"><Icon name="search" size="lg"/> {t.stories.search.title}</h5>
-            <StoryList stories={searchResults} movable={false}/>
+            <h5 class="panel-title"><Icon name="search" size="lg"/> {t.stories.search.title}: {searchQuery}</h5>
+            {#if searchResults}
+              <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)}/>
+            {:else}
+              <Spinner/>
+            {/if}
           </div>
         {/if}
       </div>
