@@ -76,7 +76,7 @@
   "projects": {
     "title": "Projects",
     "project": "Project",
-    "iterations": "Iterations",
+    "currentIterationNum": "Iteration",
     "velocity": "Velocity",
     "velocityOverride": "Temporary velocity override"
   },
