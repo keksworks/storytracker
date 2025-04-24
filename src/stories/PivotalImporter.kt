@@ -126,7 +126,7 @@ class PivotalImporter(
 
   suspend fun importIterations(project: Project) {
     var numStories = 0
-    val currentIteration = 0//iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
+    val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
     var num = currentIteration ?: 0
     while (num < project.currentIterationNum) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
