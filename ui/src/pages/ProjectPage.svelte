@@ -9,7 +9,6 @@
   import Header from 'src/layout/Header.svelte'
   import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
-  import Form from 'src/forms/Form.svelte'
 
   export let id: Id<Project>
 
@@ -59,6 +58,17 @@
   $: done = stories.filter(s => s.iteration! < project!.currentIterationNum)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
+
+  function onDrag(e: CustomEvent<{id: Id<Story>, beforeId: Id<Story>}>) {
+    const fromIndex = stories.findIndex(s => s.id == e.detail.id)
+    const story = stories.splice(fromIndex, 1)[0]
+    const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
+    const toStory = stories[toIndex]
+    stories.splice(toIndex, 0, story)
+    if (toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
+    else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.PLANNED
+    stories = stories
+  }
 </script>
 
 <svelte:head>
@@ -90,7 +100,7 @@
               <span><Icon name="done" size="lg"/> {t.panels.done}</span>
               <Button title={t.general.close} on:click={() => show.done = false} variant="ghost">✕</Button>
             </h5>
-            <StoryList stories={done} on:search={e => search(e.detail)}/>
+            <StoryList stories={done} on:search={e => search(e.detail)} movable={false}/>
           </div>
         {/if}
         {#if show.backlog}
@@ -102,7 +112,7 @@
               </span>
               <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
             </h5>
-            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)}/>
+            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} on:drag={onDrag}/>
           </div>
         {/if}
         {#if show.icebox}
@@ -111,7 +121,7 @@
               <span><Icon name="icebox" size="lg"/> {t.panels.icebox}</span>
               <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
             </h5>
-            <StoryList stories={icebox} on:search={e => search(e.detail)}/>
+            <StoryList stories={icebox} on:search={e => search(e.detail)} on:drag={onDrag}/>
           </div>
         {/if}
         {#if searchQuery}

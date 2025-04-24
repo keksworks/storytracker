@@ -23,14 +23,6 @@
       }
     }
   }
-
-  function onDrag(e: CustomEvent<{id: Id<Story>, beforeId: Id<Story>}>) {
-    const fromIndex = stories.findIndex(s => s.id == e.detail.id)
-    const story = stories.splice(fromIndex, 1)
-    const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
-    stories.splice(toIndex, 0, ...story)
-    stories = stories
-  }
 </script>
 
 {#each stories as story, i (story.id)}
@@ -41,5 +33,5 @@
       <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}
-  <StoryView bind:story {movable} on:search on:drag={onDrag}/>
+  <StoryView bind:story {movable} on:search on:drag/>
 {/each}
