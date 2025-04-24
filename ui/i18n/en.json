@@ -89,15 +89,15 @@
     "icebox": "Icebox"
   },
   "stories": {
-    "description": "Description"
-  },
-  "storyActions": {
-    "start": "Start",
-    "finish": "Finish",
-    "deliver": "Deliver",
-    "accept": "Accept",
-    "reject": "Reject",
-    "restart": "Restart"
+    "description": "Description",
+    "actions": {
+      "start": "Start",
+      "finish": "Finish",
+      "deliver": "Deliver",
+      "accept": "Accept",
+      "reject": "Reject",
+      "restart": "Restart"
+    }
   },
   "errors": {
     "technical": "Technical error, please try again",
