@@ -35,7 +35,7 @@ class PivotalImporter(
   }, registry = registry, retryCount = 3, retryAfter = 3.minutes)
 
   override suspend fun run() {
-    if (projectRepository.count() == 0L) importProjects()
+    importProjects()
     if (userRepository.count() < 5L) importAccountMembers(Id(84056))
     projectRepository.list().forEach {
       if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
@@ -57,7 +57,7 @@ class PivotalImporter(
         p.getInt("velocity_averaged_over"), reviewTypes = emptySet(),
         p.getInt("current_iteration_number"),
         Instant.parse(p.getString("updated_at")), Instant.parse(p.getString("created_at")))
-      projectRepository.save(project)
+      projectRepository.save(project, skipUpdate = setOf(Project::reviewTypes))
       num++
     }
     log.info("Imported $num projects")
