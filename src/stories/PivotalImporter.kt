@@ -76,7 +76,7 @@ class PivotalImporter(
     var num = 0
     var afterId: Id<Story>? = null
     val reviewTypes = mutableSetOf<String>()
-    val lastUpdated = null // TODO storyRepository.lastUpdated(project.id)
+    val lastUpdated = storyRepository.lastUpdated(project.id)
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id")
       http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
