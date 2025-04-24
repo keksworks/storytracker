@@ -21,7 +21,7 @@
     {#each projects ?? [] as p}
       <Link to="projects/{p.id}" class="project border p-4 hover:bg-gray-200">
         {p.name}
-        <div>{t.projects.iterations}: {p.iterations}</div>
+        <div>{t.projects.iterations}: {p.currentIteration}</div>
       </Link>
     {/each}
   </div>

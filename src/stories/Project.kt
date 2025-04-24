@@ -17,8 +17,7 @@ data class Project(
   val timezone: String = "UTC",
   val velocityAveragedWeeks: Int = 3,
   val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
-  val version: Int = 0,
-  val iterations: Int = 0,
+  val currentIterationNum: Int = 0,
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
 ): Entity<Project>//, UpdatableEntity

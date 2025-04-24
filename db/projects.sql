@@ -20,3 +20,9 @@ create trigger projects_history after update on projects for each row execute fu
 
 --changeset projects.reviewTypes
 alter table projects add column reviewTypes text[] not null default '{}';
+
+--changeset projects.currentIterationNum
+alter table projects rename column iterations to currentIterationNum;
+
+--changeset projects.version:drop
+alter table projects drop column version;

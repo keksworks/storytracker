@@ -1,7 +1,7 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import {type Id, type Project, type Story, StoryStatus} from 'src/api/types'
-  import {t, today} from 'src/i18n'
+  import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
   import Icon from 'src/icons/Icon.svelte'
@@ -34,7 +34,7 @@
 
   onMount(async () => {
     project = await api.get('projects/' + id)
-    await loadStories(project!.iterations)
+    await loadStories(project!.currentIterationNum)
   })
 
   $: if (show.done && !pastLoaded) {
@@ -42,9 +42,9 @@
     pastLoaded = true
   }
 
-  $: done = stories.filter(s => s.iteration! < project!.iterations)
+  $: done = stories.filter(s => s.iteration! < project!.currentIterationNum)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
-  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.iterations))
+  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
 </script>
 
 <svelte:head>
