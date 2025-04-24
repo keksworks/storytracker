@@ -32,7 +32,7 @@
     searchResults = undefined
     if (q) {
       show.search = true
-      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${q}`)
+      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
     } else {
       show.search = false
     }
@@ -88,6 +88,7 @@
           <div class="panel">
             <h5 class="panel-title">
               <span><Icon name="done" size="lg"/> {t.panels.done}</span>
+              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
             </h5>
             <StoryList stories={done} on:search={e => search(e.detail)}/>
           </div>
@@ -99,7 +100,7 @@
                 <Icon name="backlog" size="lg"/> {t.panels.backlog}
                 <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
               </span>
-              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">🗙</Button>
+              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
             </h5>
             <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)}/>
           </div>
@@ -108,7 +109,7 @@
           <div class="panel">
             <h5 class="panel-title">
               <span><Icon name="icebox" size="lg"/> {t.panels.icebox}</span>
-              <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">🗙</Button>
+              <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
             </h5>
             <StoryList stories={icebox} on:search={e => search(e.detail)}/>
           </div>
@@ -118,7 +119,7 @@
             <h5 class="panel-title">
               <span><Icon name="search" size="lg"/> {t.stories.search.title}</span>
               {searchQuery}
-              <Button title={t.general.close} on:click={() => show.search = false} variant="ghost">🗙</Button>
+              <Button title={t.general.close} on:click={() => show.search = false} variant="ghost">✕</Button>
             </h5>
             {#if searchResults}
               <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)}/>
