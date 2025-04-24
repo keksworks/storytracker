@@ -9,6 +9,7 @@
   import Header from 'src/layout/Header.svelte'
   import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
+  import Form from 'src/forms/Form.svelte'
 
   export let id: Id<Project>
 
@@ -31,10 +32,9 @@
     searchQuery = q
     searchResults = undefined
     if (q) {
-      show.search = true
       searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
     } else {
-      show.search = false
+      searchQuery = undefined
     }
   }
 
@@ -42,7 +42,6 @@
     done: false,
     backlog: true,
     icebox: true,
-    search: false
   }
 
   let pastLoaded = false
@@ -70,7 +69,7 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    <FormField type="search" placeholder={t.stories.search.placeholder} on:change={e => search(e.currentTarget.value)}/>
+    <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex h-screen px-4">
     <aside class="w-16 sticky top-0 h-screen pt-6">
@@ -114,12 +113,12 @@
             <StoryList stories={icebox} on:search={e => search(e.detail)}/>
           </div>
         {/if}
-        {#if show.search}
+        {#if searchQuery}
           <div class="panel">
             <h5 class="panel-title">
               <span><Icon name="search" size="lg"/> {t.stories.search.title}</span>
               {searchQuery}
-              <Button title={t.general.close} on:click={() => show.search = false} variant="ghost">✕</Button>
+              <Button title={t.general.close} on:click={() => searchQuery = undefined} variant="ghost">✕</Button>
             </h5>
             {#if searchResults}
               <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)}/>
