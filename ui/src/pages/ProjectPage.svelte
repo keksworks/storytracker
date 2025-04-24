@@ -75,7 +75,8 @@
     <aside class="w-14 sticky top-0 h-screen pt-3 -ml-3">
       <div class="flex flex-col items-center gap-4">
         {#each Object.keys(show) as key}
-          <Button icon={key} size="lg" on:click={() => show[key] = !show[key]} variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
+          <Button icon={key} size="lg" title={t.panels[key]} on:click={() => show[key] = !show[key]}
+                  variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
       </div>
     </aside>
