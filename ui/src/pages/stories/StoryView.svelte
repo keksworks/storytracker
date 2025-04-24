@@ -17,11 +17,11 @@
     isDropTarget = false
   }
 
-  $: movable = !story.open || !story.acceptedAt
+  $: movable = !story.open && !story.acceptedAt
 </script>
 
-<div class="{story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'} flex flex-col border-b"
-     class:cursor-move={movable} draggable={movable}
+<div class="{story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
+      flex flex-col border-b {movable ? 'cursor-move' : 'cursor-default'}" draggable={movable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:border-t-black={isDropTarget}
 >
