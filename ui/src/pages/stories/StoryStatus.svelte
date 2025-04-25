@@ -2,34 +2,41 @@
   import {type Story, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
+  import api from 'src/api/api'
 
   export let story: Story
+  export let save: () => void
 
   const size = 'sm'
 
   function start(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.STARTED
+    save()
   }
 
   function finish(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.FINISHED
+    save()
   }
 
   function deliver(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.DELIVERED
+    save()
   }
 
   function accept(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.ACCEPTED
+    save()
   }
 
   function reject(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.REJECTED
+    save()
   }
 </script>
 

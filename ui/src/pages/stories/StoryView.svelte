@@ -7,6 +7,7 @@
   import {createEventDispatcher} from 'svelte'
   import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
   import {t} from 'src/i18n'
+  import api from 'src/api/api'
 
   export let story: Story
   export let movable = true
@@ -29,6 +30,11 @@
     await navigator.clipboard.writeText(v)
     el.textContent = t.general.copied
     setTimeout(() => el.textContent = v, 1000)
+  }
+
+  async function save() {
+    story = story
+    await api.post(`projects/${story.projectId}/stories`, story)
   }
 </script>
 
@@ -54,7 +60,7 @@
       </ul>
     </div>
     <div class="flex items-center gap-3">
-      <StoryStatus bind:story/>
+      <StoryStatus {story} {save}/>
       <StoryPointsSelect bind:points={story.points}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
     </div>

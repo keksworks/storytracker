@@ -5,6 +5,7 @@ import db.Id
 import klite.AssetsHandler
 import klite.HttpExchange
 import klite.annotations.GET
+import klite.annotations.POST
 import klite.annotations.PathParam
 import klite.annotations.QueryParam
 import users.Role.ADMIN
@@ -21,6 +22,13 @@ class ProjectRoutes(
 
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
+
+  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story) {
+    require(story.projectId == id) { "Invalid story projectId" }
+    // TODO: protect with updatedAt checking
+    // TODO: maybe handle afterId change and update other stories here?
+    storyRepository.save(story)
+  }
 
    @GET("/:id/stories/:storyId/attachments/:fileName")
    fun attachment(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @PathParam fileName: String, e: HttpExchange) {
