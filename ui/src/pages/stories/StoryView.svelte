@@ -60,7 +60,7 @@
   {#if story.open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
-        <button on:click|stopPropagation={copyToClipboard}>#{story.id}</button>
+        <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
         <div>{formatDateTime(story.createdAt)}</div>
       </div>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
