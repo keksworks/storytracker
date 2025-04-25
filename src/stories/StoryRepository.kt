@@ -4,7 +4,9 @@ import db.CrudRepository
 import db.Id
 import db.getJson
 import db.jsonb
+import klite.info
 import klite.jdbc.*
+import klite.logger
 import klite.toValues
 import java.sql.ResultSet
 import java.time.Instant
@@ -13,6 +15,14 @@ import kotlin.reflect.KProperty1
 
 class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
   override val defaultOrder get() = ""
+
+  init {
+    val maxId = db.query("select max(id) from $table") { getLong(1) }.firstOrNull()
+    if (maxId != null && maxId > Id.sequence.get()) {
+      Id.sequence.set(maxId + (Math.random() * 1000).toLong())
+    }
+    logger().info("Initialized next story id to ${Id.sequence.get()}")
+  }
 
   override fun Story.persister() = toValues(
     Story::tasks to jsonb(tasks),

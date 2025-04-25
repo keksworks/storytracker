@@ -1,17 +1,20 @@
 package db
 
-import klite.TSID
 import klite.i18n.Lang
 import klite.jdbc.BaseCrudRepository
 import klite.jdbc.BaseEntity
 import klite.jdbc.getLongOrNull
 import klite.json.parse
 import java.sql.ResultSet
+import java.util.concurrent.atomic.AtomicLong
 import javax.sql.DataSource
 
 @JvmInline value class Id<T>(val value: Long) {
+  companion object {
+    val sequence = AtomicLong(200000000L)
+  }
   constructor(value: String): this(value.toLong())
-  constructor(): this(TSID.generateValue())
+  constructor(): this(sequence.incrementAndGet())
   override fun toString() = value.toString()
 }
 

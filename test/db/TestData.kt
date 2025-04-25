@@ -14,10 +14,6 @@ import java.util.concurrent.atomic.AtomicLong
 
 /** Immutable domain object samples for unit tests */
 object TestData {
-  init {
-    TSID.deterministic = AtomicLong(171717188819)
-  }
-
   val date = LocalDate.of(2025, 3, 3)
   val now = date.atStartOfDay().toInstant(UTC)
 
