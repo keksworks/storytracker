@@ -8,8 +8,10 @@
   import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
   import {t} from 'src/i18n'
 
-  export let story: Story & {open?: boolean}
+  export let story: Story
   export let movable = true
+
+  let open = false
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string}>()
 
@@ -19,7 +21,7 @@
     isDropTarget = false
   }
 
-  $: reallyMovable = movable && !story.open && !story.acceptedAt
+  $: reallyMovable = movable && !open && !story.acceptedAt
 
   async function copyToClipboard(e: Event) {
     const el = e.currentTarget as HTMLElement
@@ -30,12 +32,12 @@
   }
 </script>
 
-<div class="{story.open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
+<div class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
-  <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => story.open = !story.open}>
+  <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
     {#if story.type == StoryType.FEATURE}
       <Icon name="star-filled" class="text-yellow-500"/>
     {:else if story.type == StoryType.CHORE}
@@ -54,10 +56,10 @@
     <div class="flex items-center gap-3">
       <StoryStatus bind:story/>
       <StoryPointsSelect bind:points={story.points}/>
-      <Icon name={story.open ? 'chevron-up' : 'chevron-down'}/>
+      <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
     </div>
   </div>
-  {#if story.open}
+  {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
         <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
