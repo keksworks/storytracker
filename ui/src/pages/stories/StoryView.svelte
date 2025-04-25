@@ -33,8 +33,7 @@
   }
 
   async function save() {
-    story = story
-    await api.post(`projects/${story.projectId}/stories`, story)
+    story = await api.post(`projects/${story.projectId}/stories`, story)
   }
 </script>
 

@@ -8,6 +8,8 @@ import klite.annotations.GET
 import klite.annotations.POST
 import klite.annotations.PathParam
 import klite.annotations.QueryParam
+import klite.jdbc.StaleEntityException
+import klite.jdbc.nowSec
 import users.Role.ADMIN
 import users.Role.OWNER
 
@@ -23,11 +25,12 @@ class ProjectRoutes(
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
 
-  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story) {
+  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story): Story {
     require(story.projectId == id) { "Invalid story projectId" }
-    // TODO: protect with updatedAt checking
+    val existing = storyRepository.by(Story::id to story.id)
+    if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
     // TODO: maybe handle afterId change and update other stories here?
-    storyRepository.save(story)
+    return story.copy(updatedAt = nowSec()).also { storyRepository.save(it) }
   }
 
    @GET("/:id/stories/:storyId/attachments/:fileName")
