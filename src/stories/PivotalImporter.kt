@@ -14,6 +14,7 @@ import java.net.URI
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.minutes
 
@@ -66,7 +67,7 @@ class PivotalImporter(
   suspend fun importStories(project: Project, downloadAttachments: Boolean = false) {
     var num = 0
     val reviewTypes = mutableSetOf<String>()
-    val lastUpdated = storyRepository.lastUpdated(project.id)
+    val lastUpdated = storyRepository.lastUpdated(project.id)?.minus(10, ChronoUnit.DAYS)
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id", "after_id")
       http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
@@ -119,7 +120,7 @@ class PivotalImporter(
   suspend fun importIterations(project: Project) {
     var numStories = 0
     val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
-    var num = currentIteration ?: 0
+    var num = currentIteration?.let { (it - 4).max(0) } ?: 0
     while (num < project.currentIterationNum) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
         val iteration = Iteration(
