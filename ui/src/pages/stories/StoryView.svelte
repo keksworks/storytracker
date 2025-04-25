@@ -6,6 +6,7 @@
   import {formatDateTime} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
   import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
+  import {t} from 'src/i18n'
 
   export let story: Story & {open?: boolean}
   export let movable = true
@@ -19,6 +20,14 @@
   }
 
   $: reallyMovable = movable && !story.open && !story.acceptedAt
+
+  async function copyToClipboard(e: Event) {
+    const el = e.currentTarget as HTMLElement
+    const v = el.textContent!
+    await navigator.clipboard.writeText(v)
+    el.textContent = t.general.copied
+    setTimeout(() => el.textContent = v, 1000)
+  }
 </script>
 
 <div class="{story.open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
@@ -51,7 +60,7 @@
   {#if story.open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
-        <div>#{story.id}</div>
+        <button on:click|stopPropagation={copyToClipboard}>#{story.id}</button>
         <div>{formatDateTime(story.createdAt)}</div>
       </div>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
