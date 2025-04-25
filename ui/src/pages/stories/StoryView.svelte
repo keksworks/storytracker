@@ -5,7 +5,7 @@
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
-  import StoryStatus from 'src/pages/stories/StoryStatus.svelte'
+  import StoryActions from 'src/pages/stories/StoryActions.svelte'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
 
@@ -59,7 +59,7 @@
       </ul>
     </div>
     <div class="flex items-center gap-3">
-      <StoryStatus {story} {save}/>
+      <StoryActions {story} {save} {open}/>
       <StoryPointsSelect bind:points={story.points}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
     </div>

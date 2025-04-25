@@ -6,6 +6,7 @@
 
   export let story: Story
   export let save: () => void
+  export let open: boolean
 
   const size = 'sm'
 
@@ -41,7 +42,9 @@
 </script>
 
 <div title={t.stories.statuses[story.status]}>
-  {#if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
+  {#if open}
+    <Button {size} color="primary" variant="soft" on:click={save}>{t.general.save}</Button>
+  {:else if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
     <Button {size} color="secondary" variant="soft" on:click={start}>{t.stories.actions.start}</Button>
   {:else if story.status === StoryStatus.STARTED}
     <Button {size} color="secondary" on:click={finish}>{t.stories.actions.finish}</Button>
