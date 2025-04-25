@@ -112,7 +112,9 @@
       "accept": "Accept",
       "reject": "Reject",
       "restart": "Restart"
-    }
+    },
+    "createdAt": "Created",
+    "updatedAt": "Updated"
   },
   "errors": {
     "technical": "Technical error, please try again",
