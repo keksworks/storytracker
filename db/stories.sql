@@ -28,7 +28,12 @@ drop index if exists stories_afterId_idx;
 
 --changeset stories:mainIndex
 create index on stories(projectId, afterId);
---TODO index null value somehow
+
+--changeset stories:mainIndex:drop
+drop index stories_projectId_afterId_idx;
+
+--changeset stories:mainIndexUnique
+create unique index on stories(projectId, afterId);
 
 --changeset stories.iteration
 alter table stories add column iteration int,
