@@ -3,6 +3,7 @@ package stories
 import db.Id
 import db.today
 import klite.*
+import klite.jdbc.NoTransaction
 import klite.jdbc.nowSec
 import klite.jobs.Job
 import klite.json.*
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.minutes
 
+@NoTransaction
 class PivotalImporter(
   registry: Registry,
   private val projectRepository: ProjectRepository,
