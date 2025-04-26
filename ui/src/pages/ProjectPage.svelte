@@ -1,6 +1,6 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
-  import {type Id, type Project, type Story, StoryStatus} from 'src/api/types'
+  import {type Id, type Project, type Story, type StoryMoveRequest, StoryStatus} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
@@ -59,15 +59,19 @@
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
 
-  function onDrag(e: CustomEvent<{id: Id<Story>, beforeId: Id<Story>}>) {
+  async function onDrag(e: CustomEvent<{id: Id<Story>, beforeId: Id<Story>}>) {
     const fromIndex = stories.findIndex(s => s.id == e.detail.id)
     const story = stories.splice(fromIndex, 1)[0]
     const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
-    const toStory = stories[toIndex]
     stories.splice(toIndex, 0, story)
-    if (toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
-    else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSTARTED
     stories = stories
+    const updatedStories = await api.post<Story[]>(`projects/${id}/stories/move`, {storyId: story.id, afterId: stories[toIndex - 1]?.id} as StoryMoveRequest)
+    updatedStories.forEach(update)
+  }
+
+  function update(story: Story) {
+    const index = stories.findIndex(s => s.id == story.id)
+    stories[index] = story
   }
 </script>
 

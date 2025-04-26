@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Id, type Story, StoryStatus} from 'src/api/types'
+  import {type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
 
