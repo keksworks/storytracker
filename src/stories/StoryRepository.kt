@@ -56,6 +56,10 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
   fun save(story: Story, skipUpdate: Set<KProperty1<Story, *>>) =
     db.upsert(table, story.persister(), skipUpdateFields = skipUpdate.map { it.name }.toSet())
 
+  fun swapAfters(stories: List<Story>) =
+    db.exec("update $table set updatedAt = ?, afterId = case " + stories.joinToString(separator = "\n") { "when id = ${it.id} then ${it.afterId}" } +
+      "\nend where id in (${stories.joinToString { it.id.toString() }})", stories.first().updatedAt)
+
   fun lastUpdated(id: Id<Project>): Instant? =
     db.query("select max(updatedAt) as max from $table", Story::projectId to id) { getInstantOrNull("max") }.firstOrNull()
 }

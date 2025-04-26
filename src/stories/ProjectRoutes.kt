@@ -51,13 +51,16 @@ class ProjectRoutes(
     var newAfter = storyRepository.by(Story::afterId to req.afterId, Story::projectId to id) ?: error("No after story in project $id with id ${req.afterId}")
     var prevAfter = storyRepository.by(Story::afterId to story.afterId, Story::projectId to id)
 
-    newAfter = newAfter.copy(afterId = story.afterId).also { storyRepository.save(it) }
-    prevAfter = prevAfter?.copy(afterId = newAfter.id)?.also { storyRepository.save(it) }
+    val now = nowSec()
+    newAfter = newAfter.copy(afterId = story.afterId, updatedAt = now)
+    prevAfter = prevAfter?.copy(afterId = newAfter.id, updatedAt = now)
 
     val newStatus = if (after?.status == UNSCHEDULED) UNSCHEDULED
-                    else if (story.status == UNSCHEDULED) UNSTARTED else story.status
-    story = story.copy(afterId = req.afterId, status = newStatus).also { storyRepository.save(it) }
-    return listOfNotNull(story, newAfter, prevAfter)
+                    else if (story.status == UNSCHEDULED) UNSTARTED else null
+    story = story.copy(afterId = req.afterId, status = newStatus ?: story.status, updatedAt = now)
+    return listOfNotNull(story, newAfter, prevAfter).also {
+      storyRepository.swapAfters(it)
+    }
   }
 
   @GET("/:id/stories/:storyId/attachments/:fileName")
