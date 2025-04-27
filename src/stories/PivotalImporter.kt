@@ -4,6 +4,7 @@ import db.Id
 import db.today
 import klite.*
 import klite.jdbc.NoTransaction
+import klite.jdbc.exec
 import klite.jdbc.nowSec
 import klite.jobs.Job
 import klite.json.*
@@ -17,11 +18,13 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
+import javax.sql.DataSource
 import kotlin.time.Duration.Companion.minutes
 
 @NoTransaction
 class PivotalImporter(
   registry: Registry,
+  private val db: DataSource,
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val userRepository: UserRepository,
@@ -70,6 +73,7 @@ class PivotalImporter(
     var num = 0
     val reviewTypes = mutableSetOf<String>()
     val lastUpdated = storyRepository.lastUpdated(project.id)?.minus(10, ChronoUnit.DAYS)
+    var lastId: Id<Story>? = null
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id", "after_id")
       http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
@@ -104,9 +108,10 @@ class PivotalImporter(
           createdAt = Instant.parse(p.getString("created_at")),
           createdBy = Id(p.getLong("requested_by_id")),
         )
-        storyRepository.save(story, skipUpdate = setOf(Story::iteration))
+        storyRepository.save(story, skipUpdate = setOf(Story::iteration, Story::order))
         reviewTypes.addAll(story.reviews.map { it.type })
         num++
+        lastId = id
       }
       log.info("Imported $num stories")
       if (num == 0) break
@@ -117,6 +122,17 @@ class PivotalImporter(
       projectRepository.save(project.copy(reviewTypes = updatedReviewTypes))
       log.info("Updated review types for project ${project.id} to $updatedReviewTypes")
     }
+
+    db.exec("""
+      with recursive ordered_stories as (
+        select s.id, 0 as ord from stories s where s.afterid is null and projectId = ${project.id} and s.id <= ${lastId?.value}
+        union all
+        select next_s.id, os.ord + 1 from stories next_s
+          join ordered_stories os on next_s.afterid = os.id
+          where next_s.projectid = ${project.id} and s.id <= ${lastId?.value}
+      )
+      update stories set ord = os.ord from ordered_stories os where stories.id = os.id
+    """)
   }
 
   suspend fun importIterations(project: Project) {

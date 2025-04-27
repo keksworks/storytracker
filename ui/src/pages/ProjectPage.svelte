@@ -1,6 +1,6 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
-  import {type Id, type Project, type Story, type StoryBlocker, type StoryComment, type StoryMoveRequest, StoryStatus, StoryType} from 'src/api/types'
+  import {type Id, type Project, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'

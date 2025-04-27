@@ -38,6 +38,9 @@ alter table stories add constraint stories_project_after_uq unique (projectId, a
 --changeset stories:mainIndexUnique:drop
 alter table stories drop constraint stories_project_after_uq;
 
+--changeset stories:project-after-idx
+create index on stories(projectId, afterId);
+
 --changeset stories.afterId
 alter table stories add foreign key (afterId) references stories(id);
 
@@ -63,3 +66,6 @@ with recursive ordered_stories as (
     where next_s.projectid = os.projectid
 )
 update stories set ord = os.ord from ordered_stories os where stories.id = os.id;
+
+--changeset stories:project-ord
+create index on stories(projectId, ord);
