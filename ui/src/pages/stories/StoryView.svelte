@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type Story, type StoryComment, StoryType} from 'src/api/types'
+  import {type Id, type Story, type StoryAttachment, type StoryComment, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -54,7 +54,7 @@
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: $user.id,
-      attachments: [] as StoryCommentAttachment[],
+      attachments: [] as StoryAttachment[],
     } as StoryComment]
   }
 </script>
