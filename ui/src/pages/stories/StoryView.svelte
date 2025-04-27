@@ -49,6 +49,8 @@
       <Icon name="settings-filled" class="text-neutral-500"/>
     {:else if story.type == StoryType.BUG}
       <Icon name="bug" class="text-red-600"/>
+    {:else if story.type == StoryType.RELEASE}
+      <Icon name="release" class="text-black"/>
     {/if}
     <div class="flex-grow">
       {#if open}
