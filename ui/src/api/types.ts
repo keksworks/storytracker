@@ -31,9 +31,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
-// class stories.StoryMoveRequest
-export interface StoryMoveRequest {afterId?: Id<Story>; storyId: Id<Story>}
+export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
@@ -56,7 +54,7 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 export const date = "2025-03-03" as LocalDate
 export const now = "2025-03-03T00:00:00Z" as Instant
 export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":0,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","timezone":"UTC","updatedAt":"2025-03-03T00:00:00Z","velocityAveragedWeeks":3} as Project
-export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Story 1","projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
-export const story2 = {"afterId":200000003,"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 2","projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
+export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
+export const story2 = {"afterId":200000003,"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 2","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
 export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"pivotal@codeborne.com","firstName":"Test","id":200000001,"lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-03-03T00:00:00Z"} as User
 export const viewer = {"createdAt":"2025-03-03T00:00:00Z","email":"viewer@codeborne.com","firstName":"Test","id":200000002,"lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER","updatedAt":"2025-03-03T00:00:00Z"} as User

@@ -2,6 +2,7 @@ package stories
 
 import db.Entity
 import db.Id
+import klite.jdbc.Column
 import klite.jdbc.nowSec
 import stories.Story.Status.UNSTARTED
 import stories.Story.Type.FEATURE
@@ -25,6 +26,7 @@ data class Story(
   val blockers: List<Blocker> = emptyList(),
   val reviews: List<Review> = emptyList(),
   val afterId: Id<Story>? = null,
+  @Column("ord") val order: Double = 0.0,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
   val updatedAt: Instant? = nowSec(),

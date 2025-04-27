@@ -35,6 +35,9 @@ drop index stories_projectId_afterId_idx;
 --changeset stories:mainIndexUnique
 alter table stories add constraint stories_project_after_uq unique (projectId, afterId) deferrable initially immediate;
 
+--changeset stories:mainIndexUnique:drop
+alter table stories drop constraint stories_project_after_uq;
+
 --changeset stories.afterId
 alter table stories add foreign key (afterId) references stories(id);
 
@@ -47,3 +50,16 @@ alter table stories add column reviews jsonb not null default '[]';
 
 --changeset stories_history
 create trigger stories_history after update on stories for each row execute function add_change_history();
+
+--changeset stories.ord
+alter table stories add column ord double precision not null default 0;
+
+--changeset stories.ord-update
+with recursive ordered_stories as (
+  select s.id, s.projectid, 0 as ord from stories s where s.afterid is null
+  union all
+  select next_s.id, next_s.projectid, os.ord + 1 from stories next_s
+    join ordered_stories os on next_s.afterid = os.id
+    where next_s.projectid = os.projectid
+)
+update stories set ord = os.ord from ordered_stories os where stories.id = os.id;

@@ -37,36 +37,8 @@ class ProjectRoutes(
     }
   }
 
-  /*
-   *   1:after
-   *   2:after1 (after, unchanged)
-   *   4:after3 -> 2 (story)
-   *   3:after2 -> 4 (newAfter)
-   *   5:after4 -> 3 (prevAfter)
-   */
-  @POST("/:id/stories/move") fun moveStory(@PathParam id: Id<Project>, req: StoryMoveRequest): List<Story> {
-    var story = storyRepository.get(req.storyId)
-    require(story.projectId == id) { "Invalid story project" }
-    val after = req.afterId?.let { storyRepository.get(it) }
-    var newAfter = storyRepository.by(Story::afterId to req.afterId, Story::projectId to id) ?: error("No after story in project $id with id ${req.afterId}")
-    var prevAfter = storyRepository.by(Story::afterId to story.id, Story::projectId to id)
-
-    val now = nowSec()
-    newAfter = newAfter.copy(afterId = story.afterId, updatedAt = now)
-    prevAfter = prevAfter?.copy(afterId = newAfter.id, updatedAt = now)
-
-    val newStatus = if (after?.status == UNSCHEDULED) UNSCHEDULED
-                    else if (story.status == UNSCHEDULED) UNSTARTED else null
-    story = story.copy(afterId = req.afterId, status = newStatus ?: story.status, updatedAt = now)
-    return listOfNotNull(story, newAfter, prevAfter).also {
-      storyRepository.swapAfters(it)
-    }
-  }
-
   @GET("/:id/stories/:storyId/attachments/:fileName")
   fun attachment(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @PathParam fileName: String, e: HttpExchange) {
     send(e, attachmentRepository.file(id, storyId, fileName))
   }
 }
-
-data class StoryMoveRequest(val storyId: Id<Story>, val afterId: Id<Story>?)

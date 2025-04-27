@@ -64,22 +64,25 @@
     const story = stories.splice(fromIndex, 1)[0]
     const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
     stories.splice(toIndex, 0, story)
+    story.order = newOrder(stories[toIndex - 1], stories[toIndex])
     stories = stories
-    const updatedStories = await api.post<Story[]>(`projects/${id}/stories/move`, {storyId: story.id, afterId: stories[toIndex - 1]?.id} as StoryMoveRequest)
-    updatedStories.forEach(update)
-  }
-
-  function update(story: Story) {
-    const index = stories.findIndex(s => s.id == story.id)
-    stories[index] = story
+    stories[toIndex] = await api.post<Story>(`projects/${id}/stories`, story)
   }
 
   function addStory(panel: Story[], status: StoryStatus) {
+    const prev = panel.last()
+    const index = stories.findIndex(s => s.id === prev.id) + 1
+    const next = stories[index]
     const newStory = {
-      status, projectId: project!.id, afterId: panel.last()?.id,
+      status, projectId: project!.id, afterId: prev?.id, order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[]
     } as Story
-    stories = [...stories, newStory]
+    stories.splice(index, 0, newStory)
+    stories = stories
+  }
+
+  function newOrder(prev?: Story, next?: Story) {
+    return (prev?.order ?? 0) + (next ? (next.order - prev.order) / 2 : 1)
   }
 </script>
 
