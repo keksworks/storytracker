@@ -12,7 +12,7 @@
   export let story: Story
   export let movable = true
 
-  let open = false
+  let open = !story.id
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string}>()
 
@@ -51,7 +51,11 @@
       <Icon name="bug" class="text-red-600"/>
     {/if}
     <div class="flex-grow">
-      <span class="title flex-1">{story.name}</span>
+      {#if open}
+        <div class="title flex-1 focus:bg-white" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation></div>
+      {:else}
+        <span class="title flex-1">{story.name}</span>
+      {/if}
       <ul class="w-full flex gap-3 text-sm text-green-700 font-bold">
         {#each story.tags as tag}
           <li class="hover:text-green-600 cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
