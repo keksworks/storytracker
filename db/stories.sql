@@ -32,10 +32,11 @@ create index on stories(projectId, afterId);
 --changeset stories:mainIndex:drop
 drop index stories_projectId_afterId_idx;
 
---changeset stories:mainIndexUnique context:TODO
-create unique index on stories(projectId, afterId);
+--changeset stories:mainIndexUnique
+alter table stories add constraint stories_project_after_uq unique (projectId, afterId) deferrable initially immediate;
 
---TODO changeset stories.afterId foreign key DEFERRABLE INITIALLY IMMEDIATE
+--changeset stories.afterId
+alter table stories add foreign key (afterId) references stories(id);
 
 --changeset stories.iteration
 alter table stories add column iteration int,

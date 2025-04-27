@@ -49,7 +49,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     val after = req.afterId?.let { storyRepository.get(it) }
     var newAfter = storyRepository.by(Story::afterId to req.afterId, Story::projectId to id) ?: error("No after story in project $id with id ${req.afterId}")
-    var prevAfter = storyRepository.by(Story::afterId to story.afterId, Story::projectId to id)
+    var prevAfter = storyRepository.by(Story::afterId to story.id, Story::projectId to id)
 
     val now = nowSec()
     newAfter = newAfter.copy(afterId = story.afterId, updatedAt = now)
