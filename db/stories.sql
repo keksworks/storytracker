@@ -32,12 +32,6 @@ create index on stories(projectId, afterId);
 --changeset stories:mainIndex:drop
 drop index stories_projectId_afterId_idx;
 
---changeset stories:mainIndexUnique
-alter table stories add constraint stories_project_after_uq unique (projectId, afterId) deferrable initially immediate;
-
---changeset stories:mainIndexUnique:drop
-alter table stories drop constraint stories_project_after_uq;
-
 --changeset stories:project-after-idx
 create index on stories(projectId, afterId);
 
