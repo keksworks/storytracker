@@ -83,7 +83,7 @@
 
   function newOrder(prev?: Story, next?: Story) {
     const prevOrder = prev?.order ?? 0
-    return prevOrder + (next ? (next.order - prevOrder) / 2 : 1)
+    return next ? prevOrder + (next.order - prevOrder) / 2 : Math.ceil(prevOrder + 1)
   }
 
   function onSaved(e: CustomEvent<Story>) {
