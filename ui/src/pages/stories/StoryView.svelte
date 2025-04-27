@@ -13,6 +13,7 @@
   export let movable = true
 
   let open = !story.id
+  let tags = story.tags.join(', ')
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story}>()
 
@@ -33,6 +34,7 @@
   }
 
   async function save() {
+    story.tags = tags.split(',').map(t => t.trim()).filter(t => t)
     story = await api.post(`projects/${story.projectId}/stories`, story)
     open = false
     dispatch('saved', story)
@@ -91,6 +93,10 @@
       </div>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
 
+      <h4>{t.stories.tags}</h4>
+      <div class="bg-white p-2" bind:innerText={tags} contenteditable="true"></div>
+
+      <h4>{t.stories.comments}</h4>
       {#each story.comments as comment}
         <div>
           <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
@@ -112,6 +118,12 @@
 </div>
 
 <style global>
+  h4 {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    @apply py-1;
+  }
+
   .drop-target {
     box-shadow: inset 0 1px 0 0 black;
   }
