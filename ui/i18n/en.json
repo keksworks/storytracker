@@ -94,6 +94,8 @@
       "title": "Search",
       "placeholder": "Search stories..."
     },
+    "tags": "Tags",
+    "comments": "Comments",
     "status": "Status",
     "statuses": {
       "ACCEPTED": "Accepted",

@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type Story, StoryType} from 'src/api/types'
+  import {type Id, type Story, type StoryComment, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -8,6 +8,8 @@
   import StoryActions from 'src/pages/stories/StoryActions.svelte'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
+  import {user} from 'src/stores/auth'
+  import Button from 'src/components/Button.svelte'
 
   export let story: Story
   export let movable = true
@@ -45,6 +47,15 @@
       e.preventDefault()
       save()
     }
+  }
+
+  function addComment() {
+    story.comments = [...story.comments, {
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: $user.id,
+      attachments: [] as StoryCommentAttachment[],
+    } as StoryComment]
   }
 </script>
 
@@ -113,6 +124,7 @@
           {/each}
         </div>
       {/each}
+      <Button variant="outlined" size="sm" class="mt-2" on:click={addComment}>＋</Button>
     </div>
   {/if}
 </div>
