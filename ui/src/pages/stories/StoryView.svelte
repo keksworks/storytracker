@@ -35,6 +35,13 @@
   async function save() {
     story = await api.post(`projects/${story.projectId}/stories`, story)
   }
+
+  function saveOnEnter(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      save()
+    }
+  }
 </script>
 
 <div class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
@@ -54,7 +61,7 @@
     {/if}
     <div class="flex-grow">
       {#if open}
-        <div class="title flex-1 focus:bg-white p-1 -my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation autofocus={!story.id}></div>
+        <div class="title flex-1 focus:bg-white p-1 -my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
       {/if}
