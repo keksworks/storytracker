@@ -78,6 +78,7 @@
       <StoryPointsSelect bind:points={story.points}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
     </div>
+    {story.order}
   </div>
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>

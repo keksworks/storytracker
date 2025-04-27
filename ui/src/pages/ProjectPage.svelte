@@ -63,8 +63,11 @@
     const fromIndex = stories.findIndex(s => s.id == e.detail.id)
     const story = stories.splice(fromIndex, 1)[0]
     const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
+    const toStory = stories[toIndex]
     stories.splice(toIndex, 0, story)
     story.order = newOrder(stories[toIndex - 1], stories[toIndex + 1])
+    if (toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
+    else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSTARTED
     stories = stories
     stories[toIndex] = await api.post<Story>(`projects/${id}/stories`, story)
   }
