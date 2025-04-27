@@ -78,7 +78,6 @@
       <StoryPointsSelect bind:points={story.points}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
     </div>
-    {story.order}
   </div>
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
@@ -112,7 +111,7 @@
   {/if}
 </div>
 
-<style>
+<style global>
   .drop-target {
     box-shadow: inset 0 1px 0 0 black;
   }

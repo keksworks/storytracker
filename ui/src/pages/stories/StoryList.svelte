@@ -2,8 +2,10 @@
   import {type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
+  import {createEventDispatcher} from 'svelte'
 
   export let stories: Story[]
+  export let status: StoryStatus | undefined = undefined
   export let movable = true
   export let velocity = 0
 
@@ -23,6 +25,13 @@
       }
     }
   }
+
+  let isDropTarget = false
+  const dispatch = createEventDispatcher<{drag: {id: number, status?: StoryStatus}}>()
+  function onDrop(e: DragEvent) {
+    dispatch('drag', {id: parseInt(e.dataTransfer?.getData('id')!), status})
+    isDropTarget = false
+  }
 </script>
 
 {#each stories as story, i (story.id ?? i)}
@@ -35,3 +44,7 @@
   {/if}
   <StoryView {story} {movable} on:search on:drag on:saved/>
 {/each}
+
+<div class="h-16" draggable={movable} on:drop={onDrop}
+     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}>
+</div>

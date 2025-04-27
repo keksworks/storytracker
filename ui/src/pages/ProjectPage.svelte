@@ -59,14 +59,15 @@
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
 
-  async function onDrag(e: CustomEvent<{id: Id<Story>, beforeId: Id<Story>}>) {
+  async function onDrag(e: CustomEvent<{id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}>) {
     const fromIndex = stories.findIndex(s => s.id == e.detail.id)
     const story = stories.splice(fromIndex, 1)[0]
-    const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
+    const toIndex = e.detail.beforeId ? stories.findIndex(s => s.id == e.detail.beforeId) : stories.length
     const toStory = stories[toIndex]
     stories.splice(toIndex, 0, story)
     story.order = newOrder(stories[toIndex - 1], stories[toIndex + 1])
-    if (toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
+    if (e.detail.status) story.status = e.detail.status
+    else if (!toStory || toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
     else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSTARTED
     stories = stories
     stories[toIndex] = await api.post<Story>(`projects/${id}/stories`, story)
@@ -146,7 +147,7 @@
                 <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} on:drag={onDrag} on:saved={onSaved}/>
+            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:saved={onSaved}/>
           </div>
         {/if}
         {#if show.icebox}
@@ -158,7 +159,7 @@
                 <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={icebox} on:search={e => search(e.detail)} on:drag={onDrag} on:saved={onSaved}/>
+            <StoryList stories={icebox} on:search={e => search(e.detail)} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:saved={onSaved}/>
           </div>
         {/if}
         {#if searchQuery}
