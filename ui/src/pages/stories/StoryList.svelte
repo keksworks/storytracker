@@ -45,6 +45,8 @@
   <StoryView {story} {movable} on:search on:drag on:saved/>
 {/each}
 
-<div class="h-16" draggable={movable} on:drop={onDrop}
-     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}>
-</div>
+{#if movable}
+  <div class="h-16" draggable={movable} on:drop={onDrop}
+       on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}>
+  </div>
+{/if}
