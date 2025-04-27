@@ -70,8 +70,8 @@
   }
 
   function addStory(panel: Story[], status: StoryStatus) {
-    const prev = panel.last()
-    const index = stories.findIndex(s => s.id === prev.id) + 1
+    const prev = panel.last() ?? stories.last()
+    const index = stories.findIndex(s => s.id === prev?.id) + 1
     const next = stories[index]
     const newStory = {
       status, projectId: project!.id, afterId: prev?.id, order: newOrder(prev, next),
