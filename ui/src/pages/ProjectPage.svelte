@@ -64,7 +64,7 @@
     const story = stories.splice(fromIndex, 1)[0]
     const toIndex = stories.findIndex(s => s.id == e.detail.beforeId)
     stories.splice(toIndex, 0, story)
-    story.order = newOrder(stories[toIndex - 1], stories[toIndex])
+    story.order = newOrder(stories[toIndex - 1], stories[toIndex + 1])
     stories = stories
     stories[toIndex] = await api.post<Story>(`projects/${id}/stories`, story)
   }
@@ -83,7 +83,12 @@
 
   function newOrder(prev?: Story, next?: Story) {
     const prevOrder = prev?.order ?? 0
-    return prevOrder + ((next?.order ?? 1) - prevOrder) / 2
+    return prevOrder + (next ? (next.order - prevOrder) / 2 : 1)
+  }
+
+  function onSaved(e: CustomEvent<Story>) {
+    const index = stories.findIndex(s => s.id == e.detail.id)
+    if (index >= 0) stories[index] = e.detail
   }
 </script>
 
@@ -116,7 +121,7 @@
               <span><Icon name="done" size="lg"/> {t.panels.done}</span>
               <Button title={t.general.close} on:click={() => show.done = false} variant="ghost">✕</Button>
             </h5>
-            <StoryList stories={done} on:search={e => search(e.detail)} movable={false}/>
+            <StoryList stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved}/>
           </div>
         {/if}
         {#if show.backlog}
@@ -131,7 +136,7 @@
                 <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} on:drag={onDrag}/>
+            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} on:drag={onDrag} on:saved={onSaved}/>
           </div>
         {/if}
         {#if show.icebox}
@@ -143,7 +148,7 @@
                 <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={icebox} on:search={e => search(e.detail)} on:drag={onDrag}/>
+            <StoryList stories={icebox} on:search={e => search(e.detail)} on:drag={onDrag} on:saved={onSaved}/>
           </div>
         {/if}
         {#if searchQuery}
@@ -154,7 +159,7 @@
               <Button title={t.general.close} on:click={() => searchQuery = undefined} variant="ghost">✕</Button>
             </h5>
             {#if searchResults}
-              <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)}/>
+              <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved}/>
             {:else}
               <Spinner/>
             {/if}

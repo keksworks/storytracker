@@ -14,7 +14,7 @@
 
   let open = !story.id
 
-  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string}>()
+  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story}>()
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
@@ -34,6 +34,8 @@
 
   async function save() {
     story = await api.post(`projects/${story.projectId}/stories`, story)
+    open = false
+    dispatch('saved', story)
   }
 
   function saveOnEnter(e: KeyboardEvent) {

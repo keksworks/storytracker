@@ -33,5 +33,5 @@
       <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}
-  <StoryView bind:story {movable} on:search on:drag/>
+  <StoryView {story} {movable} on:search on:drag on:saved/>
 {/each}
