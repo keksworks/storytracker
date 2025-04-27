@@ -54,7 +54,7 @@
     {/if}
     <div class="flex-grow">
       {#if open}
-        <div class="title flex-1 focus:bg-white" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation></div>
+        <div class="title flex-1 focus:bg-white p-1 -my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
       {/if}
@@ -73,7 +73,9 @@
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between text-sm text-muted pb-2">
-        <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
+        {#if story.id}
+          <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
+        {/if}
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">
           {formatDateTime(story.createdAt)}
         </div>

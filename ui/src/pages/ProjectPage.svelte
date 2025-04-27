@@ -1,6 +1,6 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
-  import {type Id, type Project, type Story, type StoryMoveRequest, StoryStatus} from 'src/api/types'
+  import {type Id, type Project, type Story, type StoryBlocker, type StoryComment, type StoryMoveRequest, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
@@ -73,6 +73,14 @@
     const index = stories.findIndex(s => s.id == story.id)
     stories[index] = story
   }
+
+  function addStory(panel: Story[], status: StoryStatus) {
+    const newStory = {
+      status, projectId: project!.id, afterId: panel.last()?.id,
+      type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[]
+    } as Story
+    stories = [...stories, newStory]
+  }
 </script>
 
 <svelte:head>
@@ -114,7 +122,10 @@
                 <Icon name="backlog" size="lg"/> {t.panels.backlog}
                 <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
               </span>
-              <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
+              <span>
+                <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
+                <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
+              </span>
             </h5>
             <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} on:drag={onDrag}/>
           </div>
@@ -123,7 +134,10 @@
           <div class="panel">
             <h5 class="panel-title">
               <span><Icon name="icebox" size="lg"/> {t.panels.icebox}</span>
-              <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
+              <span>
+                <Button label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
+                <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
+              </span>
             </h5>
             <StoryList stories={icebox} on:search={e => search(e.detail)} on:drag={onDrag}/>
           </div>

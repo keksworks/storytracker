@@ -105,6 +105,7 @@
       "UNSTARTED": "Unstarted",
       "UNSCHEDULED": "Unscheduled"
     },
+    "add": "Add story",
     "actions": {
       "start": "Start",
       "finish": "Finish",
