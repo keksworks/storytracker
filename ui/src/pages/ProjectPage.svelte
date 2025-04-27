@@ -93,6 +93,11 @@
     const index = stories.findIndex(s => s.id == e.detail.id)
     if (index >= 0) stories[index] = e.detail
   }
+
+  function visibilityChange() {
+    // TODO: implement proper SSE updates instead of such reload
+    if (!document.hidden) loadStories(project!.currentIterationNum)
+  }
 </script>
 
 <svelte:head>
@@ -100,6 +105,8 @@
     <title>{project?.name} - {t.title}</title>
   {/if}
 </svelte:head>
+
+<svelte:window on:visibilitychange={visibilityChange}/>
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
