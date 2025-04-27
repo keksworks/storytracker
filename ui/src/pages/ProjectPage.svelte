@@ -82,7 +82,8 @@
   }
 
   function newOrder(prev?: Story, next?: Story) {
-    return (prev?.order ?? 0) + (next ? (next.order - prev.order) / 2 : 1)
+    const prevOrder = prev?.order ?? 0
+    return prevOrder + ((next?.order ?? 1) - prevOrder) / 2
   }
 </script>
 
