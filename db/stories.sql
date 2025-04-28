@@ -20,21 +20,6 @@ create table stories(
   ${createdBy}
 );
 
---changeset stories.afterId:index
-create index on stories(afterId);
-
---changeset stories.afterId:index:drop
-drop index if exists stories_afterId_idx;
-
---changeset stories:mainIndex
-create index on stories(projectId, afterId);
-
---changeset stories:mainIndex:drop
-drop index stories_projectId_afterId_idx;
-
---changeset stories:project-after-idx
-create index on stories(projectId, afterId);
-
 --changeset stories.afterId
 alter table stories add foreign key (afterId) references stories(id);
 
@@ -63,3 +48,6 @@ update stories set ord = os.ord from ordered_stories os where stories.id = os.id
 
 --changeset stories:project-ord
 create index on stories(projectId, ord);
+
+--changeset stories:project-after-idx:drop
+drop index if exists stories_projectid_afterid_idx;
