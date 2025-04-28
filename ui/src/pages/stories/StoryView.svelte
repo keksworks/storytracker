@@ -76,11 +76,12 @@
     {/if}
     <div class="flex-grow">
       {#if open}
-        <div class="title flex-1 focus:bg-white p-1 -my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
+        <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
       {/if}
-      <ul class="w-full flex gap-3 text-sm text-green-700 font-bold">
+
+      <ul class="w-full flex gap-2.5 text-sm text-green-700 font-bold">
         {#each story.tags as tag}
           <li class="hover:text-green-600 cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
         {/each}
