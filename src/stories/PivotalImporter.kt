@@ -41,10 +41,9 @@ class PivotalImporter(
   }, registry = registry, retryCount = 3, retryAfter = 3.minutes)
 
   override suspend fun run() {
-    importProjects()
+    val projects = importProjects()
     if (userRepository.count() < 5L) importAccountMembers(Id(84056))
-    projectRepository.list().forEach {
-      if (it.id.value == 1234L) return@forEach
+    projects.forEach {
       if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
       if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
       importStories(it, downloadAttachments = true)
@@ -52,8 +51,8 @@ class PivotalImporter(
     }
   }
 
-  suspend fun importProjects() {
-    var num = 0
+  suspend fun importProjects(): List<Project> {
+    val projects = mutableListOf<Project>()
     http.get<JsonList>("/projects").forEach { p ->
       val name = p.getString("name")
       log.info("Importing project $name")
@@ -65,9 +64,10 @@ class PivotalImporter(
         p.getInt("current_iteration_number"),
         Instant.parse(p.getString("updated_at")), Instant.parse(p.getString("created_at")))
       projectRepository.save(project, skipUpdate = setOf(Project::reviewTypes))
-      num++
+      projects.add(project)
     }
-    log.info("Imported $num projects")
+    log.info("Imported ${projects.size} projects")
+    return projects
   }
 
   suspend fun importStories(project: Project, downloadAttachments: Boolean = false) {
