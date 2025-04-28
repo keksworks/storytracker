@@ -1,12 +1,11 @@
 <script lang="ts">
-  import type {Project, ProjectMemberUser} from 'src/api/types'
+  import type {ProjectMemberUser} from 'src/api/types'
   import Modal from 'src/components/Modal.svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import SortableTable from 'src/components/SortableTable.svelte'
   import ContactLink from 'src/components/ContactLink.svelte'
 
-  export let project: Project
   export let members: ProjectMemberUser[]
 
   export let show = false

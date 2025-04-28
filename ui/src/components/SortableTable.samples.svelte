@@ -8,7 +8,7 @@
   ]
 </script>
 
-<SortableTable labels={t.addresses} columns={['county', 'municipality', 'street', 'building']} items={addresses} let:item={a}>
+<SortableTable labels={t.users} columns={['county', 'municipality', 'street', 'building']} items={addresses} let:item={a}>
   <tr>
     <td>{a.county}</td>
     <td>{a.municipality}</td>
@@ -18,7 +18,7 @@
 </SortableTable>
 
 <h4>Empty state</h4>
-<SortableTable labels={t.addresses} columns={['county', 'municipality', 'street', 'building']} items={[]}/>
+<SortableTable labels={t.users} columns={['county', 'municipality', 'street', 'building']} items={[]}/>
 
 <h4>Loading state</h4>
-<SortableTable labels={t.addresses} columns={['county', 'municipality', 'street', 'building']} items={undefined}/>
+<SortableTable labels={t.users} columns={['county', 'municipality', 'street', 'building']} items={undefined}/>

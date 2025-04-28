@@ -5,12 +5,12 @@ import enDict from 'i18n/en.json'
 describe('SortableTable', () => {
   it('sorts items by clicking on headers', async () => {
     const items = [{a: 2, b: 'zzz'}, {a: 1, b: 'aaa'}]
-    const labels = enDict.addresses
-    const columns: any[] = [['country', 'a'], ['street', 'b']]
+    const labels = enDict.users
+    const columns: any[] = [['name', 'a'], ['email', 'b']]
     const {container, component} = render(SortableTable, {labels, items, columns, class: 'another-class'})
     expect(container.querySelector('.another-class')).to.be.ok
-    expect(container.textContent).to.contain(enDict.addresses.country)
-    expect(container.textContent).to.contain(enDict.addresses.street)
+    expect(container.textContent).to.contain(enDict.users.name)
+    expect(container.textContent).to.contain(enDict.users.email)
     expect(component.items).to.equal(items)
 
     const headers = container.querySelectorAll('th')
@@ -26,7 +26,7 @@ describe('SortableTable', () => {
 
   it('do not sort columns with empty headers', async () => {
     const items = [{a: 2, b: 'zzz'}, {a: 1, b: 'aaa'}]
-    const labels = enDict.addresses
+    const labels = enDict.users
     const columns: any[] = [['', 'a'], ['time', 'b']]
     const {container, component} = render(SortableTable, {labels, items, columns, class: 'another-class'})
 

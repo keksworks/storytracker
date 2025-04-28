@@ -7,12 +7,9 @@
   import api from 'src/api/api'
   import {showToast} from 'src/stores/toasts'
   import FormField from 'src/forms/FormField.svelte'
-  import RadioButton from 'src/forms/RadioButton.svelte'
 
   export let user: User = {} as User
   export let savePath = 'users'
-
-  let gender: keyof typeof t.gender | undefined
 
   const dispatch = createEventDispatcher<{saved: User}>()
 
@@ -25,10 +22,8 @@
 
 <Form {submit}>
   <div class="common-grid sm:grid-cols-2">
-    <FormField label={t.person.firstName} bind:value={user.firstName} autofocus={!!user.id}/>
-    <FormField label={t.person.lastName} bind:value={user.lastName}/>
+    <FormField label={t.users.name} bind:value={user.name} autofocus={!!user.id}/>
     <FormField label={t.contacts.email} type="email" bind:value={user.email}/>
-    <RadioButton bind:value={gender} class="classic" label={t.person.gender} options={t.gender}/>
   </div>
 
   <div class="flex justify-end">

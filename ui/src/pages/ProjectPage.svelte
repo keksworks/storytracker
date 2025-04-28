@@ -127,7 +127,7 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    {#if project && members}<ProjectMembersButton {project} {members}/>{/if}
+    {#if members}<ProjectMembersButton {members}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex h-screen px-4">
