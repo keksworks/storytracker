@@ -64,6 +64,7 @@
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
 
   async function onDrag(e: CustomEvent<{id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}>) {
+    if (e.detail.id == e.detail.beforeId) return
     const fromIndex = stories.findIndex(s => s.id == e.detail.id)
     const story = stories.splice(fromIndex, 1)[0]
     const toIndex = e.detail.beforeId ? stories.findIndex(s => s.id == e.detail.beforeId) : stories.length
