@@ -60,19 +60,8 @@
   }
 
   onMount(() => {
-    if (open) {
-      const panel = view.closest('.panel') as HTMLElement
-      if (panel && !isElementVisible(view, panel)) {
-        view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
-      }
-    }
+    if (open) view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
   })
-
-  function isElementVisible(element: HTMLElement, container: HTMLElement) {
-    const {top, bottom} = element.getBoundingClientRect()
-    const containerRect = container.getBoundingClientRect()
-    return top >= containerRect.top && bottom <= containerRect.bottom
-  }
 </script>
 
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
