@@ -12,6 +12,7 @@ import klite.jdbc.StaleEntityException
 import klite.jdbc.nowSec
 import stories.Story.Status.DELETED
 import users.Role.*
+import users.User
 
 @Access(ADMIN, OWNER, VIEWER)
 class ProjectRoutes(
@@ -28,7 +29,9 @@ class ProjectRoutes(
     }
   }
 
-  @GET fun list() = projectRepository.list()
+  @GET fun list(@AttrParam user: User) =
+    if (user.role == OWNER) projectRepository.list()
+    else projectRepository.listForMember(user.id)
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
