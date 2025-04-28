@@ -7,6 +7,7 @@ import klite.HttpExchange
 import klite.NotFoundRoute
 import klite.RequestMethod.OPTIONS
 import users.Role
+import users.User
 import users.UserRepository
 import kotlin.annotation.AnnotationTarget.CLASS
 import kotlin.annotation.AnnotationTarget.FUNCTION
@@ -31,3 +32,6 @@ class AccessChecker(private val userRepository: UserRepository): Before {
     if (user != null) userRepository.setAppUser(user)
   }
 }
+
+val HttpExchange.user: User get() = attr("user")
+val HttpExchange.userOrNull: User? get() = attr("user")

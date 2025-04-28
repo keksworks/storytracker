@@ -32,7 +32,7 @@ USER user
 
 ENV TZ=Europe/Tallinn
 ENV JAVA_TOOL_OPTIONS="-Xss256k -Xmx1G -XX:+ExitOnOutOfMemoryError"
-CMD SMTP_HOST=${SMTP_HOST:-$(ip route | awk 'NR==1 {print $3}')} java -jar *.jar
+CMD java -jar *.jar
 
 ENV PORT=8080
 EXPOSE $PORT

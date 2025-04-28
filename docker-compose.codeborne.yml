@@ -1,8 +1,10 @@
-# For demo deployment to arti.codeborne.com
+# For deployment to tracker.codeborne.com
 services:
   tracker:
     volumes:
       - /var/tracker/attachments:/app/attachments
+    environment:
+      - SMTP_HOST=node1.codeborne.com
     networks:
       - proxy
       - default

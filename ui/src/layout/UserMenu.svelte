@@ -4,6 +4,7 @@
   import Icon from 'src/icons/Icon.svelte'
   import Dropdown from 'src/components/Dropdown.svelte'
   import Button from 'src/components/Button.svelte'
+  import LoginButton from 'src/pages/login/LoginButton.svelte'
 
   let isDropdownOpen = false
 </script>
@@ -24,5 +25,5 @@
     </svelte:fragment>
   </Dropdown>
 {:else}
-  <Button label={t.login.google} color="primary" on:click={() => location.href = '/oauth/google?redirect=' + (location.pathname == '/' ? '/projects' : location.pathname)}/>
+  <LoginButton redirect={(location.pathname == '/' ? '/projects' : location.pathname)} class="default"/>
 {/if}

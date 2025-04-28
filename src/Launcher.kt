@@ -1,7 +1,4 @@
-import auth.AccessChecker
-import auth.AuthUserProvider
-import auth.FakeAuthRoutes
-import auth.Public
+import auth.*
 import db.initDB
 import klite.*
 import klite.annotations.annotated
@@ -13,6 +10,8 @@ import klite.oauth.AuthRoutes
 import klite.oauth.GoogleOAuthClient
 import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
+import klite.smtp.FakeEmailSender
+import klite.smtp.SmtpEmailSender
 import stories.ProjectRoutes
 import users.UserRoutes
 import java.nio.file.Path
@@ -37,6 +36,8 @@ fun startServer() = Server(
 
   assets("/", AssetsHandler(assetsPath, useIndexForUnknownPaths = true))
 
+  register(if (Config.isProd) SmtpEmailSender::class else FakeEmailSender::class)
+
   context("/oauth") {
     register<OAuthUserProvider>(AuthUserProvider::class)
     register<GoogleOAuthClient>()
@@ -53,6 +54,7 @@ fun startServer() = Server(
     useOnly<JsonBody>()
 
     annotated<AuthRoutes>(annotations = listOf(Public()))
+    annotated<EmailAuthRoutes>("/auth", listOf(Public()))
     annotated<UserRoutes>("/users")
     annotated<ProjectRoutes>("/projects")
   }

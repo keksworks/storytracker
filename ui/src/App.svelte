@@ -8,6 +8,7 @@
   import ProjectPage from 'src/pages/ProjectPage.svelte'
   import HomePage from 'src/pages/HomePage.svelte'
   import ProjectsPage from 'src/pages/ProjectsPage.svelte'
+  import LoginPage from 'src/pages/login/LoginPage.svelte'
 </script>
 
 <svelte:head>
@@ -19,6 +20,7 @@
 <Router primary={false}>
   <div class="App min-h-screen flex flex-col">
     <Route path="/" component={HomePage}/>
+    <Route path="/login" component={LoginPage}/>
     {#if $user}
       <Route path="/projects" component={ProjectsPage}/>
       <Route path="/projects/:id" component={ProjectPage}/>

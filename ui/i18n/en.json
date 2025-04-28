@@ -49,10 +49,11 @@
   },
   "login": {
     "link": "Login",
-    "google": "Google Login",
+    "email": "Send code to email",
+    "codeSent": "Code sent to {email}, check your email and enter it below",
+    "code": "Login code",
     "logout": "Logout",
-    "failed": "Invalid credentials",
-    "noUser": "Invalid credentials"
+    "noUser": "User not found"
   },
   "home": {
     "title": "Home"
@@ -105,6 +106,12 @@
     },
     "createdAt": "Created",
     "updatedAt": "Updated"
+  },
+  "emails": {
+    "loginCode": {
+      "subject": "StoryTracker login code",
+      "bodyHtml": "Welcome!\n\nYour one-time StoryTracker login code is <b>{code}</b>.\n\nIf you didn't request this code, please ignore this message."
+    }
   },
   "errors": {
     "technical": "Technical error, please try again",
