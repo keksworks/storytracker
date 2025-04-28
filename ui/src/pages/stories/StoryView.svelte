@@ -4,7 +4,7 @@
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
-  import {createEventDispatcher} from 'svelte'
+  import {createEventDispatcher, onMount} from 'svelte'
   import StoryActions from 'src/pages/stories/StoryActions.svelte'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
@@ -14,6 +14,7 @@
   export let story: Story
   export let movable = true
 
+  let view: HTMLElement
   let open = !story.id
   let tags = story.tags.join(', ')
 
@@ -57,9 +58,24 @@
       attachments: [] as StoryAttachment[],
     } as StoryComment]
   }
+
+  onMount(() => {
+    if (open) {
+      const panel = view.closest('.panel') as HTMLElement
+      if (panel && !isElementVisible(view, panel)) {
+        view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+      }
+    }
+  })
+
+  function isElementVisible(element: HTMLElement, container: HTMLElement) {
+    const {top, bottom} = element.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    return top >= containerRect.top && bottom <= containerRect.bottom
+  }
 </script>
 
-<div class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
+<div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
