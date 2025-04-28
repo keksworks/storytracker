@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:6b78e984" // 1.6.16+
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:25b44a1e" // 1.6.16+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -18,6 +18,7 @@ dependencies {
   implementation(klite("oauth"))
   implementation(klite("slf4j"))
   implementation(klite("jobs"))
+  implementation(klite("smtp"))
   implementation(klite("csv"))
   implementation("org.postgresql:postgresql:42.7.5")
   implementation("org.xhtmlrenderer:flying-saucer-pdf:9.11.3")

@@ -1,5 +1,6 @@
 <script lang="ts">
   import {t} from 'src/i18n'
+  import {user} from 'src/stores/auth'
   import {Route, Router} from 'svelte-navigator'
   import Toasts from './components/Toasts.svelte'
   import NotFoundPage from './layout/NotFoundPage.svelte'
@@ -18,8 +19,10 @@
 <Router primary={false}>
   <div class="App min-h-screen flex flex-col">
     <Route path="/" component={HomePage}/>
-    <Route path="/projects" component={ProjectsPage}/>
-    <Route path="/projects/:id" component={ProjectPage}/>
+    {#if $user}
+      <Route path="/projects" component={ProjectsPage}/>
+      <Route path="/projects/:id" component={ProjectPage}/>
+    {/if}
     <Route path="/samples/*path" let:params>
       {#await import('src/samples/SamplesPage.svelte')}
         <Spinner/>

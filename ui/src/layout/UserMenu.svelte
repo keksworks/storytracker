@@ -26,5 +26,5 @@
     </svelte:fragment>
   </Dropdown>
 {:else}
-  <Button label={t.login.google} color="primary" on:click={() => location.href = '/oauth/google'}/>
+  <Button label={t.login.google} color="primary" on:click={() => location.href = '/oauth/google?redirect=' + (location.pathname == '/' ? '/projects' : location.pathname)}/>
 {/if}
