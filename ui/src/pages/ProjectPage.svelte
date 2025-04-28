@@ -131,8 +131,8 @@
     {#if members}<ProjectMembersButton {members}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
-  <div class="flex h-screen px-4">
-    <aside class="w-14 sticky top-0 h-screen pt-3 -ml-3">
+  <div class="flex px-4" style="height: calc(100vh - 56px)">
+    <aside class="w-14 sticky top-0 h-full pt-3 -ml-3">
       <div class="flex flex-col items-center gap-4">
         {#each Object.keys(show) as key}
           <Button icon={key} size="lg" title={t.panels[key]} on:click={() => show[key] = !show[key]}
