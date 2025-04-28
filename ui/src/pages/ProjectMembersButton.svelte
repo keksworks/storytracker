@@ -15,13 +15,15 @@
 <Button label={t.projects.members} on:click={() => show = true}/>
 
 <Modal bind:show title={t.projects.members} wide>
-  <SortableTable labels={t.contacts} columns={[
+  <SortableTable labels={t.users} columns={[
     ['name', m => m.user.name],
+    ['initials', m => m.user.initials],
     ['email', m => m.user.email],
     ['role', m => m.member.role]
     ]} items={members} let:item={m}>
     <tr>
       <td>{m.user.name}</td>
+      <td>{m.user.initials}</td>
       <td><ContactLink contact={m.user.email}/></td>
       <td>{m.member.role}</td>
     </tr>

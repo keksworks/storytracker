@@ -6,14 +6,11 @@
     "contactUs": "Contact us",
     "gmail": "Gmail"
   },
-  "person": {
-    "birthDate": "Date of birth",
-    "personalCode": "Personal code",
-    "firstName": "First name",
-    "lastName": "Last name",
+  "users": {
     "name": "Name",
-    "age": "Age",
-    "gender": "Gender"
+    "email": "E-mail",
+    "initials": "Initials",
+    "role": "Role"
   },
   "gender": {
     "male": "Male",
