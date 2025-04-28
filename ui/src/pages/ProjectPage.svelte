@@ -91,7 +91,8 @@
   }
 
   function onSaved(e: CustomEvent<Story>) {
-    const index = stories.findIndex(s => s.id == e.detail.id)
+    let index = stories.findIndex(s => s.id == e.detail.id)
+    if (index < 0) index = stories.findIndex(s => !s.id)
     if (index >= 0) stories[index] = e.detail
   }
 
