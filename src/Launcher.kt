@@ -13,15 +13,12 @@ import klite.oauth.AuthRoutes
 import klite.oauth.GoogleOAuthClient
 import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
-import stories.PivotalImporter
-import stories.ProjectRepository
 import stories.ProjectRoutes
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
 
 val Config.isE2E get() = isActive("e2e")
 
@@ -65,8 +62,6 @@ fun startServer() = Server(
 
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
-    val count = require<ProjectRepository>().count()
-    schedule(require<PivotalImporter>(), period = 3.hours, delay = 1.hours)
   })
 }
 
