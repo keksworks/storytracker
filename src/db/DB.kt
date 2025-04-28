@@ -10,5 +10,5 @@ fun Server.initDB() {
   logger().info("Migrating " + Config["DB_URL"])
   use(DBMigrator())
   useAppDBUser()
-  use(DBModule(PooledDataSource(timeout = 5.seconds, leakCheckThreshold = 7.minutes)))
+  use(DBModule(PooledDataSource(timeout = 15.seconds, leakCheckThreshold = 7.minutes)))
 }
