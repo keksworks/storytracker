@@ -10,13 +10,13 @@
   import api from 'src/api/api'
   import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
+  import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
 
   export let story: Story
   export let movable = true
 
   let view: HTMLElement
   let open = !story.id
-  let tags = story.tags.join(', ')
 
   const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story}>()
 
@@ -37,7 +37,6 @@
   }
 
   async function save() {
-    story.tags = tags.split(',').map(t => t.trim()).filter(t => t)
     story = await api.post(`projects/${story.projectId}/stories`, story)
     open = false
     dispatch('saved', story)
@@ -111,7 +110,7 @@
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
 
       <h4>{t.stories.tags}</h4>
-      <div class="bg-white p-2" bind:innerText={tags} contenteditable="true"></div>
+      <StoryTagsEditor bind:story on:keydown={saveOnEnter}/>
 
       <h4>{t.stories.comments}</h4>
       {#each story.comments as comment}
