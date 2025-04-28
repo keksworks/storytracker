@@ -4,6 +4,7 @@ services:
     volumes:
       - /var/tracker/attachments:/app/attachments
     environment:
+      - ENV=prod
       - SMTP_HOST=node1.codeborne.com
     networks:
       - proxy
