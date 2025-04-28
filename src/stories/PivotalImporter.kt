@@ -126,11 +126,11 @@ class PivotalImporter(
 
     db.exec("""
       with recursive ordered_stories as (
-        select s.id, 0 as ord from stories s where s.afterid is null and projectId = ${project.id} and s.id <= ${lastId?.value}
+        select s.id, 0 as ord from stories s where s.afterid is null and projectId = ${project.id}
         union all
         select next_s.id, os.ord + 1 from stories next_s
           join ordered_stories os on next_s.afterid = os.id
-          where next_s.projectid = ${project.id} and next_s.id <= ${lastId?.value}
+          where next_s.projectid = ${project.id}
       )
       update stories set ord = os.ord from ordered_stories os where stories.id = os.id
     """)
