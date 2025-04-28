@@ -73,8 +73,7 @@ class PivotalImporter(
   suspend fun importStories(project: Project, downloadAttachments: Boolean = false) {
     var num = 0
     val reviewTypes = mutableSetOf<String>()
-    val lastUpdated = storyRepository.lastUpdated(project.id)?.minus(10, ChronoUnit.DAYS)
-    var lastId: Id<Story>? = null
+    val lastUpdated = storyRepository.lastUpdated(project.id)?.minus(30, ChronoUnit.DAYS)
     while (num % 500 == 0) {
       val fields = listOf("name", "description", "current_state", "story_type", "estimate", "labels", "comments(:default,file_attachments)", "reviews(:default,review_type)", "tasks", "blockers", "accepted_at", "updated_at", "created_at", "requested_by_id", "after_id")
       http.get<JsonList>("/projects/${project.id}/stories?limit=500&offset=$num&fields=" + fields.joinToString(",") + (lastUpdated?.let { "&updated_after=$it" } ?: "")).forEach { p ->
@@ -112,7 +111,6 @@ class PivotalImporter(
         storyRepository.save(story, skipUpdate = setOf(Story::iteration, Story::order))
         reviewTypes.addAll(story.reviews.map { it.type })
         num++
-        lastId = id
       }
       log.info("Imported $num stories")
       if (num == 0) break
