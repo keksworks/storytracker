@@ -10,6 +10,6 @@
 {#if contact}
   <span class={icon ? 'flex items-center' : ''}>
     {#if icon}<Icon name={icon} class="mr-2"/>{/if}
-    <a href="{proto}:{contact}" {...$$restProps}>{contact.replace('@', '\u200B@')}</a>
+    <a href="{proto}:{contact}" {...$$restProps}>{contact}</a>
   </span>
 {/if}

@@ -14,7 +14,7 @@
     <Button class="sm" color="primary" variant="soft">
       <div class="flex items-center gap-1 -mx-0.5">
         <Icon name="user" strokeWidth="1.5"/>
-        <div>{$user.firstName} {$user.lastName}</div>
+        <div>{$user.name}</div>
         <Icon name="chevron-down" class="opacity-50"/>
       </div>
     </Button>

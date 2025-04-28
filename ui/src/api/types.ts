@@ -14,10 +14,8 @@ export interface Epic {comments: Array<StoryComment>; createdAt: Instant; create
 export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; points?: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number; velocity: number}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number}
-// class stories.ProjectMember$Role
-export enum ProjectMemberRole {OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class stories.ProjectMember
-export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: ProjectMemberRole; updatedAt?: Instant; userId: Id<User>}
+export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
 // class stories.ProjectMemberUser
 export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
 // class stories.Story$Attachment
@@ -41,7 +39,7 @@ export interface Story {acceptedAt?: Instant; afterId?: Id<Story>; blockers: Arr
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
-export enum Role {OWNER = 'OWNER', ADMIN = 'ADMIN', VIEWER = 'VIEWER'}
+export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
 export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; lang: string; lastName: string; lastOnlineAt?: Instant; name: string; role: Role; updatedAt?: Instant; username?: string}
 

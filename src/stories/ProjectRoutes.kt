@@ -1,24 +1,35 @@
 package stories
 
 import auth.Access
+import auth.user
 import db.Id
 import klite.AssetsHandler
+import klite.Before
+import klite.ForbiddenException
 import klite.HttpExchange
 import klite.annotations.*
 import klite.jdbc.StaleEntityException
 import klite.jdbc.nowSec
 import stories.Story.Status.DELETED
-import users.Role.ADMIN
-import users.Role.OWNER
+import users.Role.*
 
-@Access(ADMIN, OWNER)
+@Access(ADMIN, OWNER, VIEWER)
 class ProjectRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val projectMemberRepository: ProjectMemberRepository,
   private val attachmentRepository: AttachmentRepository,
-): AssetsHandler(attachmentRepository.path) {
+): AssetsHandler(attachmentRepository.path), Before {
+  override suspend fun before(e: HttpExchange) {
+    e.path("id")?.let {
+      val role = if (e.user.role == OWNER) OWNER else projectMemberRepository.role(Id(it), e.user.id)
+      if (role == null) throw ForbiddenException()
+      e.attr("role", role)
+    }
+  }
+
   @GET fun list() = projectRepository.list()
+
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =

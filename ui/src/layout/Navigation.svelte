@@ -6,7 +6,7 @@
 
   const menu = [
     {path: '', label: t.home.title, roles: []},
-    {path: 'projects', label: t.projects.title, roles: [Role.ADMIN, Role.OWNER]}
+    {path: 'projects', label: t.projects.title, roles: [Role.ADMIN, Role.OWNER, Role.VIEWER]}
   ]
 </script>
 

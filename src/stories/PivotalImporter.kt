@@ -201,7 +201,7 @@ class PivotalImporter(
       val userId = ensureUserExists(m, Role.VIEWER) ?: return@forEach
       log.info("Importing project member ${userId.value}")
       val member = ProjectMember(Id(m.getLong("id")), projectId, userId,
-        role = ProjectMember.Role.valueOf(m.getString("role").uppercase()),
+        role = Role.valueOf(m.getString("role").uppercase()),
         commentNotifications = m.getBoolean("wants_comment_notification_emails"),
         mentionNotifications = m.getBoolean("will_receive_mention_notifications_or_emails"),
         lastViewedAt = m.getStringOrNull("last_viewed_at")?.let { Instant.parse(it) },

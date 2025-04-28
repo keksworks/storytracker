@@ -3,15 +3,13 @@ package users
 import db.Entity
 import db.Id
 import klite.Email
-import klite.Phone
-import klite.jdbc.UpdatableEntity
 import klite.jdbc.nowSec
 import klite.oauth.OAuthUser
 import java.net.URI
 import java.time.Instant
 
 enum class Role {
-  OWNER, ADMIN, VIEWER
+  ADMIN, OWNER, MEMBER, VIEWER
 }
 
 data class User(
