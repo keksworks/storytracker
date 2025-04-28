@@ -16,7 +16,7 @@ class EmailContent(lang: String, labelKey: String, substitutions: Map<String, St
     <tr>
       <td style="padding: 2em; background: white; color: rgb(17, 24, 39)">
         <div>
-          <img height="32" alt="Stampy.Guru" src="https://stampy.guru/img/icon.png">
+          <img height="32" alt="StoryTracker" src="https://tracker.codeborne.com/img/logo.png">
         </div>
         <h1 style="margin: 1em 0; font-size: 1.625em; line-height: 1.25; font-weight: bold">${+subject}</h1>
         <div style="margin-bottom: 1em; white-space: pre-line">$body</div>
@@ -25,9 +25,6 @@ class EmailContent(lang: String, labelKey: String, substitutions: Map<String, St
             $actionLabel
           </a>
         """} ?: ""}
-        <p style="margin: 0; font-size: 0.8em; color: rgb(107, 114, 128); text-align: center">
-          ${translate(lang, "legal.name")}
-        </p>
       </td>
     </tr>
   </table>
