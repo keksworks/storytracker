@@ -1,5 +1,7 @@
-import auth.*
-import db.Id
+import auth.AccessChecker
+import auth.AuthUserProvider
+import auth.FakeAuthRoutes
+import auth.Public
 import db.initDB
 import klite.*
 import klite.annotations.annotated
@@ -11,15 +13,9 @@ import klite.oauth.AuthRoutes
 import klite.oauth.GoogleOAuthClient
 import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
-import kotlinx.coroutines.launch
-import stories.Epic
-import stories.EpicRepository
 import stories.PivotalImporter
-import stories.ProjectMember
-import stories.ProjectMemberRepository
 import stories.ProjectRepository
 import stories.ProjectRoutes
-import users.UserRepository
 import users.UserRoutes
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -70,7 +66,7 @@ fun startServer() = Server(
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
     val count = require<ProjectRepository>().count()
-    schedule(require<PivotalImporter>(), period = 3.hours, delay = 0.hours)
+    schedule(require<PivotalImporter>(), period = 3.hours, delay = 1.hours)
   })
 }
 
