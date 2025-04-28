@@ -18,7 +18,7 @@
   let view: HTMLElement
   let open = !story.id
 
-  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story}>()
+  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story, delete: Story}>()
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
@@ -99,10 +99,13 @@
   </div>
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
-      <div class="flex justify-between text-sm text-muted pb-2">
-        {#if story.id}
-          <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
-        {/if}
+      <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">
+        <div class="flex items-center">
+          {#if story.id}
+            <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
+          {/if}
+          <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => dispatch('delete', story)}/>
+        </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">
           {formatDateTime(story.createdAt)}
         </div>

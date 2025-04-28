@@ -4,14 +4,10 @@ import auth.Access
 import db.Id
 import klite.AssetsHandler
 import klite.HttpExchange
-import klite.annotations.GET
-import klite.annotations.POST
-import klite.annotations.PathParam
-import klite.annotations.QueryParam
+import klite.annotations.*
 import klite.jdbc.StaleEntityException
 import klite.jdbc.nowSec
-import stories.Story.Status.UNSCHEDULED
-import stories.Story.Status.UNSTARTED
+import stories.Story.Status.DELETED
 import users.Role.ADMIN
 import users.Role.OWNER
 
@@ -35,6 +31,12 @@ class ProjectRoutes(
     return story.copy(updatedAt = nowSec()).also {
       storyRepository.save(it, skipUpdate = if (existing != null) emptySet() else setOf(Story::afterId))
     }
+  }
+
+  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>) {
+    val story = storyRepository.get(storyId)
+    require(story.projectId == id) { "Invalid story project" }
+    storyRepository.save(story.copy(status = DELETED, updatedAt = nowSec()))
   }
 
   @GET("/:id/stories/:storyId/attachments/:fileName")

@@ -42,7 +42,7 @@
       <div class="font-bold">{iteration.points}</div>
     </div>
   {/if}
-  <StoryView {story} {movable} on:search on:drag on:saved/>
+  <StoryView {story} {movable} on:search on:drag on:saved on:delete/>
 {/each}
 
 {#if movable}

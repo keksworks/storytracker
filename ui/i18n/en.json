@@ -108,6 +108,8 @@
       "UNSCHEDULED": "Unscheduled"
     },
     "add": "Add story",
+    "delete": "Delete",
+    "deleteConfirm": "Really delete story #{id} {name}?",
     "actions": {
       "start": "Start",
       "finish": "Finish",

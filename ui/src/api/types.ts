@@ -25,7 +25,7 @@ export enum StoryReviewStatus {UNSTARTED = 'UNSTARTED', IN_REVIEW = 'IN_REVIEW',
 // class stories.Story$Review
 export interface StoryReview {createdAt: Instant; reviewerId?: Id<User>; status: StoryReviewStatus; type: string; updatedAt: Instant}
 // class stories.Story$Status
-export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED'}
+export enum StoryStatus {ACCEPTED = 'ACCEPTED', DELIVERED = 'DELIVERED', FINISHED = 'FINISHED', STARTED = 'STARTED', REJECTED = 'REJECTED', PLANNED = 'PLANNED', UNSTARTED = 'UNSTARTED', UNSCHEDULED = 'UNSCHEDULED', DELETED = 'DELETED'}
 // class stories.Story$Task
 export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: string}
 // class stories.Story$Type

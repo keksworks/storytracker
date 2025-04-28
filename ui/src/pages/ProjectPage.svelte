@@ -9,6 +9,7 @@
   import Header from 'src/layout/Header.svelte'
   import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
+  import {replaceValues} from '@codeborne/i18n-json'
 
   export let id: Id<Project>
 
@@ -97,6 +98,16 @@
     if (index >= 0) stories[index] = e.detail
   }
 
+  async function onDelete(e: CustomEvent<Story>) {
+    if (e.detail.id) {
+      if (!confirm(replaceValues(t.stories.deleteConfirm, e.detail))) return
+      await api.delete(`projects/${id}/stories/${e.detail.id}`)
+    }
+    let index = stories.findIndex(s => s.id == e.detail.id)
+    stories.splice(index, 1)
+    stories = stories
+  }
+
   function visibilityChange() {
     // TODO: implement proper SSE updates instead of such reload
     if (!document.hidden) loadStories(project!.currentIterationNum)
@@ -134,7 +145,7 @@
               <span><Icon name="done" size="lg"/> {t.panels.done}</span>
               <Button title={t.general.close} on:click={() => show.done = false} variant="ghost">✕</Button>
             </h5>
-            <StoryList stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved}/>
+            <StoryList stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved} on:delete={onDelete}/>
           </div>
         {/if}
         {#if show.backlog}
@@ -149,7 +160,7 @@
                 <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:saved={onSaved}/>
+            <StoryList stories={backlog} {velocity} on:search={e => search(e.detail)} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:saved={onSaved}  on:delete={onDelete}/>
           </div>
         {/if}
         {#if show.icebox}
@@ -161,7 +172,7 @@
                 <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
               </span>
             </h5>
-            <StoryList stories={icebox} on:search={e => search(e.detail)} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:saved={onSaved}/>
+            <StoryList stories={icebox} on:search={e => search(e.detail)} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:saved={onSaved}  on:delete={onDelete}/>
           </div>
         {/if}
         {#if searchQuery}
@@ -172,7 +183,7 @@
               <Button title={t.general.close} on:click={() => searchQuery = undefined} variant="ghost">✕</Button>
             </h5>
             {#if searchResults}
-              <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved}/>
+              <StoryList stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}/>
             {:else}
               <Spinner/>
             {/if}

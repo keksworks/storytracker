@@ -8,6 +8,7 @@ import klite.info
 import klite.jdbc.*
 import klite.logger
 import klite.toValues
+import stories.Story.Status.DELETED
 import java.sql.ResultSet
 import java.time.Instant
 import javax.sql.DataSource
@@ -44,6 +45,7 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
   fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> {
     return db.select(table,
       Story::projectId to projectId,
+      Story::status to NotIn(DELETED),
       fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
       q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
       suffix = defaultOrder) { mapper() }
