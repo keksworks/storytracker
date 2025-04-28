@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Story, StoryStatus, StoryType} from 'src/api/types'
+  import {type Instant, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
@@ -31,6 +31,7 @@
   function accept(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.ACCEPTED
+    story.acceptedAt = new Date().toISOString() as Instant
     save()
   }
 
