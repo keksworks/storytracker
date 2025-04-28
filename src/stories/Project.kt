@@ -18,6 +18,7 @@ data class Project(
   val velocityAveragedWeeks: Int = 3,
   val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
   val currentIterationNum: Int = 0,
+  val defaultStoryPoints: Int? = 1,
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
 ): Entity<Project>//, UpdatableEntity

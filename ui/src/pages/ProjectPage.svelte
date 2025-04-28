@@ -79,7 +79,8 @@
     const next = stories[index]
     const newStory = {
       status, projectId: project!.id, afterId: prev?.id, order: newOrder(prev, next),
-      type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[]
+      type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
+      points: project!.defaultStoryPoints
     } as Story
     stories.splice(index, 0, newStory)
     stories = stories

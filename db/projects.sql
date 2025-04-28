@@ -30,3 +30,6 @@ alter table projects drop column version;
 --changeset projects:storytracker
 insert into projects (id, name, description)
 values (1234, 'Story Tracker', 'Story Tracker own development');
+
+--changeset projects:defaultStoryPoints
+alter table projects add column defaultStoryPoints int;

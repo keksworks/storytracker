@@ -62,7 +62,7 @@ class PivotalImporter(
         p.getNode("time_zone").getString("olson_name"),
         p.getInt("velocity_averaged_over"), reviewTypes = emptySet(),
         p.getInt("current_iteration_number"),
-        Instant.parse(p.getString("updated_at")), Instant.parse(p.getString("created_at")))
+        updatedAt = Instant.parse(p.getString("updated_at")), createdAt = Instant.parse(p.getString("created_at")))
       projectRepository.save(project, skipUpdate = setOf(Project::reviewTypes))
       projects.add(project)
     }

@@ -70,7 +70,7 @@ fun startServer() = Server(
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
     val count = require<ProjectRepository>().count()
-    schedule(require<PivotalImporter>(), period = 3.hours, delay = 0.hours)// if (count == 0L) 0.hours else 1.hours)
+    schedule(require<PivotalImporter>(), period = 3.hours, delay = if (count == 0L) 0.hours else 1.hours)
   })
 }
 
