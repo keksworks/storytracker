@@ -94,7 +94,7 @@
     <div class="flex items-center gap-3">
       <StoryActions {story} {save} {open}/>
       <StoryPointsSelect bind:points={story.points}/>
-      <Icon name={open ? 'chevron-up' : 'chevron-down'}/>
+      <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
   {#if open}
