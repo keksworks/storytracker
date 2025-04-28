@@ -10,8 +10,8 @@
   ]
 </script>
 
-{#each menu as m}
-  {#if !m.roles.length || m.roles.includes($user?.role)}
+{#if $user}
+  {#each menu as m}
     <Link to={m.path} label={m.label} class="btn sm mr-2 {location.pathname.substring(1).startsWith(m.path) ? 'bg-stone-100' : ''}"/>
-  {/if}
-{/each}
+  {/each}
+{/if}
