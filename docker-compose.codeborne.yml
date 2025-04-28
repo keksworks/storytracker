@@ -6,6 +6,7 @@ services:
     environment:
       - ENV=prod
       - SMTP_HOST=node1.codeborne.com
+      - MAIL_FROM=pivotal@codeborne.com
     networks:
       - proxy
       - default
