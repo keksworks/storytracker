@@ -15,10 +15,14 @@ import users.Role.OWNER
 class ProjectRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
+  private val projectMemberRepository: ProjectMemberRepository,
   private val attachmentRepository: AttachmentRepository,
 ): AssetsHandler(attachmentRepository.path) {
   @GET fun list() = projectRepository.list()
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
+
+  @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
+    projectMemberRepository.listWithUsers(id)
 
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)

@@ -14,6 +14,8 @@ export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentI
 export enum ProjectMemberRole {OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: ProjectMemberRole; updatedAt?: Instant; userId: Id<User>}
+// class stories.ProjectMemberUser
+export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
 // class stories.Story$Attachment
 export interface StoryAttachment {filename: string; height?: number; id?: number; size: number; width?: number}
 // class stories.Story$Blocker

@@ -1,6 +1,6 @@
 <script lang="ts">
   import StoryList from 'src/pages/stories/StoryList.svelte'
-  import {type Id, type Project, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
+  import {type Id, type Project, type ProjectMemberUser, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
@@ -10,10 +10,12 @@
   import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
   import {replaceValues} from '@codeborne/i18n-json'
+  import ProjectMembersButton from 'src/pages/ProjectMembersButton.svelte'
 
   export let id: Id<Project>
 
   let project: Project | undefined
+  let members: ProjectMemberUser[]
   let stories: Story[] = []
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
@@ -48,6 +50,7 @@
 
   onMount(async () => {
     project = await api.get('projects/' + id)
+    api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => members = r)
     await loadStories(project!.currentIterationNum)
   })
 
@@ -124,6 +127,7 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
+    {#if project && members}<ProjectMembersButton {project} {members}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex h-screen px-4">
