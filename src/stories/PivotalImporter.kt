@@ -44,6 +44,7 @@ class PivotalImporter(
     importProjects()
     if (userRepository.count() < 5L) importAccountMembers(Id(84056))
     projectRepository.list().forEach {
+      if (it.id.value == 1234L) return@forEach
       if (projectMemberRepository.count(ProjectMember::projectId to it.id) == 0L) importProjectMembers(it.id)
       if (epicRepository.count(Epic::projectId to it.id) == 0L) importEpics(it.id, downloadAttachments = true)
       importStories(it, downloadAttachments = true)
@@ -129,7 +130,7 @@ class PivotalImporter(
         union all
         select next_s.id, os.ord + 1 from stories next_s
           join ordered_stories os on next_s.afterid = os.id
-          where next_s.projectid = ${project.id} and s.id <= ${lastId?.value}
+          where next_s.projectid = ${project.id} and next_s.id <= ${lastId?.value}
       )
       update stories set ord = os.ord from ordered_stories os where stories.id = os.id
     """)
