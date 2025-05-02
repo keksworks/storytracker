@@ -11,6 +11,7 @@
   import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
   import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
+  import StoryTypeSelect from 'src/pages/stories/StoryTypeSelect.svelte'
 
   export let story: Story
   export let movable = true
@@ -78,6 +79,7 @@
     {:else if story.type == StoryType.RELEASE}
       <Icon name="release" class="text-black"/>
     {/if}
+
     <div class="flex-grow">
       {#if open}
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
@@ -110,6 +112,16 @@
           {formatDateTime(story.createdAt)}
         </div>
       </div>
+
+      <div class="grid grid-cols-2 p-2 bg-gray-100 border border-solid border-gray-300 text-gray-500 text-sm">
+        <span>{t.stories.type}</span>
+        <div>
+          <StoryTypeSelect bind:type={story.type}
+                           class="p-1 -m-1 float-right text-sm text-gray-600 hover:text-black"/>
+        </div>
+      </div>
+
+      <h4>{t.stories.description}</h4>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
 
       <h4>{t.stories.tags}</h4>
