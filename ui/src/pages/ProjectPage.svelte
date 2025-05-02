@@ -201,10 +201,10 @@
 
 <style lang="postcss">
   .panel {
-    @apply w-full max-w-6xl overflow-y-auto flex flex-col bg-gray-100 border border-gray-200 rounded;
+    @apply w-full max-w-6xl overflow-y-auto flex flex-col bg-stone-100 border border-stone-200 rounded;
   }
 
   .panel-title {
-    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-gray-100 border-b flex justify-between items-center;
+    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-stone-100 border-b flex justify-between items-center;
   }
 </style>
