@@ -17,11 +17,11 @@
   {#if !projects}
     <Spinner/>
   {/if}
-  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 my-6 text-lg">
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 my-3 text-lg">
     {#each projects ?? [] as p}
-      <Link to="projects/{p.id}" class="project border p-4 hover:bg-gray-200">
-        {p.name}
-        <div>{t.projects.currentIterationNum}: {p.currentIterationNum}</div>
+      <Link to="projects/{p.id}" class="project border rounded-lg px-4 py-3 bg-white hover:bg-stone-50">
+        <div class="font-semibold">{p.name}</div>
+        <div class="text-muted">{t.projects.currentIterationNum} {p.currentIterationNum}</div>
       </Link>
     {/each}
   </div>

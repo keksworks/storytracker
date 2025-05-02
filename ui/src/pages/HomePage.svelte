@@ -5,14 +5,8 @@
 
 <MainPageLayout title={t.title}>
   <section class="grid gap-10 p-6 sm:p-12">
-    <h1>
-      StoryTracker - a Pivotal Tracker replacement
-    </h1>
-
-    <h3>Pivotal Tracker unfortunately goes away, so we take this opportunity to build a similar, but a bit more modern and improved tool.</h3>
-
     <div class="grid gap-4">
-      <h4>These are the features we care about the most</h4>
+      <h2>Features</h2>
       <ul class="list-disc list-inside">
         <li>No stories lost/hidden - everyone sees the same stories</li>
         <li>Easy drag-based prioritization</li>
