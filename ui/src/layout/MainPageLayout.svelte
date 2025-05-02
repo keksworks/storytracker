@@ -1,10 +1,7 @@
 <script lang="ts">
   import {t} from 'src/i18n'
-  import Container from 'src/layout/Container.svelte'
   import Header from 'src/layout/Header.svelte'
-
   export let title = ''
-  export let width = 'normal'
 </script>
 
 <svelte:head>
@@ -13,11 +10,9 @@
   {/if}
 </svelte:head>
 
-<div class="min-h-screen relative">
-  <div class="absolute inset-0 flex items-center justify-center -z-10"></div>
-
+<div class="min-h-screen flex flex-col">
   <Header {title}/>
-  <Container {width}>
+  <div class="h-full px-2 sm:px-3 flex-grow bg-stone-100">
     <slot/>
-  </Container>
+  </div>
 </div>
