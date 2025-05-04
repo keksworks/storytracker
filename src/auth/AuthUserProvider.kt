@@ -1,12 +1,11 @@
 package auth
 
 import klite.HttpExchange
+import klite.jdbc.nowSec
 import klite.oauth.OAuthTokenResponse
 import klite.oauth.OAuthUser
 import klite.oauth.OAuthUserProvider
 import klite.oauth.UserProfile
-import users.Role
-import users.Role.ADMIN
 import users.Role.OWNER
 import users.Role.VIEWER
 import users.User
@@ -20,7 +19,10 @@ class AuthUserProvider(
     if (user == null) {
       val role = if (profile.email.domain in listOf("codeborne.com")) OWNER else VIEWER
       user = User(profile.firstName + " " + profile.lastName, profile.email, role, avatarUrl = profile.avatarUrl,
-        initials = profile.firstName[0] + "" + profile.lastName[0])
+        initials = profile.firstName[0] + "" + profile.lastName[0], lastOnlineAt = nowSec())
+      userRepository.save(user)
+    } else {
+      user = user.copy(lastOnlineAt = nowSec())
       userRepository.save(user)
     }
     return user
