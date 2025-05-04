@@ -120,17 +120,19 @@
 
   function listenToUpdates() {
     updates?.close()
-    updates = new EventSource(`/api/projects/${id}/updates`)
+    const lastUpdatedAt = stories.max(s => s.updatedAt)
+    updates = new EventSource(`/api/projects/${id}/updates` + (lastUpdatedAt ? '?after=' + lastUpdatedAt : ''))
     updates.addEventListener('story', e => {
       const story = JSON.parse(e.data) as Story
       let index = stories.findIndex(s => s.id == story.id)
-      if (index >= 0) return stories[index] = story
-      else {
-        index = stories.findIndex(s => story.order >= s.order) - 1
-        if (index < 0) index = stories.length
-        stories.splice(index, 0, story)
-        stories = stories
+      if (index >= 0) {
+        if (stories[index].order == story.order) return stories[index] = story
+        else stories.splice(index, 1)
       }
+      index = stories.findIndex(s => s.order > story.order) - 1
+      if (index < 0) index = stories.length
+      stories.splice(index, 0, story)
+      stories = stories
     })
   }
 
