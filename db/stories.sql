@@ -36,22 +36,12 @@ create trigger stories_history after update on stories for each row execute func
 --changeset stories.ord
 alter table stories add column ord double precision not null default 0;
 
---changeset stories.ord-update
-with recursive ordered_stories as (
-  select s.id, s.projectid, 0 as ord from stories s where s.afterid is null
-  union all
-  select next_s.id, next_s.projectid, os.ord + 1 from stories next_s
-    join ordered_stories os on next_s.afterid = os.id
-    where next_s.projectid = os.projectid
-)
-update stories set ord = os.ord from ordered_stories os where stories.id = os.id;
-
 --changeset stories:project-ord
 create index on stories(projectId, ord);
-
---changeset stories:project-after-idx:drop
-drop index if exists stories_projectid_afterid_idx;
 
 --changeset iterations:drop-imported-future onChange:RUN
 update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and endDate > '2025-04-28');
 delete from iterations where endDate > '2025-04-28';
+
+--changeset stories.afterId:drop
+alter table stories drop column afterId;

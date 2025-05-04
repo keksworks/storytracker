@@ -85,7 +85,7 @@
     const index = stories.findIndex(s => s.id === prev?.id) + 1
     const next = stories[index]
     const newStory = {
-      status, projectId: project!.id, afterId: prev?.id, order: newOrder(prev, next),
+      status, projectId: project!.id, order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
       points: project!.defaultStoryPoints
     } as Story

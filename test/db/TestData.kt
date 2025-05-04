@@ -1,16 +1,13 @@
 package db
 
 import klite.Email
-import klite.TSID
 import stories.Project
 import stories.Story
 import users.Role.ADMIN
 import users.Role.VIEWER
 import users.User
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.ZoneOffset.UTC
-import java.util.concurrent.atomic.AtomicLong
 
 /** Immutable domain object samples for unit tests */
 object TestData {
@@ -22,5 +19,5 @@ object TestData {
 
   val project = Project(Id(1), "Project 1", "Description", createdAt = now, updatedAt = now)
   val story = Story(Id(), Id(1), "Story 1", createdAt = now, updatedAt = now)
-  val story2 = Story(Id(), Id(1), "Story 2", afterId = story.id, createdAt = now, updatedAt = now)
+  val story2 = Story(Id(), Id(1), "Story 2", order = 2.0, createdAt = now, updatedAt = now)
 }
