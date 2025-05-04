@@ -40,7 +40,7 @@ Start API by running the [Launcher](src/Launcher.kt).
 It will automatically try to start the database using `docker compose up -d db`
 To access DB via IDE use credentials from [.env](.env) file.
 
-Start UI using: `cd ui && npm run dev`
+Start UI using: `cd ui && npm start`
 
 ## Running tests
 

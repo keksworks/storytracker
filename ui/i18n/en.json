@@ -93,6 +93,13 @@
       "UNSTARTED": "Unstarted",
       "UNSCHEDULED": "Unscheduled"
     },
+    "type": "Type",
+    "types": {
+      "CHORE": "Chore",
+      "FEATURE": "Feature",
+      "BUG": "Bug",
+      "RELEASE": "Release"
+    },
     "add": "Add story",
     "delete": "Delete",
     "deleteConfirm": "Really delete story #{id} {name}?",

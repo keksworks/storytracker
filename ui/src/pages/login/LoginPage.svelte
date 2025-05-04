@@ -8,7 +8,7 @@
   let waitingForCode = false
 </script>
 
-<MainPageLayout title={t.login.link} width="narrow">
+<MainPageLayout title={t.login.link}>
   <div slot="header">
     {#if !waitingForCode}<LangSelect/>{/if}
   </div>
