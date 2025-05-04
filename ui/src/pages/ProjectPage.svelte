@@ -140,7 +140,7 @@
   function visibilityChange() {
     if (document.hidden) updates?.close()
     else {
-      if (Date.now() - becameHidden > 5 * 60 * 1000) loadStories(project!.currentIterationNum)
+      if (Date.now() - becameHidden > 10 * 60 * 1000) loadStories(project!.currentIterationNum)
       else listenToUpdates()
     }
   }

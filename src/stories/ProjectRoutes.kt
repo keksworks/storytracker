@@ -10,6 +10,7 @@ import klite.HttpExchange
 import klite.annotations.*
 import klite.jdbc.NoTransaction
 import klite.jdbc.StaleEntityException
+import klite.jdbc.gt
 import klite.jdbc.nowSec
 import klite.sse.Event
 import klite.sse.send
@@ -71,16 +72,20 @@ class ProjectRoutes(
 
   @GET("/:id/updates") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @QueryParam after: Instant? = null, e: HttpExchange) {
-    // TODO: replay lastUpdatedAt > after
     val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 100) }
     e.startEventStream()
-    flow.collect { story -> e.send(Event(story, "story")) }
+    if (after != null) {
+      val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
+      updatedSince.forEach { e.send(Event(it, "story")) }
+    }
+    flow.collect { e.send(Event(it, "story")) }
   }
 
   @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
     storyRepository.save(story.copy(status = DELETED, updatedAt = nowSec()))
+    // TODO emit
   }
 
   @GET("/:id/stories/:storyId/attachments/:fileName")
