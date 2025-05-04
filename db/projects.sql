@@ -36,3 +36,6 @@ alter table projects add column defaultStoryPoints int;
 
 --changeset projects.velocity
 alter table projects add column velocity int not null default 10;
+
+--changeset projects.velocityAveragedOver
+alter table projects rename column velocityAveragedWeeks to velocityAveragedOver;

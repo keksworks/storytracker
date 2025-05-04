@@ -38,7 +38,7 @@ class IterationAdvancer(
   private fun advanceFor(p: Project, endDate: LocalDate) {
     // TODO: check for iteration length, if it is longer than 1 week
     log.info("Advancing iteration of $p")
-    val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedWeeks + 1)
+    val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedOver + 1)
     val startDate = lastIterations.find { it.number == p.currentIterationNum }?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
     val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
     // TODO: see if iteration already exists with overridden teamStrength
