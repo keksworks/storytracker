@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import stories.Story.Status.DELETED
 import users.Role.*
 import users.User
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 @Access(ADMIN, OWNER, VIEWER)
@@ -69,8 +70,9 @@ class ProjectRoutes(
   private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Story>>()
 
   @GET("/:id/updates") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(replay = 10, extraBufferCapacity = 90) }
+  suspend fun updates(@PathParam id: Id<Project>, @QueryParam after: Instant? = null, e: HttpExchange) {
+    // TODO: replay lastUpdatedAt > after
+    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 100) }
     e.startEventStream()
     flow.collect { story -> e.send(Event(story, "story")) }
   }
