@@ -126,7 +126,8 @@
       const story = JSON.parse(e.data) as Story
       let index = stories.findIndex(s => s.id == story.id)
       if (index >= 0) {
-        if (stories[index].order == story.order) return stories[index] = story
+        if (story.status == StoryStatus.DELETED) return stories.splice(index, 1)
+        else if (stories[index].order == story.order) return stories[index] = story
         else stories.splice(index, 1)
       }
       index = stories.findIndex(s => s.order > story.order) - 1

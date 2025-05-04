@@ -84,8 +84,10 @@ class ProjectRoutes(
   @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
-    storyRepository.save(story.copy(status = DELETED, updatedAt = nowSec()))
-    // TODO emit
+    story.copy(status = DELETED, updatedAt = nowSec()).also {
+      storyRepository.save(it)
+      projectFlows[it.projectId]?.tryEmit(it)
+    }
   }
 
   @GET("/:id/stories/:storyId/attachments/:fileName")
