@@ -7,10 +7,11 @@
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
-  import {onDestroy, onMount} from 'svelte'
+  import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
   import {replaceValues} from '@codeborne/i18n-json'
   import ProjectMembersButton from 'src/pages/ProjectMembersButton.svelte'
+  import ProjectUpdatesListener from 'src/pages/ProjectUpdatesListener.svelte'
 
   export let id: Id<Project>
 
@@ -28,7 +29,6 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
-    listenToUpdates()
   }
 
   async function search(q?: string) {
@@ -48,16 +48,11 @@
   }
 
   let pastLoaded = false
-  let updates: EventSource
 
   onMount(async () => {
     project = await api.get('projects/' + id)
     api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => members = r)
     await loadStories(project!.currentIterationNum)
-  })
-
-  onDestroy(() => {
-    updates?.close()
   })
 
   $: if (show.done && !pastLoaded) {
@@ -117,34 +112,6 @@
     stories.splice(index, 1)
     stories = stories
   }
-
-  function listenToUpdates() {
-    updates?.close()
-    const lastUpdatedAt = stories.max(s => s.updatedAt)
-    updates = new EventSource(`/api/projects/${id}/updates` + (lastUpdatedAt ? '?after=' + lastUpdatedAt : ''))
-    updates.addEventListener('story', e => {
-      const story = JSON.parse(e.data) as Story
-      let index = stories.findIndex(s => s.id == story.id)
-      if (index >= 0) {
-        if (story.status == StoryStatus.DELETED) return stories.splice(index, 1)
-        else if (stories[index].order == story.order) return stories[index] = story
-        else stories.splice(index, 1)
-      }
-      index = stories.findIndex(s => s.order > story.order) - 1
-      if (index < 0) index = stories.length
-      stories.splice(index, 0, story)
-      stories = stories
-    })
-  }
-
-  let becameHidden = Date.now()
-  function visibilityChange() {
-    if (document.hidden) updates?.close()
-    else {
-      if (Date.now() - becameHidden > 10 * 60 * 1000) loadStories(project!.currentIterationNum)
-      else listenToUpdates()
-    }
-  }
 </script>
 
 <svelte:head>
@@ -152,8 +119,6 @@
     <title>{project?.name} - {t.title}</title>
   {/if}
 </svelte:head>
-
-<svelte:window on:visibilitychange={visibilityChange}/>
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
@@ -172,6 +137,7 @@
     {#if !project || !stories}
       <Spinner/>
     {:else}
+      <ProjectUpdatesListener {project} bind:stories/>
       <div class="flex gap-2 ml-1 mt-3 w-full">
         {#if show.done}
           <div class="panel">
