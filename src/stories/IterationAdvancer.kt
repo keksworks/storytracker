@@ -1,5 +1,7 @@
 package stories
 
+import db.yesterday
+import klite.error
 import klite.info
 import klite.jdbc.Transaction
 import klite.jdbc.gte
@@ -17,31 +19,42 @@ class IterationAdvancer(
   private val log = logger()
 
   override suspend fun run() {
-    advance(LocalDate.now())
+    // TODO: take timezone into account
+    advance(yesterday)
   }
 
-  fun advance(endDate: LocalDate) {
+  private fun advance(endDate: LocalDate) {
     projectRepository.list(Project::startDay to endDate.dayOfWeek).forEach { p ->
-      // TODO: check for iteration length, if it is longer than 1 week
-      log.info("Advancing iteration of $p")
-      val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedWeeks + 1)
-      val startDate = lastIterations.find { it.number == p.currentIterationNum }?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
-      val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
-      // TODO: see if iteration already exists with overridden teamStrength
-      val num = p.currentIterationNum + 1
-      val iteration = Iteration(
-        p.id, num, length = 1,
-        startDate = startDate, endDate = endDate,
-        acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
-      )
-      if (iteration.acceptedPoints == 0)
-        return@forEach log.warn("Skipping non-active iteration")
-      iterationRepository.save(iteration)
-      // TODO: take into account teamStrength
-      val velocity = (lastIterations + iteration).sumOf { it.acceptedPoints ?: 0 } / (lastIterations.size + 1)
-      projectRepository.save(p.copy(currentIterationNum = num, velocity = velocity, updatedAt = nowSec()))
-      storyRepository.setIteration(iteration, acceptedStories.map { it.id })
-      Transaction.current()!!.commit()
+      try {
+        advanceFor(p, endDate)
+        Transaction.current()!!.commit()
+      } catch (e: Exception) {
+        log.error(e)
+        Transaction.current()!!.rollback()
+      }
     }
+  }
+
+  private fun advanceFor(p: Project, endDate: LocalDate) {
+    // TODO: check for iteration length, if it is longer than 1 week
+    log.info("Advancing iteration of $p")
+    val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedWeeks + 1)
+    val startDate = lastIterations.find { it.number == p.currentIterationNum }?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
+    val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
+    // TODO: see if iteration already exists with overridden teamStrength
+    val num = p.currentIterationNum + 1
+    val iteration = Iteration(
+      p.id, num, length = 1,
+      startDate = startDate, endDate = endDate,
+      acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
+    )
+    if (iteration.acceptedPoints == 0)
+      return log.warn("Skipping non-active iteration")
+
+    iterationRepository.save(iteration)
+    // TODO: take into account teamStrength
+    val velocity = (lastIterations + iteration).sumOf { it.acceptedPoints ?: 0 } / (lastIterations.size + 1)
+    projectRepository.save(p.copy(currentIterationNum = num, velocity = velocity, updatedAt = nowSec()))
+    storyRepository.setIteration(iteration, acceptedStories.map { it.id })
   }
 }
