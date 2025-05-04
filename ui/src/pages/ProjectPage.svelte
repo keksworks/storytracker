@@ -51,6 +51,7 @@
 
   onMount(async () => {
     project = await api.get('projects/' + id)
+    velocity = project!.velocity
     api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => members = r)
     await loadStories(project!.currentIterationNum)
   })
