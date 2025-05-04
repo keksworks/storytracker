@@ -19,6 +19,8 @@ class ProjectRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val projectMemberRepository: ProjectMemberRepository,
+  private val epicRepository: EpicRepository,
+  private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
@@ -37,6 +39,12 @@ class ProjectRoutes(
 
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
     projectMemberRepository.listWithUsers(id)
+
+  @GET("/:id/epics") fun epics(@PathParam id: Id<Project>): List<Epic> =
+    epicRepository.list(Epic::projectId to id)
+
+  @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
+    iterationRepository.list(projectId = id)
 
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
