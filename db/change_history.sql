@@ -19,7 +19,6 @@ revoke update on change_history from app;
 create or replace procedure set_app_user(userId bigint) language plpgsql as $$
 begin
   perform set_config('app.user', userId::text, true);
-  update users set lastOnlineAt = current_timestamp where id = userId;
 end; $$
 
 --changeset get_app_user onChange:RUN separator:none
@@ -46,7 +45,7 @@ begin
     loop
       execute format('select (($1).%I)::text', col) using new into newValue;
       execute format('select (($1).%I)::text', col) using old into oldValue;
-      if (oldValue is not distinct from newValue) then continue; end if;
+      if (oldValue is not distinct from newValue or col in ('updatedat')) then continue; end if;
 
       insert into change_history ("table", rowId, "column", oldValue, newValue, changedBy) values (tg_table_name, new.id, col, oldValue, newValue, get_app_user());
     end loop;
