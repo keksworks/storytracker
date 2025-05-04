@@ -15,3 +15,6 @@ create table iterations(
 
 --changeset iterations.endDate:not-null
 alter table iterations alter column endDate set not null;
+
+--changeset iterations.velocity:drop
+alter table iterations drop column velocity;

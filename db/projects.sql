@@ -33,3 +33,6 @@ values (1234, 'Story Tracker', 'Story Tracker own development');
 
 --changeset projects:defaultStoryPoints
 alter table projects add column defaultStoryPoints int;
+
+--changeset projects.velocity
+alter table projects add column velocity int not null default 10;

@@ -60,7 +60,7 @@ class PivotalImporter(
         DayOfWeek.valueOf(p.getString("week_start_day").uppercase()),
         p.getOrNull("iteration_weeks") ?: 1, p.getBoolean("bugs_and_chores_are_estimatable"),
         p.getNode("time_zone").getString("olson_name"),
-        p.getInt("velocity_averaged_over"), reviewTypes = emptySet(),
+        p.getInt("velocity_averaged_over"),
         p.getInt("current_iteration_number"),
         updatedAt = Instant.parse(p.getString("updated_at")), createdAt = Instant.parse(p.getString("created_at")))
       projectRepository.save(project, skipUpdate = setOf(Project::reviewTypes))
@@ -136,16 +136,16 @@ class PivotalImporter(
 
   suspend fun importIterations(project: Project) {
     var numStories = 0
-    val currentIteration = iterationRepository.list(project.id, "order by number desc limit 20").find { it.endDate >= today }?.number
+    val currentIteration = iterationRepository.list(project.id, suffix = "order by number desc limit 20").find { it.endDate >= today }?.number
     var num = currentIteration?.let { (it - 4).max(0) } ?: 0
     while (num < project.currentIterationNum) {
       http.get<JsonList>("/projects/${project.id}/iterations?limit=50&offset=$num&fields=number,length,team_strength,story_ids,length,start,finish,points,accepted_points,velocity").forEach { p ->
         val iteration = Iteration(
           project.id, p.getInt("number"), p.getInt("length"), ((p.get("team_strength") as Number).toDouble() * 100.0).toInt(),
           LocalDate.parse(p.getString("start").substringBefore("T")), LocalDate.parse(p.getString("finish").substringBefore("T")),
-          p.getOrNull("points"), p.getOrNull("accepted_points"), p.getInt("velocity"))
+          p.getOrNull("accepted_points"))
         iterationRepository.save(iteration)
-        val storyIds = p.getList<Int>("story_ids")
+        val storyIds = p.getList<Int>("story_ids").map { Id<Story>(it.toLong()) }
         numStories += storyRepository.setIteration(iteration, storyIds)
         num++
       }

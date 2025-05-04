@@ -11,9 +11,9 @@ export type Id<T> = number
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.Iteration
-export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; points?: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number; velocity: number}
+export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
 // class stories.Project
-export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocityAveragedWeeks: number}
+export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedWeeks: number}
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
 // class stories.ProjectMemberUser
@@ -57,7 +57,7 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 // db.TestData
 export const date = "2025-03-03" as LocalDate
 export const now = "2025-03-03T00:00:00Z" as Instant
-export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":0,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","timezone":"UTC","updatedAt":"2025-03-03T00:00:00Z","velocityAveragedWeeks":3} as Project
+export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":0,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","timezone":"UTC","updatedAt":"2025-03-03T00:00:00Z","velocity":10,"velocityAveragedWeeks":3} as Project
 export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
 export const story2 = {"afterId":200000003,"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 2","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE","updatedAt":"2025-03-03T00:00:00Z"} as Story
 export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"pivotal@codeborne.com","firstName":"Test","id":200000001,"lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN","updatedAt":"2025-03-03T00:00:00Z"} as User
