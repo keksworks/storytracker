@@ -8,11 +8,11 @@
   let updates: EventSource
 
   onMount(() => {
-    listenToUpdates()
+    listen()
     return () => updates?.close()
   })
 
-  function listenToUpdates() {
+  function listen() {
     updates?.close()
     const lastUpdatedAt = stories.max(s => s.updatedAt)
     updates = new EventSource(`/api/projects/${project.id}/updates` + (lastUpdatedAt ? '?after=' + lastUpdatedAt : ''))
@@ -24,20 +24,21 @@
         else if (stories[index].order == story.order) return stories[index] = story
         else stories.splice(index, 1)
       }
-      index = stories.findIndex(s => s.order > story.order) - 1
+      index = stories.findIndex(s => s.order > story.order)
       if (index < 0) index = stories.length
       stories.splice(index, 0, story)
       stories = stories
     })
   }
 
-  let becameHidden = Date.now()
+  let hiddenAt: number
   function visibilityChange() {
-    if (document.hidden) updates?.close()
-    else {
-      if (Date.now() - becameHidden > 30 * 60 * 1000) location.reload()
-      else listenToUpdates()
+    if (document.hidden) {
+      updates?.close()
+      hiddenAt = Date.now()
     }
+    else if (Date.now() - hiddenAt > 30 * 60 * 1000) location.reload()
+    else listen()
   }
 </script>
 
