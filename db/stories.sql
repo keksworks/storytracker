@@ -52,6 +52,6 @@ create index on stories(projectId, ord);
 --changeset stories:project-after-idx:drop
 drop index if exists stories_projectid_afterid_idx;
 
---changeset iterations:drop-imported-future
-update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and startDate > '2025-04-28');
-delete from iterations where startDate > '2025-04-28';
+--changeset iterations:drop-imported-future onChange:RUN
+update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and endDate > '2025-04-28');
+delete from iterations where endDate > '2025-04-28';

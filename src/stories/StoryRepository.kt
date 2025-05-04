@@ -38,9 +38,9 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     Story::reviews to getJson<List<Story.Review>>("reviews"),
   )
 
-  fun setIteration(iteration: Iteration, storyIds: List<Int>) =
+  fun setIteration(iteration: Iteration, storyIds: List<Id<Story>>) =
     if (storyIds.isEmpty()) 0 else
-    db.update(table, mapOf(Story::iteration to iteration.number), Story::id to storyIds)
+    db.update(table, mapOf(Story::iteration to iteration.number, Story::updatedAt to nowSec()), Story::id to storyIds)
 
   fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> {
     return db.select(table,

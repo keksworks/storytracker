@@ -12,9 +12,11 @@ import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
 import klite.smtp.FakeEmailSender
 import klite.smtp.SmtpEmailSender
+import stories.IterationAdvancer
 import stories.ProjectRoutes
 import users.UserRoutes
 import java.nio.file.Path
+import java.time.LocalTime
 import kotlin.io.path.exists
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
@@ -64,6 +66,7 @@ fun startServer() = Server(
 
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
+    scheduleDaily(require<IterationAdvancer>(), LocalTime.of(0, 1))
   })
 }
 
