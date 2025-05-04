@@ -7,7 +7,7 @@
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
-  import {onMount} from 'svelte'
+  import {onDestroy, onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
   import {replaceValues} from '@codeborne/i18n-json'
   import ProjectMembersButton from 'src/pages/ProjectMembersButton.svelte'
@@ -28,6 +28,7 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
+    listenToUpdates()
   }
 
   async function search(q?: string) {
@@ -47,11 +48,16 @@
   }
 
   let pastLoaded = false
+  let updates: EventSource
 
   onMount(async () => {
     project = await api.get('projects/' + id)
     api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => members = r)
     await loadStories(project!.currentIterationNum)
+  })
+
+  onDestroy(() => {
+    updates?.close()
   })
 
   $: if (show.done && !pastLoaded) {
@@ -112,8 +118,23 @@
     stories = stories
   }
 
+  function listenToUpdates() {
+    updates?.close()
+    updates = new EventSource(`/api/projects/${id}/updates`)
+    updates.addEventListener('story', e => {
+      const story = JSON.parse(e.data) as Story
+      let index = stories.findIndex(s => s.id == story.id)
+      if (index >= 0) return stories[index] = story
+      else {
+        index = stories.findIndex(s => story.order >= s.order) - 1
+        if (index < 0) index = stories.length
+        stories.splice(index, 0, story)
+        stories = stories
+      }
+    })
+  }
+
   function visibilityChange() {
-    // TODO: implement proper SSE updates instead of such reload
     if (!document.hidden) loadStories(project!.currentIterationNum)
   }
 </script>

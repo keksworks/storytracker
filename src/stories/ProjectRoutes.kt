@@ -8,11 +8,17 @@ import klite.Before
 import klite.ForbiddenException
 import klite.HttpExchange
 import klite.annotations.*
+import klite.jdbc.NoTransaction
 import klite.jdbc.StaleEntityException
 import klite.jdbc.nowSec
+import klite.sse.Event
+import klite.sse.send
+import klite.sse.startEventStream
+import kotlinx.coroutines.flow.MutableSharedFlow
 import stories.Story.Status.DELETED
 import users.Role.*
 import users.User
+import java.util.concurrent.ConcurrentHashMap
 
 @Access(ADMIN, OWNER, VIEWER)
 class ProjectRoutes(
@@ -55,8 +61,18 @@ class ProjectRoutes(
     if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.copy(updatedAt = nowSec()).also {
-      storyRepository.save(it, skipUpdate = if (existing != null) emptySet() else setOf(Story::afterId))
+      storyRepository.save(it, skipUpdate = setOf(Story::iteration))
+      projectFlows[it.projectId]?.tryEmit(it)
     }
+  }
+
+  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Story>>()
+
+  @GET("/:id/updates") @NoTransaction
+  suspend fun updates(@PathParam id: Id<Project>, e: HttpExchange) {
+    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(replay = 10, extraBufferCapacity = 90) }
+    e.startEventStream()
+    flow.collect { story -> e.send(Event(story, "story")) }
   }
 
   @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>) {
