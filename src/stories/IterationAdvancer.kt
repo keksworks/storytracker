@@ -40,12 +40,12 @@ class IterationAdvancer(
 
   private fun advanceFor(p: Project, endDate: LocalDate) {
     // TODO: check for iteration length, if it is longer than 1 week
-    log.info("Advancing iteration of $p")
+    log.info("Advancing iteration of project ${p.id} ${p.name}")
     val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedOver + 1)
     val startDate = lastIterations.find { it.number == p.currentIterationNum }?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
     val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
     // TODO: see if iteration already exists with overridden teamStrength
-    val num = p.currentIterationNum + 1
+    val num = p.currentIterationNum
     val iteration = Iteration(
       p.id, num, length = 1,
       startDate = startDate, endDate = endDate,
@@ -57,7 +57,8 @@ class IterationAdvancer(
     iterationRepository.save(iteration)
     // TODO: take into account teamStrength
     val velocity = (lastIterations + iteration).sumOf { it.acceptedPoints ?: 0 } / (lastIterations.size + 1)
-    projectRepository.save(p.copy(currentIterationNum = num, velocity = velocity, updatedAt = nowSec()))
+    projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity, updatedAt = nowSec()))
     storyRepository.setIteration(iteration, acceptedStories.map { it.id })
+    log.info("Saved $iteration")
   }
 }

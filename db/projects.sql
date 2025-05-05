@@ -39,3 +39,6 @@ alter table projects add column velocity int not null default 10;
 
 --changeset projects.velocityAveragedOver
 alter table projects rename column velocityAveragedWeeks to velocityAveragedOver;
+
+--changeset projects.iteration+1
+update projects set currentIterationNum = currentIterationNum + 1;
