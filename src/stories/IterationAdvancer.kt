@@ -1,6 +1,6 @@
 package stories
 
-import db.yesterday
+import db.today
 import klite.error
 import klite.info
 import klite.jdbc.Transaction
@@ -19,13 +19,15 @@ class IterationAdvancer(
   private val log = logger()
 
   override suspend fun run() {
-    // TODO: take timezone into account
-    advance(yesterday)
+    advance(today)
   }
 
   private fun advance(endDate: LocalDate) {
-    projectRepository.list(Project::startDay to endDate.dayOfWeek).forEach { p ->
+    var num = 0
+    val dayOfWeek = endDate.dayOfWeek
+    projectRepository.list(Project::startDay to dayOfWeek).forEach { p ->
       try {
+        num++
         advanceFor(p, endDate)
         Transaction.current()!!.commit()
       } catch (e: Exception) {
@@ -33,6 +35,7 @@ class IterationAdvancer(
         Transaction.current()!!.rollback()
       }
     }
+    log.info("$num $dayOfWeek projects processed")
   }
 
   private fun advanceFor(p: Project, endDate: LocalDate) {
