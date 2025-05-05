@@ -9,10 +9,7 @@ import io.mockk.verify
 import klite.oauth.OAuthTokenResponse
 import klite.oauth.UserProfile
 import org.junit.jupiter.api.Test
-import users.Role
-import users.Role.ADMIN
 import users.Role.OWNER
-import users.Role.VIEWER
 import users.User
 
 class AuthUserProviderTest: BaseMocks() {
@@ -23,7 +20,8 @@ class AuthUserProviderTest: BaseMocks() {
 
   @Test fun `provides existing user`() {
     every { userRepository.by(User::email to user.email) } returns user
-    expect(provider.provide(profile, tokenResponse, exchange)).toEqual(user)
+    val providedUser = provider.provide(profile, tokenResponse, exchange) as User
+    expect(providedUser).toEqual(user.copy(lastOnlineAt = providedUser.lastOnlineAt))
   }
 
   @Test fun `creates a new user`() {
