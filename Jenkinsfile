@@ -52,6 +52,7 @@ pipeline {
          branch 'main'
       }
       steps {
+        sh "docker logs -t --since 1000h tracker-tracker-1 >> /var/tracker/logs/`date -I`.log"
         sh "$COMPOSE up -d --remove-orphans"
         script {
           def startLogs = sh script: "sleep 9 && $COMPOSE logs $APP", returnStdout: true
