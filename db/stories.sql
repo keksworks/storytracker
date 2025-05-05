@@ -43,5 +43,5 @@ create index on stories(projectId, ord);
 update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and endDate > '2025-04-28');
 delete from iterations where endDate > '2025-04-28';
 
---changeset stories.afterId:drop
+--changeset stories.afterId:drop context:TODO
 alter table stories drop column afterId;
