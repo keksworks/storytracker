@@ -22,3 +22,6 @@ create trigger users_history after update on users for each row execute function
 
 --changeset users:codeborne-owners3
 update users set role = 'OWNER' where email like '%@codeborne.com';
+
+--changeset users.lastLoginAt
+alter table users rename column lastOnlineAt to lastLoginAt;

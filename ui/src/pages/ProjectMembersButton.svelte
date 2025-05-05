@@ -5,6 +5,7 @@
   import Button from 'src/components/Button.svelte'
   import SortableTable from 'src/components/SortableTable.svelte'
   import ContactLink from 'src/components/ContactLink.svelte'
+  import {formatDateTime} from '@codeborne/i18n-json'
 
   export let members: ProjectMemberUser[]
 
@@ -18,13 +19,15 @@
     ['name', m => m.user.name],
     ['initials', m => m.user.initials],
     ['email', m => m.user.email],
-    ['role', m => m.member.role]
-    ]} items={members} let:item={m}>
+    ['role', m => m.member.role],
+    ['lastLoginAt', m => m.user.lastLoginAt]
+  ]} items={members} let:item={m}>
     <tr>
       <td>{m.user.name}</td>
       <td>{m.user.initials}</td>
       <td><ContactLink contact={m.user.email}/></td>
       <td>{m.member.role}</td>
+      <td>{formatDateTime(m.user.lastLoginAt)}</td>
     </tr>
   </SortableTable>
 </Modal>

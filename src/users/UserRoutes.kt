@@ -2,15 +2,10 @@ package users
 
 import auth.Access
 import db.Id
-import db.today
-import klite.HttpExchange
-import klite.MimeTypes
-import klite.StatusCode.Companion.OK
 import klite.annotations.*
-import klite.i18n.lang
 import klite.jdbc.BetweenExcl
 import klite.jdbc.or
-import users.Role.*
+import users.Role.ADMIN
 import java.time.LocalDate
 
 @Access(ADMIN)
@@ -19,7 +14,7 @@ class UserRoutes(
 ) {
   @GET
   fun all(@QueryParam from: LocalDate, @QueryParam until: LocalDate) =
-    userRepository.list(or(User::role to ADMIN, User::lastOnlineAt to null, User::lastOnlineAt to BetweenExcl(from, until.plusDays(1))))
+    userRepository.list(or(User::role to ADMIN, User::lastLoginAt to null, User::lastLoginAt to BetweenExcl(from, until.plusDays(1))))
 
   @POST @Access(ADMIN)
   fun save(user: User): User {

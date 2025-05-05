@@ -41,7 +41,7 @@ export interface ChangeLangRequest {lang: string}
 // class users.Role
 export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
-export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; lang: string; lastName: string; lastOnlineAt?: Instant; name: string; role: Role; updatedAt?: Instant; username?: string}
+export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; lang: string; lastLoginAt?: Instant; lastName: string; name: string; role: Role; updatedAt?: Instant; username?: string}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`

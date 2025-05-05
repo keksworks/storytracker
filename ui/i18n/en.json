@@ -10,7 +10,8 @@
     "name": "Name",
     "email": "E-mail",
     "initials": "Initials",
-    "role": "Role"
+    "role": "Role",
+    "lastLoginAt": "Last login"
   },
   "gender": {
     "male": "Male",

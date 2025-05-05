@@ -19,10 +19,10 @@ class AuthUserProvider(
     if (user == null) {
       val role = if (profile.email.domain in listOf("codeborne.com")) OWNER else VIEWER
       user = User(profile.firstName + " " + profile.lastName, profile.email, role, avatarUrl = profile.avatarUrl,
-        initials = profile.firstName[0] + "" + profile.lastName[0], lastOnlineAt = nowSec())
+        initials = profile.firstName[0] + "" + profile.lastName[0], lastLoginAt = nowSec())
       userRepository.save(user)
     } else {
-      user = user.copy(lastOnlineAt = nowSec())
+      user = user.copy(lastLoginAt = nowSec())
       userRepository.save(user)
     }
     return user

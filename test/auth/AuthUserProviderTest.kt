@@ -21,7 +21,7 @@ class AuthUserProviderTest: BaseMocks() {
   @Test fun `provides existing user`() {
     every { userRepository.by(User::email to user.email) } returns user
     val providedUser = provider.provide(profile, tokenResponse, exchange) as User
-    expect(providedUser).toEqual(user.copy(lastOnlineAt = providedUser.lastOnlineAt))
+    expect(providedUser).toEqual(user.copy(lastLoginAt = providedUser.lastLoginAt))
   }
 
   @Test fun `creates a new user`() {

@@ -19,7 +19,7 @@ data class User(
   val avatarUrl: URI? = null,
   val initials: String? = null,
   val username: String? = null,
-  val lastOnlineAt: Instant? = null, // TODO: rename to lastLoginAt
+  val lastLoginAt: Instant? = null,
   val lang: String = "en",
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
