@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.1.10"
+  kotlin("jvm") version "2.1.20"
 }
 
 repositories {
@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:25b44a1e" // 1.6.16+
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:16ea1cd4" // upcoming 1.7.0
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
