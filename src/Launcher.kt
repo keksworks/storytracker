@@ -66,7 +66,7 @@ fun startServer() = Server(
 
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
-    scheduleDaily(require<IterationAdvancer>(), LocalTime.of(0, 1), LocalTime.now().plusMinutes(1))
+    scheduleDaily(require<IterationAdvancer>(), LocalTime.of(0, 1))
   })
 }
 
