@@ -12,6 +12,7 @@
   import Button from 'src/components/Button.svelte'
   import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
   import StoryTypeSelect from 'src/pages/stories/StoryTypeSelect.svelte'
+  import {copyToClipboard} from 'src/pages/stories/clipboard'
 
   export let story: Story
   export let movable = true
@@ -28,14 +29,6 @@
   }
 
   $: reallyMovable = movable && !open && !story.acceptedAt
-
-  async function copyToClipboard(e: Event) {
-    const el = e.currentTarget as HTMLElement
-    const v = el.textContent!
-    await navigator.clipboard.writeText(v)
-    el.textContent = t.general.copied
-    setTimeout(() => el.textContent = v, 1000)
-  }
 
   async function save() {
     story = await api.post(`projects/${story.projectId}/stories`, story)
