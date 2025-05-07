@@ -77,10 +77,10 @@ class ProjectRoutes(
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
-      updatedSince.forEach { e.send(Event(it, "story")) }
+      updatedSince.forEach { story -> e.send(Event(story, "story", id = story.updatedAt)) }
     }
     flow.collect { (story, reqId) ->
-      if (reqId != requesterId) e.send(Event(story, name = "story", id = story.updatedAt))
+      if (reqId != requesterId) e.send(Event(story, "story", id = story.updatedAt))
     }
   }
 
