@@ -82,7 +82,8 @@
 
   let nextAddIndex: Partial<Record<StoryStatus, number>> = {}
   function addStory(panel: Story[], status: StoryStatus) {
-    const index = nextAddIndex[status] ?? panel.findIndex(s => s.status == status)
+    let index = nextAddIndex[status] ?? stories.findIndex(s => s.type == StoryType.FEATURE && s.status == status)
+    if (index < 0) index = panel.length
     const prev = stories[index]
     const next = stories[index + 1]
     const newStory = {
