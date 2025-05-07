@@ -57,36 +57,38 @@ class ProjectRoutes(
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
 
-  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story): Story {
+  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story, @AttrParam user: User): Story {
     require(story.projectId == id) { "Invalid story project" }
     val existing = storyRepository.by(Story::id to story.id)
     if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.copy(updatedAt = nowSec()).also {
       storyRepository.save(it, skipUpdate = setOf(Story::iteration))
-      projectFlows[it.projectId]?.tryEmit(it)
+      projectFlows[it.projectId]?.tryEmit(it to user.id)
     }
   }
 
-  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Story>>()
+  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, Id<User>>>>()
 
   @GET("/:id/updates") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, @QueryParam after: Instant? = null, e: HttpExchange) {
+  suspend fun updates(@PathParam id: Id<Project>, @QueryParam after: Instant? = null, @AttrParam user: User, e: HttpExchange) {
     val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 100) }
     e.startEventStream()
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { e.send(Event(it, "story")) }
     }
-    flow.collect { e.send(Event(it, "story")) }
+    flow.collect { (story, userId) ->
+      if (userId != user.id) e.send(Event(story, name = "story", id = story.updatedAt))
+    }
   }
 
-  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>) {
+  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @AttrParam user: User) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED, updatedAt = nowSec()).also {
       storyRepository.save(it)
-      projectFlows[it.projectId]?.tryEmit(it)
+      projectFlows[it.projectId]?.tryEmit(it to user.id)
     }
   }
 
