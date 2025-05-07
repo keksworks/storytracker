@@ -84,8 +84,8 @@
   function addStory(panel: Story[], status: StoryStatus) {
     let index = nextAddIndex[status] ?? stories.findIndex(s => s.type == StoryType.FEATURE && s.status == status)
     if (index < 0) index = panel.length
-    const prev = stories[index]
-    const next = stories[index + 1]
+    const prev = stories[index - 1]
+    const next = stories[index]
     const newStory = {
       status, projectId: project!.id, order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
