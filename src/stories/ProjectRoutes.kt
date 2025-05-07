@@ -57,39 +57,39 @@ class ProjectRoutes(
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
 
-  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story, @AttrParam user: User): Story {
+  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {
     require(story.projectId == id) { "Invalid story project" }
     val existing = storyRepository.by(Story::id to story.id)
     if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.copy(updatedAt = nowSec()).also {
       storyRepository.save(it, skipUpdate = setOf(Story::iteration))
-      projectFlows[it.projectId]?.tryEmit(it to user.id)
+      projectFlows[it.projectId]?.tryEmit(it to requesterId)
     }
   }
 
-  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, Id<User>>>>()
+  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, String>>>()
 
-  @GET("/:id/updates") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, @AttrParam user: User, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow() }
+  @GET("/:id/updates/:requesterId") @NoTransaction
+  suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
+    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 1) }
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { e.send(Event(it, "story")) }
     }
-    flow.collect { (story, userId) ->
-      if (userId != user.id) e.send(Event(story, name = "story", id = story.updatedAt))
+    flow.collect { (story, reqId) ->
+      if (reqId != requesterId) e.send(Event(story, name = "story", id = story.updatedAt))
     }
   }
 
-  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @AttrParam user: User) {
+  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @HeaderParam requesterId: String) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED, updatedAt = nowSec()).also {
       storyRepository.save(it)
-      projectFlows[it.projectId]?.tryEmit(it to user.id)
+      projectFlows[it.projectId]?.tryEmit(it to requesterId)
     }
   }
 

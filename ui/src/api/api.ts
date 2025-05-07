@@ -1,6 +1,11 @@
 import {refreshOnNextNavigate} from 'src/i18n'
 
-export const headers = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json'} as HeadersInit
+export const requesterId = Math.random().toString(36).substring(2)
+export const headers = {
+  'Content-Type': 'application/json; charset=UTF-8',
+  'Accept': 'application/json',
+  'requesterId': requesterId,
+} as HeadersInit
 
 type Body = object|string|FormData|File
 

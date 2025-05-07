@@ -1,6 +1,7 @@
 <script lang="ts">
   import {type Project, type Story, StoryStatus} from 'src/api/types'
   import {onMount} from 'svelte'
+  import {requesterId} from 'src/api/api'
 
   export let project: Project
   export let stories: Story[]
@@ -14,7 +15,7 @@
 
   function listen() {
     updates?.close()
-    updates = new EventSource(`/api/projects/${project.id}/updates`)
+    updates = new EventSource(`/api/projects/${project.id}/updates/${requesterId}`)
     updates.addEventListener('story', e => {
       const story = JSON.parse(e.data) as Story
       let index = stories.findIndex(s => s.id == story.id)
