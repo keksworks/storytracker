@@ -14,8 +14,7 @@
 
   function listen() {
     updates?.close()
-    const lastUpdatedAt = stories.max(s => s.updatedAt)
-    updates = new EventSource(`/api/projects/${project.id}/updates` + (lastUpdatedAt ? '?after=' + lastUpdatedAt : ''))
+    updates = new EventSource(`/api/projects/${project.id}/updates`)
     updates.addEventListener('story', e => {
       const story = JSON.parse(e.data) as Story
       let index = stories.findIndex(s => s.id == story.id)
@@ -30,16 +29,4 @@
       stories = stories
     })
   }
-
-  let hiddenAt: number
-  function visibilityChange() {
-    if (document.hidden) {
-      updates?.close()
-      hiddenAt = Date.now()
-    }
-    else if (Date.now() - hiddenAt > 30 * 60 * 1000) location.reload()
-    else listen()
-  }
 </script>
-
-<svelte:window on:visibilitychange={visibilityChange}/>

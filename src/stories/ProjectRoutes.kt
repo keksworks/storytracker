@@ -71,9 +71,10 @@ class ProjectRoutes(
   private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, Id<User>>>>()
 
   @GET("/:id/updates") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, @QueryParam after: Instant? = null, @AttrParam user: User, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 100) }
+  suspend fun updates(@PathParam id: Id<Project>, @AttrParam user: User, e: HttpExchange) {
+    val flow = projectFlows.getOrPut(id) { MutableSharedFlow() }
     e.startEventStream()
+    val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { e.send(Event(it, "story")) }
