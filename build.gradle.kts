@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:16ea1cd4" // upcoming 1.7.0
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:1.7.0"
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -28,7 +28,7 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
   testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-1")
-  testImplementation("io.mockk:mockk:1.13.16")
+  testImplementation("io.mockk:mockk:1.14.2")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
   api("com.codeborne:selenide:7.5.1")
 }
