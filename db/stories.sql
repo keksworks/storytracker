@@ -45,3 +45,6 @@ delete from iterations where endDate > '2025-04-28';
 
 --changeset stories.afterId:drop context:TODO
 alter table stories drop column afterId;
+
+--changeset stories.assignedTo
+alter table stories add column assignedTo bigint references users(id);

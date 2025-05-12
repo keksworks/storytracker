@@ -26,6 +26,7 @@ data class Story(
   val blockers: List<Blocker> = emptyList(),
   val reviews: List<Review> = emptyList(),
   @Column("ord") val order: Double = 0.0,
+  val assignedTo: Id<User>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
   val updatedAt: Instant? = nowSec(),

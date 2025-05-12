@@ -35,7 +35,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+export interface Story {acceptedAt?: Instant; assignedTo?: Id<User>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
 // class users.Role
