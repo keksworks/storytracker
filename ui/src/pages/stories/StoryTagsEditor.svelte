@@ -13,7 +13,7 @@
   }
 
   function add(e: Event) {
-    const input = e.target as HTMLInputElement
+    const input = e.currentTarget as HTMLInputElement
     const value = input.value.trim()
     if (value) {
       story.tags.push(value)
@@ -27,6 +27,9 @@
     if (e.key === 'Enter') {
       e.preventDefault()
       add(e)
+    } else if (e.key === 'Backspace' && !e.currentTarget!['value']) {
+      e.preventDefault()
+      remove(story.tags.length - 1)
     }
   }
 </script>
