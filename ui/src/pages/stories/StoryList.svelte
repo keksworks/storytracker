@@ -27,11 +27,12 @@
         }
       }
     } else {
+      // TODO: load real iterations from the server
       let iteration: typeof iterations[number] | undefined
       for (const s of stories) {
-        if (!iteration || s.iteration! > iteration.number!)
+        if (s.iteration! > (iteration?.number ?? 0))
           iterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!}
-        iteration.points += s.points ?? 0
+        if (iteration) iteration.points += s.points ?? 0
       }
     }
   }
