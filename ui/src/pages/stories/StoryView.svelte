@@ -88,7 +88,7 @@
     </div>
     <div class="flex items-center gap-3">
       <StoryActions {story} {save} {open}/>
-      <StoryPointsSelect bind:points={story.points} onchange={save}/>
+      <StoryPointsSelect bind:points={story.points} onchange={save} disabled={!!story.acceptedAt}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>

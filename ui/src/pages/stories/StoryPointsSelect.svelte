@@ -1,12 +1,14 @@
 <script lang="ts">
   import {pointsLabels} from 'src/pages/stories/points'
+  import {t} from 'src/i18n'
 
   export let points: number | undefined
+  export let disabled = false
   export let onchange: () => void
 </script>
 
 <select bind:value={points} class="p-1 -m-1 border-0 bg-transparent text-blue-500 hover:text-blue-900 font-bold text-sm cursor-pointer"
-        style="background-image: none" on:click|stopPropagation on:change={onchange}>
+        style="background-image: none" on:click|stopPropagation on:change={onchange} title={t.stories.points} {disabled}>
   {#each pointsLabels as label, i}
     <option value={i}>{label}</option>
   {/each}
