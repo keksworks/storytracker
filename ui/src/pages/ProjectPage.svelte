@@ -12,6 +12,7 @@
   import {replaceValues} from '@codeborne/i18n-json'
   import ProjectMembersButton from 'src/pages/ProjectMembersButton.svelte'
   import ProjectUpdatesListener from 'src/pages/ProjectUpdatesListener.svelte'
+  import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
 
   export let id: Id<Project>
 
@@ -145,44 +146,14 @@
       <ProjectUpdatesListener {project} bind:stories/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        {#if show.done}
-          <div class="panel">
-            <h5 class="panel-title">
-              <span><Icon name="done" size="lg"/> {t.panels.done}</span>
-              <Button title={t.general.close} on:click={() => show.done = false} variant="ghost">✕</Button>
-            </h5>
-            <StoryList {project} stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved} on:delete={onDelete}/>
-          </div>
-        {/if}
+        <ProjectPanel name="done" bind:show={show.done} {project} stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved} on:delete={onDelete}/>
 
-        {#if show.backlog}
-          <div class="panel">
-            <h5 class="panel-title">
-              <span>
-                <Icon name="backlog" size="lg"/> {t.panels.backlog}
-                <button title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
-              </span>
-              <span>
-                <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
-                <Button title={t.general.close} on:click={() => show.backlog = false} variant="ghost">✕</Button>
-              </span>
-            </h5>
-            <StoryList {project} {velocity} stories={backlog} on:search={e => search(e.detail)} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:saved={onSaved} on:delete={onDelete}/>
-          </div>
-        {/if}
+        <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
+          <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
+        </ProjectPanel>
 
-        {#if show.icebox}
-          <div class="panel">
-            <h5 class="panel-title">
-              <span><Icon name="icebox" size="lg"/> {t.panels.icebox}</span>
-              <span>
-                <Button label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
-                <Button title={t.general.close} on:click={() => show.icebox = false} variant="ghost">✕</Button>
-              </span>
-            </h5>
-            <StoryList {project} stories={icebox} on:search={e => search(e.detail)} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:saved={onSaved} on:delete={onDelete}/>
-          </div>
-        {/if}
+        <ProjectPanel name="icebox" bind:show={show.icebox} {project} {velocity} stories={backlog} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}/>
 
         {#if searchQuery}
           <div class="panel">
@@ -202,13 +173,3 @@
     {/if}
   </div>
 </div>
-
-<style lang="postcss">
-  .panel {
-    @apply w-full max-w-6xl overflow-y-auto flex flex-col bg-stone-100 border border-stone-200 rounded;
-  }
-
-  .panel-title {
-    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-stone-100 border-b flex justify-between items-center;
-  }
-</style>
