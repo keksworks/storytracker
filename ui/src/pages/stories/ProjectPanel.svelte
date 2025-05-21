@@ -1,14 +1,15 @@
 <script lang="ts">
-  import {type Project, type Story, StoryStatus} from 'src/api/types'
+  import type {Project, Story, StoryStatus} from 'src/api/types'
   import {t} from 'src/i18n'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import StoryList from 'src/pages/stories/StoryList.svelte'
+  import Spinner from 'src/components/Spinner.svelte'
 
   export let name: keyof typeof t.panels
-  export let show = true
+  export let show: boolean | string | undefined
   export let project: Project
-  export let stories: Story[]
+  export let stories: Story[] | undefined
   export let movable = true
   export let velocity = 0
   export let status: StoryStatus | undefined = undefined
@@ -22,15 +23,19 @@
         <slot name="left"/>
       </span>
       <span>
-        <Button title={t.general.close} on:click={() => show = false} variant="ghost">✕</Button>
         <slot name="right"/>
+        <Button title={t.general.close} on:click={() => show = undefined} variant="ghost">✕</Button>
       </span>
     </h5>
-    <StoryList {project} {stories} {status} {velocity} {movable} on:drag on:search on:saved on:delete/>
+    {#if stories}
+      <StoryList {project} {stories} {status} {velocity} {movable} on:drag on:search on:saved on:delete/>
+    {:else}
+      <Spinner/>
+    {/if}
   </div>
 {/if}
 
-<style lang="postcss" global>
+<style lang="postcss">
   .panel {
     @apply w-full max-w-6xl overflow-y-auto flex flex-col bg-stone-100 border border-stone-200 rounded;
   }

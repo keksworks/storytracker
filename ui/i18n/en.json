@@ -73,12 +73,12 @@
   "panels": {
     "done": "Done",
     "backlog": "Backlog",
-    "icebox": "Icebox"
+    "icebox": "Icebox",
+    "search": "Search"
   },
   "stories": {
     "description": "Description",
     "search": {
-      "title": "Search",
       "placeholder": "Search stories..."
     },
     "tags": "Tags",

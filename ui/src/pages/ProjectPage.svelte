@@ -1,10 +1,8 @@
 <script lang="ts">
-  import StoryList from 'src/pages/stories/StoryList.svelte'
   import {type Id, type Project, type ProjectMemberUser, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
-  import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
   import {onMount} from 'svelte'
@@ -153,22 +151,13 @@
           <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
         </ProjectPanel>
 
-        <ProjectPanel name="icebox" bind:show={show.icebox} {project} {velocity} stories={backlog} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}/>
+        <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+          <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
+        </ProjectPanel>
 
-        {#if searchQuery}
-          <div class="panel">
-            <h5 class="panel-title">
-              <span><Icon name="search" size="lg"/> {t.stories.search.title}</span>
-              {searchQuery}
-              <Button title={t.general.close} on:click={() => searchQuery = undefined} variant="ghost">✕</Button>
-            </h5>
-            {#if searchResults}
-              <StoryList {project} stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}/>
-            {:else}
-              <Spinner/>
-            {/if}
-          </div>
-        {/if}
+        <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+          <span slot="right">{searchQuery}</span>
+        </ProjectPanel>
       </div>
     {/if}
   </div>
