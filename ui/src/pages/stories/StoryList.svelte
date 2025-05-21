@@ -27,16 +27,11 @@
         }
       }
     } else {
-      let lastIteration = -1
-      let points = 0
+      let iteration: typeof iterations[number] | undefined
       for (const s of stories) {
-        if (s.iteration! > lastIteration) {
-          lastIteration = s.iteration!
-          iterations[s.id] = {number: s.iteration, points, startDate: s.acceptedAt!}
-          points = 0
-        } else {
-          points += s.points ?? 0
-        }
+        if (!iteration || s.iteration! > iteration.number!)
+          iterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!}
+        iteration.points += s.points ?? 0
       }
     }
   }
