@@ -113,7 +113,13 @@
       "restart": "Restart"
     },
     "createdAt": "Created",
-    "updatedAt": "Updated"
+    "updatedAt": "Updated",
+    "points": "Difficulty points"
+  },
+  "iterations": {
+    "number": "Iteration number",
+    "startDate": "Start date",
+    "points": "Points accepted"
   },
   "emails": {
     "loginCode": {

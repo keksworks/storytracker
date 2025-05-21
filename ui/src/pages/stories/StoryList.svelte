@@ -3,6 +3,7 @@
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
+  import {t} from 'src/i18n'
 
   export let project: Project
   export let stories: Story[]
@@ -10,19 +11,31 @@
   export let movable = true
   export let velocity = 0
 
-  let iterations: ({points: number, startDate: number}|null)[] = []
-  $: if (velocity) {
-    let points = 0
+  let iterations: ({number?: number, points: number, startDate: string}|null)[] = []
+  $: {
     iterations = []
-    let date = new Date()
-    for (const s of stories) {
-      if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
-        date.setDate(date.getDate() + project.iterationWeeks * 7)
-        iterations.push({points, startDate: date.getTime()})
-        points = 0
-      } else {
-        points += s.points ?? 0
-        iterations.push(null)
+    if (velocity) {
+      let points = 0
+      let date = new Date()
+      for (const s of stories) {
+        if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
+          date.setDate(date.getDate() + project.iterationWeeks * 7)
+          iterations.push({points, startDate: date.toISOString()})
+          points = 0
+        } else {
+          points += s.points ?? 0
+          iterations.push(null)
+        }
+      }
+    } else {
+      let lastIteration = -1
+      for (const s of stories) {
+        if (s.iteration! > lastIteration) {
+          lastIteration = s.iteration!
+          iterations.push({number: s.iteration, points: s.points ?? 0, startDate: s.acceptedAt!})
+        } else {
+          iterations.push(null)
+        }
       }
     }
   }
@@ -39,8 +52,13 @@
   {@const iteration = iterations[i]}
   {#if iteration}
     <div class="bg-stone-300 px-3 py-2 flex justify-between border-t">
-      <div class="font-medium">{formatDate(iteration.startDate)}</div>
-      <div class="font-bold">{iteration.points}</div>
+      <div>
+        {#if iteration.number}
+          <span class="font-medium mr-2" title={t.iterations.number}>{iteration.number}</span>
+        {/if}
+        <span title={t.iterations.startDate}>{formatDate(iteration.startDate)}</span>
+      </div>
+      <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
     </div>
   {/if}
   <StoryView {story} {movable} on:search on:drag on:saved on:delete/>
