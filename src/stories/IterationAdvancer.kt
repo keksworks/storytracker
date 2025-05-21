@@ -51,7 +51,7 @@ class IterationAdvancer(
       startDate = startDate, endDate = endDate,
       acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
     )
-    if (iteration.acceptedPoints == 0)
+    if (acceptedStories.isEmpty())
       return log.warn("Skipping non-active iteration")
 
     iterationRepository.save(iteration)
