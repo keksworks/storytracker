@@ -29,11 +29,14 @@
       }
     } else {
       let lastIteration = -1
+      let points = 0
       for (const s of stories) {
         if (s.iteration! > lastIteration) {
           lastIteration = s.iteration!
-          iterations.push({number: s.iteration, points: s.points ?? 0, startDate: s.acceptedAt!})
+          iterations.push({number: s.iteration, points, startDate: s.acceptedAt!})
+          points = 0
         } else {
+          points += s.points ?? 0
           iterations.push(null)
         }
       }

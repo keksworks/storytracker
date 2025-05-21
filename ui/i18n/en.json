@@ -119,7 +119,7 @@
   "iterations": {
     "number": "Iteration number",
     "startDate": "Start date",
-    "points": "Points accepted"
+    "points": "Total points"
   },
   "emails": {
     "loginCode": {
