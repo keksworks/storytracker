@@ -19,6 +19,7 @@ data class Project(
   val velocity: Int = 10,
   val currentIterationNum: Int = 0,
   val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
+  val tags: Set<String> = emptySet(), // TODO: persist to db
   val defaultStoryPoints: Int? = 1,
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),

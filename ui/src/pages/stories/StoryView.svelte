@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type Story, type StoryAttachment, type StoryComment, StoryType} from 'src/api/types'
+  import {type Id, type Project, type Story, type StoryAttachment, type StoryComment, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -14,6 +14,7 @@
   import {copyToClipboard} from 'src/pages/stories/clipboard'
   import SelectField from 'src/forms/SelectField.svelte'
 
+  export let project: Project
   export let story: Story
   export let movable = true
 
@@ -82,11 +83,13 @@
         <span class="title flex-1">{story.name}</span>
       {/if}
 
-      <ul class="w-full flex gap-2.5 text-sm text-green-700 font-bold">
-        {#each story.tags as tag}
-          <li class="hover:text-green-600 cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
-        {/each}
-      </ul>
+      {#if !open}
+        <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
+          {#each story.tags as tag}
+            <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
+          {/each}
+        </ul>
+      {/if}
     </div>
     <div class="flex items-center gap-3">
       <StoryActions {story} {save} {open}/>
@@ -117,7 +120,7 @@
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
 
       <h4>{t.stories.tags}</h4>
-      <StoryTagsEditor bind:story on:keydown={saveOnEnter}/>
+      <StoryTagsEditor {project} bind:story/>
 
       <h4>{t.stories.comments}</h4>
       {#each story.comments as comment}

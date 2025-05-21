@@ -58,7 +58,7 @@
       <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
     </div>
   {/if}
-  <StoryView {story} {movable} on:search on:drag on:saved on:delete/>
+  <StoryView {project} {story} {movable} on:search on:drag on:saved on:delete/>
 {/each}
 
 {#if movable}

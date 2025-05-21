@@ -29,6 +29,7 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
+    project!.tags = [...new Set(stories.flatMap(s => s.tags))]
   }
 
   async function search(q?: string) {
