@@ -2,7 +2,6 @@
   import {type Instant, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
-  import api from 'src/api/api'
 
   export let story: Story
   export let save: () => void
@@ -13,6 +12,7 @@
   function start(e: Event) {
     e.stopPropagation()
     story.status = StoryStatus.STARTED
+    // TODO: move
     save()
   }
 

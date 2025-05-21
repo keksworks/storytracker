@@ -1,9 +1,10 @@
 <script lang="ts">
-  import {type Story, StoryStatus} from 'src/api/types'
+  import {type Project, type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
   import {createEventDispatcher} from 'svelte'
 
+  export let project: Project
   export let stories: Story[]
   export let status: StoryStatus | undefined = undefined
   export let movable = true
@@ -16,7 +17,7 @@
     let date = new Date()
     for (const s of stories) {
       if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
-        date.setDate(date.getDate() + 7) // TODO: iteration length
+        date.setDate(date.getDate() + project.iterationWeeks * 7)
         iterations.push({points, startDate: date.getTime()})
         points = 0
       } else {
