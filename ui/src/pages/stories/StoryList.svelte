@@ -20,11 +20,10 @@
       for (const s of stories) {
         if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
           date.setDate(date.getDate() + project.iterationWeeks * 7)
-          iterations.push({points, startDate: date.toISOString()})
+          iterations[s.id] = {points, startDate: date.toISOString()}
           points = 0
         } else {
           points += s.points ?? 0
-          iterations.push(null)
         }
       }
     } else {
@@ -33,11 +32,10 @@
       for (const s of stories) {
         if (s.iteration! > lastIteration) {
           lastIteration = s.iteration!
-          iterations.push({number: s.iteration, points, startDate: s.acceptedAt!})
+          iterations[s.id] = {number: s.iteration, points, startDate: s.acceptedAt!}
           points = 0
         } else {
           points += s.points ?? 0
-          iterations.push(null)
         }
       }
     }
@@ -52,7 +50,7 @@
 </script>
 
 {#each stories as story, i (story.id ?? i)}
-  {@const iteration = iterations[i]}
+  {@const iteration = iterations[story.id]}
   {#if iteration}
     <div class="bg-stone-300 px-3 py-2 flex justify-between border-t">
       <div>
