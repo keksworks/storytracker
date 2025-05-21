@@ -11,8 +11,8 @@
   import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
   import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
-  import StoryTypeSelect from 'src/pages/stories/StoryTypeSelect.svelte'
   import {copyToClipboard} from 'src/pages/stories/clipboard'
+  import SelectField from 'src/forms/SelectField.svelte'
 
   export let story: Story
   export let movable = true
@@ -108,12 +108,9 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 p-2 bg-gray-100 border border-solid border-gray-300 text-gray-500 text-sm">
-        <span>{t.stories.type}</span>
-        <div>
-          <StoryTypeSelect bind:type={story.type}
-                           class="p-1 -m-1 float-right text-sm text-gray-600 hover:text-black"/>
-        </div>
+      <div class="flex gap-2">
+        <SelectField bind:value={story.type} options={t.stories.types} title={t.stories.type}/>
+        <SelectField bind:value={story.status} options={t.stories.statuses} title={t.stories.status}/>
       </div>
 
       <h4>{t.stories.description}</h4>
