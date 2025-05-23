@@ -9,7 +9,6 @@ import users.User
 import java.time.Instant
 
 data class ProjectMember(
-  override val id: Id<ProjectMember> = Id(),
   val projectId: Id<Project>,
   val userId: Id<User>,
   val role: Role = MEMBER,
@@ -18,4 +17,5 @@ data class ProjectMember(
   val lastViewedAt: Instant? = null,
   val updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
+  override val id: Id<ProjectMember> = Id(),
 ): Entity<ProjectMember>/*, UpdatableEntity*/

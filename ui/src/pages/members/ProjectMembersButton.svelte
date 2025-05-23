@@ -1,12 +1,14 @@
 <script lang="ts">
-  import type {ProjectMemberUser} from 'src/api/types'
+  import type {Project, ProjectMemberUser} from 'src/api/types'
   import Modal from 'src/components/Modal.svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import SortableTable from 'src/components/SortableTable.svelte'
   import ContactLink from 'src/components/ContactLink.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
+  import InviteMemberButton from 'src/pages/members/InviteMemberButton.svelte'
 
+  export let project: Project
   export let members: ProjectMemberUser[]
 
   export let show = false
@@ -26,8 +28,10 @@
       <td>{m.user.name}</td>
       <td>{m.user.initials}</td>
       <td><ContactLink contact={m.user.email}/></td>
-      <td>{m.member.role}</td>
+      <td>{t.users.roles[m.member.role]}</td>
       <td>{formatDateTime(m.user.lastLoginAt)}</td>
     </tr>
   </SortableTable>
+
+  <InviteMemberButton {project} onadded={m => members = [...members, m]}/>
 </Modal>

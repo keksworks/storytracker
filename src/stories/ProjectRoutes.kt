@@ -3,22 +3,18 @@ package stories
 import auth.Access
 import auth.user
 import db.Id
-import klite.AssetsHandler
-import klite.Before
-import klite.ForbiddenException
-import klite.HttpExchange
+import klite.*
 import klite.annotations.*
-import klite.jdbc.NoTransaction
-import klite.jdbc.StaleEntityException
-import klite.jdbc.gt
-import klite.jdbc.nowSec
+import klite.jdbc.*
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
 import kotlinx.coroutines.flow.MutableSharedFlow
 import stories.Story.Status.DELETED
+import users.Role
 import users.Role.*
 import users.User
+import users.UserRepository
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -27,6 +23,7 @@ class ProjectRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val projectMemberRepository: ProjectMemberRepository,
+  private val userRepository: UserRepository,
   private val epicRepository: EpicRepository,
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
@@ -47,6 +44,13 @@ class ProjectRoutes(
 
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
     projectMemberRepository.listWithUsers(id)
+
+  @POST("/:id/members") fun addMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
+    val user = userRepository.by(User::email eq req.email) ?:
+    User(req.name, req.email, VIEWER, initials = req.initials).also { userRepository.save(it) }
+    val member = ProjectMember(id, user.id, req.role).also { projectMemberRepository.save(it) }
+    return ProjectMemberUser(member, user)
+  }
 
   @GET("/:id/epics") fun epics(@PathParam id: Id<Project>): List<Epic> =
     epicRepository.list(Epic::projectId to id)
@@ -98,3 +102,5 @@ class ProjectRoutes(
     send(e, attachmentRepository.file(id, storyId, fileName))
   }
 }
+
+data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String)

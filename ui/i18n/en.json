@@ -11,6 +11,11 @@
     "email": "E-mail",
     "initials": "Initials",
     "role": "Role",
+    "roles": {
+      "OWNER": "Owner",
+      "MEMBER": "Member",
+      "VIEWER": "Viewer"
+    },
     "lastLoginAt": "Last login"
   },
   "gender": {
@@ -63,6 +68,7 @@
     "title": "Projects",
     "project": "Project",
     "members": "Members",
+    "invite": "Invite member",
     "currentIterationNum": "Iteration",
     "velocity": "Velocity",
     "velocityOverride": "Temporary velocity override"

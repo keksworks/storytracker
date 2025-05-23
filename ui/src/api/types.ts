@@ -16,6 +16,8 @@ export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length:
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number}
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
+// class stories.ProjectMemberRequest
+export interface ProjectMemberRequest {email: Email; initials: string; name: string; role: Role}
 // class stories.ProjectMemberUser
 export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
 // class stories.Story$Attachment
