@@ -18,7 +18,7 @@ import users.UserRepository
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-@Access(ADMIN, OWNER, VIEWER)
+@Access(ADMIN, OWNER, MEMBER, VIEWER)
 class ProjectRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
@@ -42,10 +42,19 @@ class ProjectRoutes(
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
+  @POST @Access(ADMIN, OWNER)
+  fun save(project: Project, @AttrParam user: User): Project {
+    require(user.role == OWNER || projectMemberRepository.role(project.id, user.id) == OWNER) { "Not an owner" }
+    projectRepository.save(project)
+    // TODO: propagate to all members, check for updated at
+    return project
+  }
+
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
     projectMemberRepository.listWithUsers(id)
 
-  @POST("/:id/members") fun addMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
+  @POST("/:id/members") @Access(ADMIN, OWNER)
+  fun addMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
     val user = userRepository.by(User::email eq req.email) ?:
     User(req.name, req.email, VIEWER, initials = req.initials).also { userRepository.save(it) }
     val member = ProjectMember(id, user.id, req.role).also { projectMemberRepository.save(it) }
@@ -61,7 +70,8 @@ class ProjectRoutes(
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)
 
-  @POST("/:id/stories") fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {
+  @POST("/:id/stories") @Access(ADMIN, OWNER, MEMBER)
+  fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {
     require(story.projectId == id) { "Invalid story project" }
     val existing = storyRepository.by(Story::id to story.id)
     if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
@@ -88,7 +98,8 @@ class ProjectRoutes(
     }
   }
 
-  @DELETE("/:id/stories/:storyId") fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @HeaderParam requesterId: String) {
+  @DELETE("/:id/stories/:storyId") @Access(ADMIN, OWNER, MEMBER)
+  fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @HeaderParam requesterId: String) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED, updatedAt = nowSec()).also {

@@ -5,9 +5,9 @@
   import Toasts from './components/Toasts.svelte'
   import NotFoundPage from './layout/NotFoundPage.svelte'
   import Spinner from 'src/components/Spinner.svelte'
-  import ProjectPage from 'src/pages/ProjectPage.svelte'
+  import ProjectPage from 'src/pages/projects/ProjectPage.svelte'
   import HomePage from 'src/pages/HomePage.svelte'
-  import ProjectsPage from 'src/pages/ProjectsPage.svelte'
+  import ProjectsPage from 'src/pages/projects/ProjectsPage.svelte'
   import LoginPage from 'src/pages/login/LoginPage.svelte'
 </script>
 

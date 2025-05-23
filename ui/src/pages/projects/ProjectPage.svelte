@@ -8,9 +8,10 @@
   import {onMount} from 'svelte'
   import FormField from 'src/forms/FormField.svelte'
   import {replaceValues} from '@codeborne/i18n-json'
-  import ProjectMembersButton from 'src/pages/members/ProjectMembersButton.svelte'
-  import ProjectUpdatesListener from 'src/pages/ProjectUpdatesListener.svelte'
+  import ProjectMembersButton from 'src/pages/projects/ProjectMembersButton.svelte'
+  import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
   import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
+  import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
 
   export let id: Id<Project>
 
@@ -126,7 +127,8 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    {#if members}<ProjectMembersButton {project} {members}/>{/if}
+    {#if project && members}<ProjectMembersButton {project} {members}/>{/if}
+    {#if project}<ProjectSettingsButton {project}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex px-4" style="height: calc(100vh - 56px)">

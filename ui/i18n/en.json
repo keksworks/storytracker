@@ -67,11 +67,27 @@
   "projects": {
     "title": "Projects",
     "project": "Project",
+    "name": "Name",
+    "description": "Description",
     "members": "Members",
     "invite": "Invite member",
+    "settings": "Settings",
+    "defaultStoryPoints": "Default story points",
+    "iterationWeeks": "Iteration length (weeks)",
+    "velocityAveragedOver": "Velocity averaged over iterations",
     "currentIterationNum": "Iteration",
+    "startDay": "Iteration start day",
     "velocity": "Velocity",
     "velocityOverride": "Temporary velocity override"
+  },
+  "weekDays": {
+    "MONDAY": "Monday",
+    "TUESDAY": "Tuesday",
+    "WEDNESDAY": "Wednesday",
+    "THURSDAY": "Thursday",
+    "FRIDAY": "Friday",
+    "SATURDAY": "Saturday",
+    "SUNDAY": "Sunday"
   },
   "samples": {
     "title": "Samples"

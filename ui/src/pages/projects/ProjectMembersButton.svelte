@@ -6,7 +6,7 @@
   import SortableTable from 'src/components/SortableTable.svelte'
   import ContactLink from 'src/components/ContactLink.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
-  import InviteMemberButton from 'src/pages/members/InviteMemberButton.svelte'
+  import InviteMemberButton from 'src/pages/projects/InviteMemberButton.svelte'
 
   export let project: Project
   export let members: ProjectMemberUser[]
