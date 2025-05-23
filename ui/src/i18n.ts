@@ -41,7 +41,7 @@ date.setDate(date.getDate() + 2)
 export const tomorrow = date.toLocaleDateString('lt')
 
 export function path(to: string) {
-  return `/${to}`
+  return to.startsWith('/') ? to : `/${to}`
 }
 
 let refreshNavigate = false

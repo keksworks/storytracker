@@ -67,6 +67,7 @@
   "projects": {
     "title": "Projects",
     "project": "Project",
+    "new": "New project",
     "name": "Name",
     "description": "Description",
     "members": "Members",

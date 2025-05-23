@@ -5,15 +5,21 @@
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
   import Link from 'src/components/Link.svelte'
+  import {onMount} from 'svelte'
+  import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
 
   let projects: Project[]
-  async function load() {
+
+  onMount(async () => {
     projects = await api.get('projects')
-  }
-  $: load()
+  })
 </script>
 
 <MainPageLayout title={t.projects.title}>
+  <span slot="header">
+    <ProjectSettingsButton label={t.projects.new}/>
+  </span>
+
   {#if !projects}
     <Spinner/>
   {/if}
