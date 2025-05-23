@@ -13,7 +13,7 @@ class StoryRepositoryTest: DBTest() {
   val repository = StoryRepository(db)
 
   @Test fun `save & load`() {
-    ProjectRepository(db).save(project)
+    ProjectRepository(db).save(project.copy(updatedAt = null))
     repository.save(story)
     repository.save(story2)
     expect(repository.get(story.id)).toEqual(story)

@@ -31,7 +31,7 @@
         <div class="flex justify-between text-muted">
           <div>{t.projects.currentIterationNum} {p.currentIterationNum}</div>
           <div>{t.projects.velocity} {p.velocity}</div>
-          <div>{formatDate(p.updatedAt)}</div>
+          <div title={t.projects.updatedAt}>{formatDate(p.updatedAt)}</div>
         </div>
       </Link>
     {/each}
