@@ -5,7 +5,6 @@ import klite.error
 import klite.info
 import klite.jdbc.Transaction
 import klite.jdbc.gte
-import klite.jdbc.nowSec
 import klite.jobs.Job
 import klite.logger
 import klite.warn
@@ -57,7 +56,7 @@ class IterationAdvancer(
     iterationRepository.save(iteration)
     // TODO: take into account teamStrength
     val velocity = (lastIterations + iteration).sumOf { it.acceptedPoints ?: 0 } / (lastIterations.size + 1)
-    projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity, updatedAt = nowSec()))
+    projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity))
     storyRepository.setIteration(iteration, acceptedStories.map { it.id })
     log.info("Saved $iteration")
   }
