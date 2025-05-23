@@ -46,7 +46,7 @@ class ProjectRoutes(
   fun save(project: Project, @AttrParam user: User): Project {
     require(user.role == OWNER || projectMemberRepository.role(project.id, user.id) == OWNER) { "Not an owner" }
     projectRepository.save(project)
-    // TODO: propagate to all members, check for updated at
+    // TODO: propagate to all members
     return project
   }
 

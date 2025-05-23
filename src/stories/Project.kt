@@ -2,6 +2,7 @@ package stories
 
 import db.Entity
 import db.Id
+import klite.jdbc.UpdatableEntity
 import klite.jdbc.nowSec
 import java.time.DayOfWeek
 import java.time.DayOfWeek.MONDAY
@@ -21,6 +22,6 @@ data class Project(
   val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
   val tags: Set<String> = emptySet(), // TODO: persist to db
   val defaultStoryPoints: Int? = 1,
-  val updatedAt: Instant? = nowSec(),
+  override var updatedAt: Instant? = nowSec(),
   val createdAt: Instant = nowSec(),
-): Entity<Project>//, UpdatableEntity
+): Entity<Project>, UpdatableEntity
