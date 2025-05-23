@@ -7,6 +7,7 @@
   import Link from 'src/components/Link.svelte'
   import {onMount} from 'svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
+  import {formatDate} from '@codeborne/i18n-json'
 
   let projects: Project[]
 
@@ -27,7 +28,11 @@
     {#each projects ?? [] as p}
       <Link to="projects/{p.id}" class="project border rounded-lg px-4 py-3 bg-white hover:bg-stone-50">
         <div class="font-semibold">{p.name}</div>
-        <div class="text-muted">{t.projects.currentIterationNum} {p.currentIterationNum}</div>
+        <div class="flex justify-between text-muted">
+          <div>{t.projects.currentIterationNum} {p.currentIterationNum}</div>
+          <div>{t.projects.velocity} {p.velocity}</div>
+          <div>{formatDate(p.updatedAt)}</div>
+        </div>
       </Link>
     {/each}
   </div>

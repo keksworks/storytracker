@@ -79,7 +79,8 @@
     "currentIterationNum": "Iteration",
     "startDay": "Iteration start day",
     "velocity": "Velocity",
-    "velocityOverride": "Temporary velocity override"
+    "velocityOverride": "Temporary velocity override",
+    "updatedAt": "Updated"
   },
   "weekDays": {
     "MONDAY": "Monday",
