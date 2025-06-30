@@ -1,7 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.1.20"
+  kotlin("jvm") version "2.2.0"
 }
 
 repositories {
@@ -10,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:1.7.0"
+  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:91e29a91" // 1.7.0+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -62,7 +63,9 @@ tasks.register<Test>("e2eTest") {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "21"
+  compilerOptions {
+    jvmTarget = JVM_21
+  }
   if (System.getProperty("user.name") != "root") finalizedBy("types.ts")
 }
 
