@@ -25,3 +25,6 @@ update users set role = 'OWNER' where email like '%@codeborne.com';
 
 --changeset users.lastLoginAt
 alter table users rename column lastOnlineAt to lastLoginAt;
+
+--changeset users.member
+update users set role = 'MEMBER' where role = 'VIEWER';

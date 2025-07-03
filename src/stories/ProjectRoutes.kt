@@ -56,7 +56,7 @@ class ProjectRoutes(
   @POST("/:id/members") @Access(ADMIN, OWNER)
   fun addMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
     val user = userRepository.by(User::email eq req.email) ?:
-    User(req.name, req.email, VIEWER, initials = req.initials).also { userRepository.save(it) }
+    User(req.name, req.email, MEMBER, initials = req.initials).also { userRepository.save(it) }
     val member = ProjectMember(id, user.id, req.role).also { projectMemberRepository.save(it) }
     return ProjectMemberUser(member, user)
   }
