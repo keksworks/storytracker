@@ -7,7 +7,7 @@ pipeline {
     BUILD = "${JOB_NAME.replace('/', '-')}-${BUILD_NUMBER}"
     EMAIL = sh(script: "git show -s --format='%ae' HEAD", returnStdout: true)
     GIT_LAST_CHANGE = sh(script: "git show", returnStdout: true)
-    EMAIL_BODY = "Project: ${JOB_NAME}\nBuild Number: ${BUILD_NUMBER}\n\nLast change:\n\n${env.GIT_LAST_CHANGE}"
+    EMAIL_BODY = "Project: ${JOB_NAME}\nBuild Number: ${BUILD_NUMBER}\n\nLast change:\n\n${env.GIT_LAST_CHANGE.abbreviate(1000)}"
     COMPOSE = "docker compose -f docker-compose.yml -f docker-compose.codeborne.yml -p ${APP}"
     VERSION = sh(script: 'git describe --tags --always --long', returnStdout: true).trim()
     RUN_TESTS = "docker run --network ${APP}_default -e DB_START= -e DB_URL=jdbc:postgresql://db/${APP} -e BUILD=$BUILD"
