@@ -13,10 +13,10 @@ export default defineConfig({
       src: path.resolve(__dirname, './src'),
       i18n: path.resolve(__dirname, process.env.NODE_ENV == 'production' ? 'build/i18n' : 'i18n')
     },
-    conditions: isTest ? ['browser'] : []
+    conditions: ['browser']
   },
   plugins: [
-    svelte({hot: !process.env.VITEST}),
+    svelte(),
     run({
       silent: !!process.env.VITEST,
       input: [

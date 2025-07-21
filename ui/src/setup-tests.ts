@@ -8,6 +8,12 @@ initTestTranslations('en', en)
 window.fetch = () => new Promise(() => {})
 window.scrollTo = () => {}
 
+// not provided by jsdom
+Element.prototype.animate = (() => ({
+  cancel: () => {}
+})) as any
+
+
 beforeEach(() => {
   user.set(testUser)
 })
