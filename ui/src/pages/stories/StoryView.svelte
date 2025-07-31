@@ -61,11 +61,13 @@
   })
 </script>
 
+<!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
+  <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
     <span title={t.stories.types[story.type]}>
       {#if story.type == StoryType.FEATURE}
