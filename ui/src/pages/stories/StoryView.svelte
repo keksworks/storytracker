@@ -66,7 +66,7 @@
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
-  <div class="flex justify-between items-start gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
+  <div class="flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
     <span title={t.stories.types[story.type]}>
       {#if story.type == StoryType.FEATURE}
         <Icon name="star-filled" class="text-yellow-500"/>
