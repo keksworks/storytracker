@@ -10,40 +10,40 @@
   const size = 'sm'
 
   function start(e: Event) {
-    e.stopPropagation()
     story.status = StoryStatus.STARTED
-    save(true)
+    justSave(e, true)
   }
 
   function finish(e: Event) {
-    e.stopPropagation()
     story.status = StoryStatus.FINISHED
-    save()
+    justSave(e)
   }
 
   function deliver(e: Event) {
-    e.stopPropagation()
     story.status = StoryStatus.DELIVERED
-    save()
+    justSave(e)
   }
 
   function accept(e: Event) {
-    e.stopPropagation()
     story.status = StoryStatus.ACCEPTED
     story.acceptedAt = new Date().toISOString() as Instant
-    save()
+    justSave(e)
   }
 
   function reject(e: Event) {
-    e.stopPropagation()
     story.status = StoryStatus.REJECTED
-    save()
+    justSave(e)
+  }
+
+  function justSave(e: Event, move?: boolean) {
+    e.stopPropagation()
+    save(move)
   }
 </script>
 
 <div title={t.stories.statuses[story.status]}>
   {#if open}
-    <Button {size} color="primary" variant="soft" on:click={() => save()}>{t.general.save}</Button>
+    <Button {size} color="primary" variant="soft" on:click={justSave}>{t.general.save}</Button>
   {:else if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
     <Button {size} color="secondary" variant="soft" on:click={start}>{t.stories.actions.start}</Button>
   {:else if story.status === StoryStatus.STARTED}
