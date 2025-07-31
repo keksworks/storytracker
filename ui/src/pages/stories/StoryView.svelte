@@ -54,7 +54,10 @@
   }
 
   onMount(() => {
-    if (open) view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    if (open) {
+      view.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      (view.querySelector('[autofocus]') as HTMLInputElement)?.focus()
+    }
   })
 </script>
 
@@ -78,7 +81,8 @@
 
     <div class="flex-grow">
       {#if open}
-        <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="true" bind:innerText={story.name} on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
+        <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={story.name}
+             on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
       {/if}
