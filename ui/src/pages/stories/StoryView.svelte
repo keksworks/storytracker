@@ -31,7 +31,7 @@
     isDropTarget = false
   }
 
-  $: reallyMovable = movable && !open && !story.acceptedAt
+  $: reallyMovable = movable && !open
 
   async function save(move?: boolean) {
     open = false
