@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type Project, type Story, type StoryAttachment, type StoryComment, StoryType} from 'src/api/types'
+  import {type Id, type Project, type Story, type StoryAttachment, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -18,6 +18,7 @@
   export let story: Story
   export let movable = true
   export let firstUnstarted: Story | undefined
+  export let firstUnaccepted: Story | undefined
 
   let view: HTMLElement
   let open = !story.id
@@ -37,7 +38,8 @@
     story = await api.post(`projects/${story.projectId}/stories`, story)
     dispatch('saved', story)
     if (move) setTimeout(() => {
-      dispatch('drag', {id: story.id, beforeId: firstUnstarted?.id})
+      const beforeId = story.status === StoryStatus.ACCEPTED ? firstUnaccepted?.id : firstUnstarted?.id
+      dispatch('drag', {id: story.id, beforeId})
       setTimeout(() => scrollIntoView(), 100)
     }, 100)
   }

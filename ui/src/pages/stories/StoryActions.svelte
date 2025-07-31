@@ -27,7 +27,7 @@
   function accept(e: Event) {
     story.status = StoryStatus.ACCEPTED
     story.acceptedAt = new Date().toISOString() as Instant
-    justSave(e)
+    justSave(e, true)
   }
 
   function reject(e: Event) {

@@ -45,6 +45,7 @@
   }
 
   $: firstUnstarted = stories.find(s => s.status === status)
+  $: firstUnaccepted = stories.find(s => s.status !== StoryStatus.ACCEPTED)
 </script>
 
 {#each stories as story, i (story.id ?? i)}
@@ -60,7 +61,7 @@
       <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
     </div>
   {/if}
-  <StoryView {project} {story} {movable} {firstUnstarted} on:search on:drag on:saved on:delete/>
+  <StoryView {project} {story} {movable} {firstUnstarted} {firstUnaccepted} on:search on:drag on:saved on:delete/>
 {/each}
 
 {#if movable}
