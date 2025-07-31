@@ -43,6 +43,8 @@
     dispatch('drag', {id: parseInt(e.dataTransfer?.getData('id')!), status})
     isDropTarget = false
   }
+
+  $: firstUnstarted = stories.find(s => s.status === status)
 </script>
 
 {#each stories as story, i (story.id ?? i)}
@@ -58,7 +60,7 @@
       <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
     </div>
   {/if}
-  <StoryView {project} {story} {movable} on:search on:drag on:saved on:delete/>
+  <StoryView {project} {story} {movable} {firstUnstarted} on:search on:drag on:saved on:delete/>
 {/each}
 
 {#if movable}

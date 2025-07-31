@@ -7,21 +7,22 @@
   import {createEventDispatcher, onMount} from 'svelte'
   import StoryActions from 'src/pages/stories/StoryActions.svelte'
   import {t} from 'src/i18n'
-  import api from 'src/api/api'
   import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
   import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
   import {copyToClipboard} from 'src/pages/stories/clipboard'
   import SelectField from 'src/forms/SelectField.svelte'
+  import api from 'src/api/api'
 
   export let project: Project
   export let story: Story
   export let movable = true
+  export let firstUnstarted: Story | undefined
 
   let view: HTMLElement
   let open = !story.id
 
-  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId: Id<Story>}, search: string, saved: Story, delete: Story}>()
+  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId?: Id<Story>}, search: string, saved: Story, delete: Story}>()
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
@@ -31,10 +32,14 @@
 
   $: reallyMovable = movable && !open && !story.acceptedAt
 
-  async function save() {
-    story = await api.post(`projects/${story.projectId}/stories`, story)
+  async function save(move?: boolean) {
     open = false
+    story = await api.post(`projects/${story.projectId}/stories`, story)
     dispatch('saved', story)
+    if (move) setTimeout(() => {
+      dispatch('drag', {id: story.id, beforeId: firstUnstarted?.id})
+      setTimeout(() => scrollIntoView(), 100)
+    }, 100)
   }
 
   function saveOnEnter(e: KeyboardEvent) {
@@ -53,9 +58,13 @@
     } as StoryComment]
   }
 
+  function scrollIntoView() {
+    view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+  }
+
   onMount(() => {
     if (open) {
-      view.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      scrollIntoView();
       (view.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
   })
@@ -87,9 +96,6 @@
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
-      {/if}
-
-      {#if !open}
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
           {#each story.tags as tag}
             <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
@@ -99,7 +105,7 @@
     </div>
     <div class="flex items-center gap-3">
       <StoryActions {story} {save} {open}/>
-      <StoryPointsSelect bind:points={story.points} onchange={save} disabled={!!story.acceptedAt}/>
+      <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={!!story.acceptedAt}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
