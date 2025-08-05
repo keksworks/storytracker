@@ -32,7 +32,7 @@
     project!.tags = [...new Set(stories.flatMap(s => s.tags))]
   }
 
-  async function search(q?: string) {
+  async function onSearch(q?: string) {
     searchQuery = q
     searchResults = undefined
     if (q) {
@@ -66,15 +66,15 @@
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
 
-  async function onDrag(e: CustomEvent<{id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}>) {
-    if (e.detail.id == e.detail.beforeId) return
-    const fromIndex = stories.findIndex(s => s.id == e.detail.id)
+  async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
+    if (e.id == e.beforeId) return
+    const fromIndex = stories.findIndex(s => s.id == e.id)
     const story = stories.splice(fromIndex, 1)[0]
-    const toIndex = e.detail.beforeId ? stories.findIndex(s => s.id == e.detail.beforeId) : stories.length
+    const toIndex = e.beforeId ? stories.findIndex(s => s.id == e.beforeId) : stories.length
     const toStory = stories[toIndex]
     stories.splice(toIndex, 0, story)
     story.order = newOrder(stories[toIndex - 1], stories[toIndex + 1])
-    if (e.detail.status) story.status = e.detail.status
+    if (e.status) story.status = e.status
     else if (!toStory || toStory.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSCHEDULED
     else if (story.status === StoryStatus.UNSCHEDULED) story.status = StoryStatus.UNSTARTED
     stories = stories
@@ -102,18 +102,18 @@
     return next ? prevOrder + (next.order - prevOrder) / 2 : Math.ceil(prevOrder + 1)
   }
 
-  function onSaved(e: CustomEvent<Story>) {
-    let index = stories.findIndex(s => s.id == e.detail.id)
+  function onSaved(story: Story) {
+    let index = stories.findIndex(s => s.id == story.id)
     if (index < 0) index = stories.findIndex(s => !s.id)
-    if (index >= 0) stories[index] = e.detail
+    if (index >= 0) stories[index] = story
   }
 
-  async function onDelete(e: CustomEvent<Story>) {
-    if (e.detail.id) {
-      if (!confirm(replaceValues(t.stories.deleteConfirm, e.detail))) return
-      await api.delete(`projects/${id}/stories/${e.detail.id}`)
+  async function onDelete(story: Story) {
+    if (story.id) {
+      if (!confirm(replaceValues(t.stories.deleteConfirm, story))) return
+      await api.delete(`projects/${id}/stories/${story.id}`)
     }
-    let index = stories.findIndex(s => s.id == e.detail.id)
+    let index = stories.findIndex(s => s.id == story.id)
     stories.splice(index, 1)
     stories = stories
   }
@@ -129,7 +129,7 @@
   <Header title={project?.name}>
     {#if project && members}<ProjectMembersButton {project} {members}/>{/if}
     {#if project}<ProjectSettingsButton {project}/>{/if}
-    <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && search(e.currentTarget?.['value'])}/>
+    <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
   </Header>
   <div class="flex px-4" style="height: calc(100vh - 56px)">
     <aside class="w-14 sticky top-0 h-full pt-3 -ml-3">
@@ -146,18 +146,18 @@
       <ProjectUpdatesListener {project} bind:stories/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        <ProjectPanel name="done" bind:show={show.done} {project} stories={done} on:search={e => search(e.detail)} movable={false} on:saved={onSaved} on:delete={onDelete}/>
+        <ProjectPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
 
-        <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+        <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
           <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
         </ProjectPanel>
 
-        <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} on:drag={onDrag} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+        <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
         </ProjectPanel>
 
-        <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} on:search={e => search(e.detail)} on:saved={onSaved} on:delete={onDelete}>
+        <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>
         </ProjectPanel>
       </div>

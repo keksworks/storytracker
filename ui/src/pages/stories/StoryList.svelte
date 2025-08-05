@@ -2,7 +2,6 @@
   import {type Project, type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
-  import {createEventDispatcher} from 'svelte'
   import {t} from 'src/i18n'
 
   export let project: Project
@@ -10,6 +9,10 @@
   export let status: StoryStatus | undefined = undefined
   export let movable = true
   export let velocity = 0
+  export let onDrag: (detail: {id: number, status?: StoryStatus, beforeId?: number}) => void = () => {}
+  export let onSearch: (tag: string) => void = () => {}
+  export let onSaved: (story: Story) => void = () => {}
+  export let onDelete: (story: Story) => void = () => {}
 
   let iterations: ({number?: number, points: number, startDate: string}|null)[] = []
   $: {
@@ -38,9 +41,8 @@
   }
 
   let isDropTarget = false
-  const dispatch = createEventDispatcher<{drag: {id: number, status?: StoryStatus}}>()
   function onDrop(e: DragEvent) {
-    dispatch('drag', {id: parseInt(e.dataTransfer?.getData('id')!), status})
+    onDrag({id: parseInt(e.dataTransfer?.getData('id')!), status})
     isDropTarget = false
   }
 
@@ -61,7 +63,7 @@
       <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
     </div>
   {/if}
-  <StoryView {project} {story} {movable} {firstUnstarted} {firstUnaccepted} on:search on:drag on:saved on:delete/>
+  <StoryView {project} {story} {movable} {firstUnstarted} {firstUnaccepted} {onSearch} {onDrag} {onSaved} {onDelete}/>
 {/each}
 
 {#if movable}

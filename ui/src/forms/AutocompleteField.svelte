@@ -2,7 +2,6 @@
   import FormField from './FormField.svelte'
   import api from 'src/api/api'
   import {debounce} from '../shared/debounce'
-  import {createEventDispatcher} from 'svelte'
 
   type T = any
 
@@ -12,21 +11,18 @@
   export let selected: T|undefined = undefined
   export let query = selected ? optionMapper(selected) : ''
   export let selectSingleMatch = true
-
-  if ($$restProps.autofocus == undefined) $$restProps.autofocus = true
-  else if ($$restProps.autofocus == false) $$restProps.autofocus = undefined
+  export let onSelected: (selected: T) => void = () => {}
 
   let matches: T[] = []
   let options: string[] = []
 
   export let id = apiPath.replace('/', '-')
-  const dispatch = createEventDispatcher<{selected: T}>()
 
   const request = debounce(async (q: string) => {
     const selectedIndex = options.indexOf(q)
     if (selectedIndex >= 0) {
       selected = matches[selectedIndex]
-      return dispatch('selected', selected)
+      return onSelected(selected)
     }
     else selected = undefined
 
@@ -50,7 +46,8 @@
   $: onQueryChange(query)
 </script>
 
-<FormField {label} type="search" bind:value={query} list="{id}-list" autocomplete="off" {...$$restProps}/>
+<FormField {label} type="search" bind:value={query} list="{id}-list" autocomplete="off"
+           autofocus={$$restProps.autofocus === undefined ? true : $$restProps.autofocus} {...$$restProps}/>
 <datalist id="{id}-list">
   {#each options as o}
     <option>{o}</option>

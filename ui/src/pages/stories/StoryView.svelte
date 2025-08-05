@@ -4,7 +4,7 @@
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
-  import {createEventDispatcher, onMount} from 'svelte'
+  import {onMount} from 'svelte'
   import StoryActions from 'src/pages/stories/StoryActions.svelte'
   import {t} from 'src/i18n'
   import {user} from 'src/stores/auth'
@@ -19,15 +19,17 @@
   export let movable = true
   export let firstUnstarted: Story | undefined
   export let firstUnaccepted: Story | undefined
+  export let onDrag: (detail: {id: Id<Story>, beforeId?: Id<Story>}) => void = () => {}
+  export let onSearch: (tag: string) => void = () => {}
+  export let onSaved: (story: Story) => void = () => {}
+  export let onDelete: (story: Story) => void = () => {}
 
   let view: HTMLElement
   let open = !story.id
 
-  const dispatch = createEventDispatcher<{drag: {id: Id<Story>, beforeId?: Id<Story>}, search: string, saved: Story, delete: Story}>()
-
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    dispatch('drag', {id: parseInt(e.dataTransfer?.getData('id')!), beforeId: story.id})
+    onDrag({id: parseInt(e.dataTransfer?.getData('id')!), beforeId: story.id})
     isDropTarget = false
   }
 
@@ -36,10 +38,10 @@
   async function save(move?: boolean) {
     open = false
     story = await api.post(`projects/${story.projectId}/stories`, story)
-    dispatch('saved', story)
+    onSaved(story)
     if (move) setTimeout(() => {
       const beforeId = story.status === StoryStatus.ACCEPTED ? firstUnaccepted?.id : firstUnstarted?.id
-      dispatch('drag', {id: story.id, beforeId})
+      onDrag({id: story.id, beforeId})
       setTimeout(() => scrollIntoView(), 100)
     }, 100)
   }
@@ -100,7 +102,7 @@
         <span class="title flex-1">{story.name}</span>
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
           {#each story.tags as tag}
-            <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => dispatch('search', tag)}>{tag}</li>
+            <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => onSearch(tag)}>{tag}</li>
           {/each}
         </ul>
       {/if}
@@ -118,7 +120,7 @@
           {#if story.id}
             <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
           {/if}
-          <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => dispatch('delete', story)}/>
+          <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(story)}/>
         </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">
           {formatDateTime(story.createdAt)}

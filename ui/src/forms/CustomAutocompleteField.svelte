@@ -1,12 +1,12 @@
 <script lang="ts">
   import FormField from 'src/forms/FormField.svelte'
-  import {createEventDispatcher} from 'svelte'
 
   type T = $$Generic
 
   export let query: string = ''
   export let options: T[] = []
   export let optionMapper: (m: T) => string
+  export let onSelected: (selected: T) => void = () => {}
 
   let selectedIndex = -1
   let showList = false
@@ -26,12 +26,10 @@
     }
   }
 
-  const dispatch = createEventDispatcher<{selected: T}>()
-
   function select(result: T) {
     query = optionMapper(result)
     setTimeout(() => showList = false)
-    dispatch('selected', result)
+    onSelected(result)
   }
 </script>
 

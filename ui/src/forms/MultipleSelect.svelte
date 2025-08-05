@@ -3,25 +3,23 @@
   import Badge from 'src/components/Badge.svelte'
   import Icon from 'src/icons/Icon.svelte'
   import PlusSelectField from './PlusSelectField.svelte'
-  import {createEventDispatcher} from 'svelte'
 
   export let label = ''
   export let values: string[]
   export let options: {[value: string|number]: string|number} | string[] | string | undefined
   export let disabled = false
+  export let onChange: (values: string[]) => void = () => {}
 
   let select: HTMLSelectElement
 
-  const dispatch = createEventDispatcher<{change: string[]}>()
-
   function remove(id: string) {
     values = values.filter(v => v != id)
-    dispatch('change', values)
+    onChange(values)
   }
 
   function add() {
     values = [...values ?? [], select.value]
-    dispatch('change', values)
+    onChange(values)
   }
 
   $: if (values) setTimeout(() => {if (select) select.selectedIndex = 0})

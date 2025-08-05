@@ -1,6 +1,5 @@
 <script lang="ts">
   import FormField from './FormField.svelte'
-  import {createEventDispatcher} from 'svelte'
 
   export let label: string | undefined = undefined
   export let value: number | undefined
@@ -10,6 +9,7 @@
   export let step: number = 1
   export let required = true
   export let helpText = ''
+  export let onChange: (value: number) => void = () => {}
 
   $: digits = -Math.log10(step)
 
@@ -41,10 +41,9 @@
     oldValue = value = unit == units[0] ? unitValue : roundToStep(unitValue / unitRatio)
   }
 
-  const dispatch = createEventDispatcher<{change: number}>()
   function onUnitChanged() {
     if (updateUnitValue()) updateValue()
-    dispatch('change', value!)
+    onChange(value!)
   }
 </script>
 

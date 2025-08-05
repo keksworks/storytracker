@@ -28,7 +28,7 @@
       </span>
     </h5>
     {#if stories}
-      <StoryList {project} {stories} {status} {velocity} {movable} on:drag on:search on:saved on:delete/>
+      <StoryList {project} {stories} {status} {velocity} {movable} {...$$restProps}/>
     {:else}
       <Spinner/>
     {/if}
