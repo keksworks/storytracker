@@ -12,5 +12,5 @@ class ProjectRepository(db: DataSource): CrudRepository<Project>(db, "projects")
   override fun Project.persister() = toValuesSkipping(Project::tags)
 
   fun listForMember(userId: Id<User>): List<Project> =
-    db.select("$table join project_members m on $table.id = m.projectId", ProjectMember::userId to userId) { mapper() }
+    db.select("$table join project_members m on $table.id = m.projectId", ProjectMember::userId to userId, suffix = defaultOrder) { mapper() }
 }
