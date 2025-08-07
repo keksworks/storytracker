@@ -2,6 +2,7 @@
   import {type Instant, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
+  import {user} from 'src/stores/auth'
 
   export let story: Story
   export let save: (move?: boolean) => void
@@ -11,6 +12,7 @@
 
   function start(e: Event) {
     story.status = StoryStatus.STARTED
+    story.assignedTo = $user.id
     justSave(e, true)
   }
 
