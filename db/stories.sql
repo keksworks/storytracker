@@ -48,3 +48,6 @@ alter table stories drop column afterId;
 
 --changeset stories.assignedTo
 alter table stories add column assignedTo bigint references users(id);
+
+--changeset stories.resetIterations
+update stories set iteration = null where acceptedAt is null and iteration is not null;
