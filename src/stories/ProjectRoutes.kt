@@ -61,6 +61,12 @@ class ProjectRoutes(
     return ProjectMemberUser(member, user)
   }
 
+  @POST("/:id/members/me") @Access(ADMIN, OWNER)
+  fun addMeAsMember(@PathParam id: Id<Project>, @AttrParam user: User): ProjectMemberUser {
+    val member = ProjectMember(id, user.id, MEMBER).also { projectMemberRepository.save(it) }
+    return ProjectMemberUser(member, user)
+  }
+
   @GET("/:id/epics") fun epics(@PathParam id: Id<Project>): List<Epic> =
     epicRepository.list(Epic::projectId to id)
 

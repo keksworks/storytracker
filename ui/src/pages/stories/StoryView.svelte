@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type Project, type Story, type StoryAttachment, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
+  import {type Id, type ProjectMemberUser, type Story, type StoryAttachment, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
@@ -13,8 +13,9 @@
   import {copyToClipboard} from 'src/pages/stories/clipboard'
   import SelectField from 'src/forms/SelectField.svelte'
   import api from 'src/api/api'
+  import type {ProjectContext} from 'src/pages/projects/context'
 
-  export let project: Project
+  export let project: ProjectContext
   export let story: Story
   export let movable = true
   export let firstUnstarted: Story | undefined
@@ -38,6 +39,9 @@
   async function save(move?: boolean) {
     open = false
     story = await api.post(`projects/${story.projectId}/stories`, story)
+    if (story.assignedTo && !project.members.find(m => m.user.id === story.assignedTo)) {
+      api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members = [...project.members, m])
+    }
     onSaved(story)
     if (move) setTimeout(() => {
       const beforeId = story.status === StoryStatus.ACCEPTED ? firstUnaccepted?.id : firstUnstarted?.id
@@ -63,13 +67,13 @@
   }
 
   function scrollIntoView() {
-    view.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
   }
 
   onMount(() => {
     if (open) {
       scrollIntoView();
-      (view.querySelector('[autofocus]') as HTMLInputElement)?.focus()
+      (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
   })
 </script>
@@ -100,6 +104,10 @@
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
+        {#if story.assignedTo}
+          {@const m = project.members?.find(m => m.user.id === story.assignedTo)}
+          <span title="{m?.user.firstName} {m?.user.lastName}">({m?.user.initials})</span>
+        {/if}
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
           {#each story.tags as tag}
             <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => onSearch(tag)}>{tag}</li>

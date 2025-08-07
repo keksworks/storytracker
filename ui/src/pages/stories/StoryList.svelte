@@ -1,10 +1,11 @@
 <script lang="ts">
-  import {type Project, type Story, StoryStatus} from 'src/api/types'
+  import {type Story, StoryStatus} from 'src/api/types'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import {formatDate} from '@codeborne/i18n-json'
   import {t} from 'src/i18n'
+  import type {ProjectContext} from 'src/pages/projects/context'
 
-  export let project: Project
+  export let project: ProjectContext
   export let stories: Story[]
   export let status: StoryStatus | undefined = undefined
   export let movable = true

@@ -12,11 +12,11 @@
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
   import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
+  import type {ProjectContext} from 'src/pages/projects/context'
 
   export let id: Id<Project>
 
-  let project: Project | undefined
-  let members: ProjectMemberUser[]
+  let project: ProjectContext | undefined
   let stories: Story[] = []
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
@@ -53,7 +53,7 @@
   onMount(async () => {
     project = await api.get('projects/' + id)
     velocity = project!.velocity
-    api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => members = r)
+    api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => project!.members = r)
     await loadStories(project!.currentIterationNum)
   })
 
@@ -127,7 +127,7 @@
 
 <div class="h-screen overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    {#if project && members}<ProjectMembersButton {project} {members}/>{/if}
+    {#if project?.members}<ProjectMembersButton {project}/>{/if}
     {#if project}<ProjectSettingsButton {project}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
   </Header>

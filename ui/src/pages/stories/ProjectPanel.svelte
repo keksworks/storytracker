@@ -1,14 +1,15 @@
 <script lang="ts">
-  import type {Project, Story, StoryStatus} from 'src/api/types'
+  import type {Story, StoryStatus} from 'src/api/types'
   import {t} from 'src/i18n'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
   import StoryList from 'src/pages/stories/StoryList.svelte'
   import Spinner from 'src/components/Spinner.svelte'
+  import type {ProjectContext} from 'src/pages/projects/context'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
-  export let project: Project
+  export let project: ProjectContext
   export let stories: Story[] | undefined
   export let movable = true
   export let velocity = 0
