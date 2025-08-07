@@ -105,7 +105,7 @@
       {:else}
         <span class="title flex-1">{story.name}</span>
         {#if story.assignedTo}
-          {@const m = project.members?.find(m => m.user.id === story.assignedTo)}
+          {@const m = project.members?.find(m => m.user.id == story.assignedTo)}
           <span title="{m?.user.firstName} {m?.user.lastName}">({m?.user.initials})</span>
         {/if}
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
@@ -138,6 +138,7 @@
       <div class="flex gap-2">
         <SelectField bind:value={story.type} options={t.stories.types} title={t.stories.type}/>
         <SelectField bind:value={story.status} options={t.stories.statuses} title={t.stories.status}/>
+        <SelectField bind:value={story.assignedTo} emptyOption="" options={project.members.map(m => [m.user.id, m.user.firstName + ' ' + m.user.lastName]).toObject()} title={t.stories.assignedTo}/>
       </div>
 
       <h4>{t.stories.description}</h4>

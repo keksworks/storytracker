@@ -138,7 +138,8 @@
     },
     "createdAt": "Created",
     "updatedAt": "Updated",
-    "points": "Difficulty points"
+    "points": "Difficulty points",
+    "assignedTo": "Assigned to"
   },
   "iterations": {
     "number": "Iteration number",
