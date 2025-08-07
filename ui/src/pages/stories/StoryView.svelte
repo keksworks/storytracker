@@ -20,7 +20,7 @@
   export let movable = true
   export let firstUnstarted: Story | undefined
   export let firstUnaccepted: Story | undefined
-  export let onDrag: (detail: {id: Id<Story>, beforeId?: Id<Story>}) => void = () => {}
+  export let onDrag: (detail: {id: Id<Story>, beforeId: Id<Story>}) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
   export let onSaved: (story: Story) => void = () => {}
   export let onDelete: (story: Story) => void = () => {}
@@ -45,6 +45,7 @@
     onSaved(story)
     if (move) setTimeout(() => {
       const beforeId = story.status === StoryStatus.ACCEPTED ? firstUnaccepted?.id : firstUnstarted?.id
+      if (!beforeId) return
       onDrag({id: story.id, beforeId})
       setTimeout(() => scrollIntoView(), 100)
     }, 100)
