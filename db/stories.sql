@@ -39,7 +39,7 @@ alter table stories add column ord double precision not null default 0;
 --changeset stories:project-ord
 create index on stories(projectId, ord);
 
---changeset iterations:drop-imported-future onChange:RUN
+--changeset iterations:drop-imported-future
 update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and endDate > '2025-04-28');
 delete from iterations where endDate > '2025-04-28';
 
@@ -51,3 +51,7 @@ alter table stories add column assignedTo bigint references users(id);
 
 --changeset stories.resetIterations
 update stories set iteration = null where acceptedAt is null and iteration is not null;
+
+--changeset stories:fixAcceptedIterations
+update stories s set iteration = (select max(number) from iterations i where i.projectId = s.projectId)
+                 where acceptedAt < current_timestamp - interval '5 days' and iteration is null;
