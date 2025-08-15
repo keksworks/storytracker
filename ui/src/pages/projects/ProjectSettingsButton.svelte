@@ -21,7 +21,7 @@
     project = await api.post('projects', project)
     showToast(t.general.saved)
     show = false
-    if (isNew) setTimeout(() => navigate(`/projects/${project.id}`))
+    if (isNew) setTimeout(() => navigate(`/projects/${project.id}`), 500)
   }
 </script>
 
