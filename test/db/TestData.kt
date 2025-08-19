@@ -14,10 +14,10 @@ object TestData {
   val date = LocalDate.of(2025, 3, 3)
   val now = date.atStartOfDay().toInstant(UTC)
 
-  val user = User("Test Admin", Email("pivotal@codeborne.com"), ADMIN, createdAt = now, updatedAt = now)
-  val viewer = User("Test Viewer", Email("viewer@codeborne.com"), VIEWER, createdAt = now, updatedAt = now)
+  val user = User("Test Admin", Email("pivotal@codeborne.com"), ADMIN, createdAt = now)
+  val viewer = User("Test Viewer", Email("viewer@codeborne.com"), VIEWER, createdAt = now)
 
-  val project = Project(Id(1), "Project 1", "Description", createdAt = now, updatedAt = now)
-  val story = Story(Id(), Id(1), "Story 1", createdAt = now, updatedAt = now)
-  val story2 = Story(Id(), Id(1), "Story 2", order = 2.0, createdAt = now, updatedAt = now)
+  val project = Project(Id(1), "Project 1", "Description", createdAt = now)
+  val story = Story(Id(), Id(1), "Story 1", createdAt = now)
+  val story2 = Story(Id(), Id(1), "Story 2", order = 2.0, createdAt = now)
 }

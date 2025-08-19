@@ -154,6 +154,7 @@
   },
   "errors": {
     "technical": "Technical error, please try again",
+    "staleEntity": "Modified by another user, please refresh the page",
     "paymentGatewayTimeout": "Card payment gateway did not respond, please try again after a few minutes",
     "notFound": "Not found",
     "notFoundInstructions": "Please check the URL in the address bar and try again",

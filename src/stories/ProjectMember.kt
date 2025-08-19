@@ -2,6 +2,7 @@ package stories
 
 import db.Entity
 import db.Id
+import klite.jdbc.UpdatableEntity
 import klite.jdbc.nowSec
 import users.Role
 import users.Role.MEMBER
@@ -15,7 +16,7 @@ data class ProjectMember(
   val commentNotifications: Boolean = false,
   val mentionNotifications: Boolean = false,
   val lastViewedAt: Instant? = null,
-  val updatedAt: Instant? = nowSec(),
+  override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   override val id: Id<ProjectMember> = Id(),
-): Entity<ProjectMember>/*, UpdatableEntity*/
+): Entity<ProjectMember>, UpdatableEntity

@@ -3,6 +3,7 @@ package stories
 import db.Entity
 import db.Id
 import klite.jdbc.Column
+import klite.jdbc.UpdatableEntity
 import klite.jdbc.nowSec
 import stories.Story.Status.UNSTARTED
 import stories.Story.Type.FEATURE
@@ -29,10 +30,10 @@ data class Story(
   val assignedTo: Id<User>? = null,
   val acceptedAt: Instant? = null,
   val deadline: LocalDate? = null,
-  val updatedAt: Instant? = nowSec(),
+  override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
-): Entity<Story>/*, UpdatableEntity */ {
+): Entity<Story>, UpdatableEntity {
   enum class Type {
     FEATURE, BUG, CHORE, RELEASE
   }
