@@ -8,7 +8,7 @@ import users.User
 import javax.sql.DataSource
 
 class ProjectRepository(db: DataSource): CrudRepository<Project>(db, "projects") {
-  override val defaultOrder get() = "order by updatedAt desc"
+  override val defaultOrder get() = "order by $table.updatedAt desc"
   override fun Project.persister() = toValuesSkipping(Project::tags)
 
   fun listForMember(userId: Id<User>): List<Project> =
