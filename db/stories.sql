@@ -55,3 +55,6 @@ update stories set iteration = null where acceptedAt is null and iteration is no
 --changeset stories:fixAcceptedIterations
 update stories s set iteration = (select max(number) from iterations i where i.projectId = s.projectId)
                  where acceptedAt < current_timestamp - interval '5 days' and iteration is null;
+
+--changeset stories.projectId:bigint
+alter table stories alter column projectId type bigint using projectId::bigint;

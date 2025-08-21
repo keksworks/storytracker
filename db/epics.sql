@@ -18,3 +18,6 @@ create unique index on epics(projectId, tag);
 
 --changeset epics_history
 create trigger epics_history after update on epics for each row execute function add_change_history();
+
+--changeset epics.projectId:bigint
+alter table epics alter column projectId type bigint using projectId::bigint;
