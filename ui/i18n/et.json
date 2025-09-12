@@ -18,6 +18,18 @@
     "contactUs": "Võta meiega ühendust",
     "gmail": "Gmail"
   },
+  "users": {
+    "name": "Nimi",
+    "email": "E-post",
+    "initials": "Initsiaalid",
+    "role": "Roll",
+    "roles": {
+      "OWNER": "Omanik",
+      "MEMBER": "Liige",
+      "VIEWER": "Vaataja"
+    },
+    "lastLoginAt": "Viimane sisselogimine"
+  },
   "person": {
     "birthDate": "Sünnikuupäev",
     "personalCode": "Isikukood",
@@ -37,6 +49,7 @@
     "and": "ja",
     "add": "Lisa",
     "cancel": "Tühista",
+    "submit": "Kinnita",
     "save": "Salvesta",
     "saved": "Salvestatud",
     "confirm": "Kinnita",
@@ -63,19 +76,108 @@
   },
   "login": {
     "link": "Sisene",
+    "email": "Saada kood e-postile",
+    "codeSent": "Kood saadeti aadressile {email}, kontrolli oma e-posti ja sisesta see allpool",
+    "code": "Sisselogimiskood",
     "logout": "Välju",
     "failed": "Sisenemine ebaõnnestus",
-    "noUser": "Sisenemine ebaõnnestus"
+    "noUser": "Kasutajat ei leitud"
   },
   "home": {
     "title": "Avaleht"
   },
+  "projects": {
+    "title": "Projektid",
+    "project": "Projekt",
+    "new": "Uus projekt",
+    "name": "Nimi",
+    "description": "Kirjeldus",
+    "members": "Liikmed",
+    "invite": "Kutsu liige",
+    "settings": "Seaded",
+    "defaultStoryPoints": "Vaikimisi loo punktid",
+    "iterationWeeks": "Iteratsiooni pikkus (nädalates)",
+    "velocityAveragedOver": "Keskmine kiirus iteratsioonide jooksul",
+    "currentIterationNum": "Iteratsioon",
+    "startDay": "Iteratsiooni alguspäev",
+    "velocity": "Kiirus",
+    "velocityOverride": "Ajutine kiiruse asendus",
+    "updatedAt": "Uuendatud"
+  },
+  "weekDays": {
+    "MONDAY": "Esmaspäev",
+    "TUESDAY": "Teisipäev",
+    "WEDNESDAY": "Kolmapäev",
+    "THURSDAY": "Neljapäev",
+    "FRIDAY": "Reede",
+    "SATURDAY": "Laupäev",
+    "SUNDAY": "Pühapäev"
+  },
   "samples": {
     "title": "Näidised"
   },
+  "panels": {
+    "done": "Valmis",
+    "backlog": "Tagasihoid",
+    "icebox": "Jääkast",
+    "search": "Otsi"
+  },
+  "stories": {
+    "description": "Kirjeldus",
+    "search": {
+      "placeholder": "Otsi lugusid..."
+    },
+    "tags": "Sildid",
+    "comments": "Kommentaarid",
+    "status": "Olek",
+    "statuses": {
+      "ACCEPTED": "Aktsepteeritud",
+      "DELIVERED": "Tarnitud",
+      "FINISHED": "Lõpetatud",
+      "STARTED": "Alustatud",
+      "REJECTED": "Tagasi lükatud",
+      "PLANNED": "Planeeritud",
+      "UNSTARTED": "Alustamata",
+      "UNSCHEDULED": "Ajastamata"
+    },
+    "type": "Tüüp",
+    "types": {
+      "CHORE": "Ülesanne",
+      "FEATURE": "Funktsioon",
+      "BUG": "Viga",
+      "RELEASE": "Väljalase"
+    },
+    "add": "Lisa lugu",
+    "delete": "Kustuta",
+    "deleteConfirm": "Kas kustutada lugu #{id} {name}?",
+    "actions": {
+      "start": "Alusta",
+      "finish": "Lõpeta",
+      "deliver": "Tarnida",
+      "accept": "Aktsepteeri",
+      "reject": "Lükka tagasi",
+      "restart": "Alusta uuesti"
+    },
+    "createdAt": "Loodud",
+    "updatedAt": "Uuendatud",
+    "points": "Raskuspunktid",
+    "assignedTo": "Määratud"
+  },
+  "iterations": {
+    "number": "Iteratsiooni number",
+    "startDate": "Alguskuupäev",
+    "points": "Punktid kokku"
+  },
+  "emails": {
+    "loginCode": {
+      "subject": "StoryTracker sisselogimiskood",
+      "bodyHtml": "Tere tulemast!\n\nSinu ühekordne StoryTracker sisselogimiskood on <b>{code}</b>.\n\nKui sa ei taotlenud seda koodi, siis ignoreeri seda teadet."
+    }
+  },
   "errors": {
     "technical": "Tehniline viga, palun proovi uuesti",
-    "paymentGatewayTimeout": "Kaardimakse teenus ei vasta. Palun proovi uuesti mõni minuti pärast",
+    "staleEntity": "Teine kasutaja muutis andmeid, palun värskenda lehte",
+    "paymentGatewayTimeout": "Kaardimakse teenus ei vasta. Palun proovi uuesti mõne minuti pärast",
     "notFound": "Lehte ei leitud",
     "notFoundInstructions": "Palun kontrolli URL'i korrektsust aadressiribal ja proovi uuesti",
     "alreadyExists": "Juba eksisteerib",

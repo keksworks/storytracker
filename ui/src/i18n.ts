@@ -14,7 +14,6 @@ export async function initTranslations(opts?: Partial<Options>) {
   if (lang) rememberLang(lang)
   else lang = detectLang(() => navigator.languages?.find(l => l.startsWith('et')) ? 'et' : undefined)
   const promise = lang == 'et' ? import('i18n/et.json') :
-    lang == 'ru' ? import('i18n/ru.json') :
       import('i18n/en.json')
   let dict = await promise as unknown as typeof enDict
   if (import.meta.env.DEV && lang != defaultLang) {
