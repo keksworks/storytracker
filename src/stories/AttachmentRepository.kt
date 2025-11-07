@@ -1,47 +1,17 @@
 package stories
 
 import db.Id
-import klite.Config
 import klite.NotFoundException
-import klite.error
-import klite.info
-import klite.logger
-import java.io.IOException
-import java.net.URI
 import java.nio.file.Path
 import kotlin.io.path.div
 import kotlin.io.path.exists
 
 class AttachmentRepository {
-  val path =  Path.of("attachments")
-  private val cookie = Config.optional("PIVOTAL_COOKIE")
-  private val log = logger()
+  val path = Path.of("attachments")
 
   fun file(projectId: Id<Project>, storyId: Id<Story>, filename: String): Path {
     val file = (path / projectId.toString() / storyId.toString() / filename)
     if (!file.exists()) throw NotFoundException(filename)
     return file
-  }
-
-  fun download(projectId: Id<Project>, ownerId: Id<out Any>, a: Story.Attachment, url: URI) {
-    val file = (path / projectId.toString() / ownerId.toString() / a.filename).toFile()
-    if (!file.exists() || file.length() == 0L) {
-      file.parentFile.mkdirs()
-      try {
-        file.outputStream().use { out ->
-          val conn = url.toURL().openConnection()
-          cookie?.let { conn.setRequestProperty("Cookie", "t_session=$cookie") }
-          conn.inputStream.use { it.copyTo(out) }
-          log.info("Downloaded $file")
-        }
-      } catch (e: IOException) {
-        log.error("Failed to download ${a.filename}: $e")
-        file.delete()
-        if (e.message?.contains("code: 429") == true) {
-          Thread.sleep((Math.random() * 60000 + 10000).toLong())
-          download(projectId, ownerId, a, url)
-        }
-      }
-    }
   }
 }
