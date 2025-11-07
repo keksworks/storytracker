@@ -43,7 +43,7 @@
   }
 </script>
 
-<div title={t.stories.statuses[story.status]}>
+<div title={t.stories.statuses[story.status]} class="status">
   {#if open}
     <Button {size} color="primary" variant="soft" on:click={justSave}>{t.general.save}</Button>
   {:else if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
@@ -51,7 +51,7 @@
   {:else if story.status === StoryStatus.STARTED}
     <Button {size} color="secondary" on:click={finish}>{t.stories.actions.finish}</Button>
   {:else if story.status === StoryStatus.DELIVERED}
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-start">
       <Button {size} color="success" on:click={accept}>{t.stories.actions.accept}</Button>
       <Button {size} color="danger" on:click={reject}>{t.stories.actions.reject}</Button>
     </div>
@@ -60,9 +60,15 @@
   {:else if story.status === StoryStatus.REJECTED}
     <Button {size} color="secondary" variant="soft" on:click={start}>
       <div class="flex items-center space-x-2">
-        <span class="w-3 h-3 rounded-full bg-red-700"/>
+        <span class="w-3 h-3 rounded-full bg-red-700"></span>
         <span>{t.stories.actions.restart}</span>
       </div>
     </Button>
   {/if}
 </div>
+
+<style lang="postcss">
+  .status :global(.btn) {
+    @apply whitespace-nowrap;
+  }
+</style>
