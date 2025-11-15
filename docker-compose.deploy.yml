@@ -10,7 +10,7 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
       - MAIL_FROM=storytracker@azib.net
-      - SESSION_SERET=${SESSION_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
     networks:
       - proxy
       - default
