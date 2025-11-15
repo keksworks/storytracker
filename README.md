@@ -1,4 +1,4 @@
-# StoryTracker
+# <img src="ui/public/img/logo.png" alt="Logo" height="32" width="32"/> StoryTracker
 
 Pivotal Tracker replacement for Agile project management.
 
