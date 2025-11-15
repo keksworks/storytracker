@@ -1,0 +1,30 @@
+# For deployment
+services:
+  tracker:
+    volumes:
+      - /var/tracker/attachments:/app/attachments
+    environment:
+      - ENV=prod
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - MAIL_FROM=storytracker@azib.net
+      - SESSION_SERET=${SESSION_SECRET}
+    networks:
+      - proxy
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.storytracker.rule=Host(`storytracker.azib.net`)"
+      - "traefik.http.routers.storytracker.entrypoints=websecure"
+      - "traefik.http.routers.storytracker.tls.certresolver=letsencrypt"
+
+  db:
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+
+networks:
+  proxy:
+    external: true

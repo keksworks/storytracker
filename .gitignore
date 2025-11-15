@@ -2,4 +2,6 @@
 build/
 logs/
 .DS_Store
-/attachments/*
+/attachments
+/logs
+/.env.prod
