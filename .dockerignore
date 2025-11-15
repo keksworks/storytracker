@@ -9,3 +9,6 @@ build
 /deploy.sh
 README.*
 .DS_Store
+/attachments
+/logs
+/.env.prod
