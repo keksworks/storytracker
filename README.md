@@ -2,6 +2,8 @@
 
 Pivotal Tracker replacement for Agile project management.
 
+![My Sample Project Screenshot](screenshot.png)
+
 ## Features
 
 * No stories lost/hidden - everyone sees the same stories
@@ -12,6 +14,11 @@ Pivotal Tracker replacement for Agile project management.
 * SSE for real-time updates
 * In our experience, no tool can match the visibility and simplicity of this approach
 * Suitable for truly Agile teams
+
+## Limitations
+
+* Currently designed for self-deployment (no SaaS yet)
+* Define your organization's domain in .env file
 
 ## Technical stack
 
