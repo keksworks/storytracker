@@ -2,6 +2,19 @@
 
 Pivotal Tracker replacement for Agile project management.
 
+## Features
+
+* No stories lost/hidden - everyone sees the same stories
+* Easy drag-based prioritization
+* Flow/Kanban style - you just work on the next item in backlog
+* Simple tag-based views
+* Velocity/estimation dates are tracked automatically
+* SSE for real-time updates
+* In our experience, no tool can match the visibility and simplicity of this approach
+* Suitable for truly Agile teams
+
+## Technical stack
+
 Built with:
 * [Database](db): PostgreSQL
 * [Backend](src): Kotlin/Klite
