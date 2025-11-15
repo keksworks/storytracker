@@ -1,6 +1,6 @@
 # StoryTracker
 
-Pivotal Tracker replacement for project management in Codeborne.
+Pivotal Tracker replacement for Agile project management.
 
 Built with:
 * [Database](db): PostgreSQL
@@ -14,7 +14,7 @@ Built with:
 
 Prerequisites (install these first):
 * JDK 21+
-* Node 20+
+* Node 24+
 * Docker
 
 ## Building
