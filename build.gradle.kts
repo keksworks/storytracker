@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:91e29a91" // 1.7.0+
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1ea4bc6c0c" // 1.7.0+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
