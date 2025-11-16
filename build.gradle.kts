@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.2.0"
+  kotlin("jvm") version "2.2.21"
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.codeborne.klite:klite-$module:91e29a91" // 1.7.0+
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:91e29a91" // 1.7.0+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -29,10 +29,9 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter:5.13.2")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.1")
-  testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-1")
+  testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-2")
   testImplementation("io.mockk:mockk:1.14.4")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-  api("com.codeborne:selenide:7.5.1")
 }
 
 sourceSets {
