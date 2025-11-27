@@ -25,7 +25,7 @@
       </span>
       <span>
         <slot name="right"/>
-        <Button title={t.general.close} on:click={() => show = undefined} variant="ghost">✕</Button>
+        <Button title={t.general.close} on:click={() => show = undefined} variant="ghost" class="max-sm:!hidden">✕</Button>
       </span>
     </h5>
     {#if stories}
