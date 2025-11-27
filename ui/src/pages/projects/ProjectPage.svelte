@@ -132,17 +132,17 @@
   {/if}
 </svelte:head>
 
-<div class="h-screen overflow-hidden flex flex-col">
+<div class="h-screen sm:overflow-hidden flex flex-col">
   <Header title={project?.name}>
     {#if project?.members}<ProjectMembersButton {project}/>{/if}
     {#if project}<ProjectSettingsButton {project}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
   </Header>
-  <div class="flex px-4" style="height: calc(100vh - 56px)">
-    <aside class="w-14 sticky top-0 h-full pt-3 -ml-3">
-      <div class="flex flex-col items-center gap-4">
+  <div class="flex max-sm:flex-col px-4" style="height: calc(100vh - 56px)">
+    <aside class="w-14 top-0 h-full pt-3 sm:-ml-3">
+      <div class="flex sm:flex-col items-center gap-4">
         {#each Object.keys(show) as key}
-          <Button icon={key} size="lg" title={t.panels[key]} on:click={() => toggleShow(key)}
+          <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
       </div>
