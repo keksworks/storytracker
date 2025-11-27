@@ -12,9 +12,7 @@
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
   import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
-  import type {ProjectContext} from 'src/pages/projects/context'
-
-  const isMobile = innerWidth < 500
+  import {isMobile, type ProjectContext} from 'src/pages/projects/context'
 
   export let id: Id<Project>
 

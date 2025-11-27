@@ -5,6 +5,7 @@
   import Dropdown from 'src/components/Dropdown.svelte'
   import Button from 'src/components/Button.svelte'
   import LoginButton from 'src/pages/login/LoginButton.svelte'
+  import {isMobile} from 'src/pages/projects/context'
 
   let isDropdownOpen = false
 </script>
@@ -14,7 +15,7 @@
     <Button class="sm" color="primary" variant="soft">
       <div class="flex items-center gap-1 -mx-0.5">
         <Icon name="user" strokeWidth="1.5"/>
-        <div>{$user.name}</div>
+        <div>{isMobile ? $user.initials : $user.name}</div>
         <Icon name="chevron-down" class="opacity-50"/>
       </div>
     </Button>
