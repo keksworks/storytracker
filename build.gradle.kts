@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1ea4bc6c0c" // 1.7.0+
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1.7.1"
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -21,16 +21,14 @@ dependencies {
   implementation(klite("jobs"))
   implementation(klite("smtp"))
   implementation(klite("csv"))
-  implementation("org.postgresql:postgresql:42.7.7")
-  implementation("org.xhtmlrenderer:flying-saucer-pdf:9.11.3")
-  implementation("com.github.web-eid:web-eid-authtoken-validation-java:3.1.0")
+  implementation("org.postgresql:postgresql:42.7.8")
 
   testImplementation(klite("jdbc-test"))
   testImplementation("org.junit.jupiter:junit-jupiter:5.13.2")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.1")
   testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-2")
-  testImplementation("io.mockk:mockk:1.14.4")
+  testImplementation("io.mockk:mockk:1.14.6")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }
 
