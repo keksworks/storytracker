@@ -136,15 +136,16 @@
   <Header title={project?.name}>
     {#if project?.members}<ProjectMembersButton {project}/>{/if}
     {#if project}<ProjectSettingsButton {project}/>{/if}
-    <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
+    {#if !isMobile}{@render search()}{/if}
   </Header>
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
-    <aside class="w-14 top-0 h-full pt-3 sm:-ml-3">
+    <aside class="w-14 max-sm:w-full sm:h-full pt-3 sm:-ml-3">
       <div class="flex sm:flex-col items-center gap-4">
         {#each Object.keys(show) as key}
           <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
+        {#if isMobile}{@render search()}{/if}
       </div>
     </aside>
     {#if !project || !stories}
@@ -171,3 +172,7 @@
     {/if}
   </div>
 </div>
+
+{#snippet search()}
+  <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
+{/snippet}
