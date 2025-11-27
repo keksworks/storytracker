@@ -34,25 +34,31 @@
     project!.tags = [...new Set(stories.flatMap(s => s.tags))]
   }
 
-  async function onSearch(q?: string) {
-    searchQuery = q
-    searchResults = undefined
-    if (q) {
-      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
-    } else {
-      searchQuery = undefined
-    }
-  }
-
   let show: Record<string, boolean> = {
     done: false,
     backlog: true,
     icebox: !isMobile
   }
 
+  function hideAll(key?: keyof typeof show) {
+    Object.keys(show).forEach(k => k != key && (show[k] = false))
+  }
+
   function toggleShow(key: keyof typeof show) {
-    if (isMobile) Object.keys(show).forEach(k => k != key && (show[k] = false))
+    if (isMobile) hideAll(key)
     show[key] = !show[key]
+  }
+
+  async function onSearch(q?: string) {
+    searchQuery = q
+    searchResults = undefined
+    if (q) {
+      if (isMobile) hideAll()
+      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
+    } else {
+      searchQuery = undefined
+      if (isMobile) show.backlog = true
+    }
   }
 
   let pastLoaded = false
@@ -174,5 +180,8 @@
 </div>
 
 {#snippet search()}
-  <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
+  <FormField type="search" placeholder={t.stories.search.placeholder}
+             on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}
+             on:input={e => isMobile && !e['value'] && onSearch()}
+  />
 {/snippet}
