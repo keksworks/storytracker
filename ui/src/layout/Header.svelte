@@ -7,7 +7,7 @@
   export let title = ''
 </script>
 
-<header class="bg-stone-50 border-b px-4 py-3 flex justify-between items-center">
+<header class="bg-stone-50 border-b px-4 py-3 flex flex-wrap gap-3 justify-between items-center">
   {#if title}
     <h1 class="font-bold text-2xl mr-4">{title}</h1>
   {:else}
@@ -18,7 +18,7 @@
     <Navigation/>
   </div>
 
-  <div class="flex sm:gap-3 items-center">
+  <div class="flex flex-wrap gap-3 items-center">
     <slot/>
     <LangSelect/>
     <UserMenu/>
