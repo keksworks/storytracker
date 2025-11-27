@@ -138,7 +138,7 @@
     {#if project}<ProjectSettingsButton {project}/>{/if}
     <FormField type="search" placeholder={t.stories.search.placeholder} on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}/>
   </Header>
-  <div class="flex max-sm:flex-col px-4" style="height: calc(100vh - 56px)">
+  <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
     <aside class="w-14 top-0 h-full pt-3 sm:-ml-3">
       <div class="flex sm:flex-col items-center gap-4">
         {#each Object.keys(show) as key}
