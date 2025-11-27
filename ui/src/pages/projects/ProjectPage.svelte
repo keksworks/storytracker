@@ -14,6 +14,8 @@
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import type {ProjectContext} from 'src/pages/projects/context'
 
+  const isMobile = innerWidth < 500
+
   export let id: Id<Project>
 
   let project: ProjectContext | undefined
@@ -45,7 +47,12 @@
   let show: Record<string, boolean> = {
     done: false,
     backlog: true,
-    icebox: true,
+    icebox: !isMobile
+  }
+
+  function toggleShow(key: keyof typeof show) {
+    if (isMobile) Object.keys(show).forEach(k => k != key && (show[k] = false))
+    show[key] = !show[key]
   }
 
   let pastLoaded = false
@@ -135,7 +142,7 @@
     <aside class="w-14 sticky top-0 h-full pt-3 -ml-3">
       <div class="flex flex-col items-center gap-4">
         {#each Object.keys(show) as key}
-          <Button icon={key} size="lg" title={t.panels[key]} on:click={() => show[key] = !show[key]}
+          <Button icon={key} size="lg" title={t.panels[key]} on:click={() => toggleShow(key)}
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
       </div>
