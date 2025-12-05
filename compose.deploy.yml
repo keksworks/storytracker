@@ -15,11 +15,8 @@ services:
       - proxy
       - default
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.storytracker.rule=Host(`storytracker.azib.net`)"
-      - "traefik.http.routers.storytracker.entrypoints=websecure"
-      - "traefik.http.routers.storytracker.tls.certresolver=letsencrypt"
+      - caddy=storytracker.azib.net
+      - caddy.reverse_proxy={{upstreams 8080}}
 
   db:
     volumes:
