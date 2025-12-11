@@ -17,6 +17,8 @@ services:
     labels:
       - caddy=storytracker.azib.net
       - caddy.reverse_proxy={{upstreams 8080}}
+      - caddy.reverse_proxy.lb_retries=5
+      - caddy.reverse_proxy.lb_try_interval=500ms
 
   db:
     volumes:
