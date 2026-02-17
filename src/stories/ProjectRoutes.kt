@@ -108,7 +108,7 @@ class ProjectRoutes(
   fun delete(@PathParam id: Id<Project>, @PathParam storyId: Id<Story>, @HeaderParam requesterId: String) {
     val story = storyRepository.get(storyId)
     require(story.projectId == id) { "Invalid story project" }
-    story.copy(status = DELETED, updatedAt = nowSec()).also {
+    story.copy(status = DELETED).also {
       storyRepository.save(it)
       projectFlows[it.projectId]?.tryEmit(it to requesterId)
     }
