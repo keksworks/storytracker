@@ -10,7 +10,7 @@
   export let required = true
   export let disabled = false
   export let select: HTMLSelectElement|undefined = undefined
-  export let onchange: ((e: Event) => void)|undefined = undefined
+  export let onchange: ((e: FormEvent) => void)|undefined = undefined
 
   $: if (typeof value == 'number') value = value?.toString()
 
