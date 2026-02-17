@@ -6,7 +6,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 fun Server.initDB() {
-  if (Config.isDev) startDevDB()
+  if (Config.isDev) DockerCompose.startDB()
   logger().info("Migrating " + Config["DB_URL"])
   use(DBMigrator())
   useAppDBUser()

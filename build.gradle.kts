@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.2.21"
+  kotlin("jvm") version "2.3.0"
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1.7.1"
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1.8.1"
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
