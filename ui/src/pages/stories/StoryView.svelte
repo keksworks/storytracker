@@ -2,18 +2,19 @@
   import {slide} from 'svelte/transition'
   import {type Id, type ProjectMemberUser, type Story, type StoryAttachment, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
-  import StoryPointsSelect from 'src/pages/stories/StoryPointsSelect.svelte'
+  import StoryPointsSelect from './StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {onMount} from 'svelte'
-  import StoryActions from 'src/pages/stories/StoryActions.svelte'
+  import StoryActions from './StoryActions.svelte'
   import {t} from 'src/i18n'
   import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
-  import StoryTagsEditor from 'src/pages/stories/StoryTagsEditor.svelte'
-  import {copyToClipboard} from 'src/pages/stories/clipboard'
+  import StoryTagsEditor from './StoryTagsEditor.svelte'
+  import {copyToClipboard} from './clipboard'
   import SelectField from 'src/forms/SelectField.svelte'
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import {onStatusChanged} from './status'
 
   export let project: ProjectContext
   export let story: Story
@@ -139,7 +140,7 @@
 
       <div class="flex gap-2">
         <SelectField bind:value={story.type} options={t.stories.types} title={t.stories.type}/>
-        <SelectField bind:value={story.status} options={t.stories.statuses} title={t.stories.status}/>
+        <SelectField bind:value={story.status} options={t.stories.statuses} title={t.stories.status} on:change={() => onStatusChanged(story)}/>
         <SelectField bind:value={story.assignedTo} emptyOption="" options={project.members.map(m => [m.user.id, m.user.firstName + ' ' + m.user.lastName]).toObject()} title={t.stories.assignedTo}/>
       </div>
 

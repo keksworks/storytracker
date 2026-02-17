@@ -1,8 +1,9 @@
 <script lang="ts">
-  import {type Instant, type Story, StoryStatus, StoryType} from 'src/api/types'
+  import {type Story, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
   import {user} from 'src/stores/auth'
+  import {onStatusChanged} from './status'
 
   export let story: Story
   export let save: (move?: boolean) => void
@@ -28,7 +29,6 @@
 
   function accept(e: Event) {
     story.status = StoryStatus.ACCEPTED
-    story.acceptedAt = new Date().toISOString() as Instant
     justSave(e, true)
   }
 
@@ -39,6 +39,7 @@
 
   function justSave(e: Event, move?: boolean) {
     e.stopPropagation()
+    onStatusChanged(story)
     save(move)
   }
 </script>
