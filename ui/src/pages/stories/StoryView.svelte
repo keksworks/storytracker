@@ -15,6 +15,7 @@
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {onStatusChanged} from './status'
+  import {linkify} from 'src/shared/linkify'
 
   export let project: ProjectContext
   export let story: Story
@@ -79,6 +80,14 @@
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
   })
+
+  function handleDescriptionClick(e: MouseEvent) {
+    const a = (e.target as HTMLElement).closest('a')
+    if (a) {
+      e.preventDefault()
+      window.open(a.href, '_blank')
+    }
+  }
 </script>
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
@@ -146,7 +155,9 @@
       </div>
 
       <h4>{t.stories.description}</h4>
-      <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"></div>
+      <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={story.description} contenteditable="true"
+           on:blur={() => story.description = linkify(story.description || '')}
+           on:click={handleDescriptionClick}></div>
 
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
