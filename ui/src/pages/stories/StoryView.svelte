@@ -18,9 +18,8 @@
 
   export let project: ProjectContext
   export let story: Story
+  export let stories: Story[]
   export let movable = true
-  export let firstUnstarted: Story | undefined
-  export let firstUnaccepted: Story | undefined
   export let onDrag: (detail: {id: Id<Story>, beforeId: Id<Story>}) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
   export let onSaved: (story: Story) => void = () => {}
@@ -45,11 +44,13 @@
     }
     onSaved(story)
     if (move) setTimeout(() => {
-      const beforeId = story.status === StoryStatus.ACCEPTED ? firstUnaccepted?.id : firstUnstarted?.id
-      if (!beforeId) return
-      onDrag({id: story.id, beforeId})
+      const before = story.status === StoryStatus.ACCEPTED ?
+        stories.find(s => s.status !== story.status) :
+        stories.find(s => s.status !== StoryStatus.ACCEPTED && s.status !== story.status)
+      if (!before || before.order > story.order) return
+      onDrag({id: story.id, beforeId: before.id})
       setTimeout(() => scrollIntoView(), 100)
-    }, 100)
+    })
   }
 
   function saveOnEnter(e: KeyboardEvent) {
