@@ -121,7 +121,7 @@
 
     <div class="flex items-center gap-3 max-sm:float-right">
       <StoryActions {story} {save} {open}/>
-      <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={!!story.acceptedAt}/>
+      <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={project.currentIterationNum > story.iteration!}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
