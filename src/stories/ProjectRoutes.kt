@@ -43,8 +43,16 @@ class ProjectRoutes(
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
   @POST @Access(ADMIN, OWNER, MEMBER)
-  fun save(project: Project, @AttrParam user: User): Project {
-    require(user.role == OWNER || projectMemberRepository.role(project.id, user.id) == OWNER) { "Not an owner" }
+  fun create(project: Project, @AttrParam user: User): Project {
+    projectRepository.create(project)
+    projectMemberRepository.save(ProjectMember(project.id, user.id, OWNER))
+    return project
+  }
+
+  @POST("/:id") @Access(ADMIN, OWNER, MEMBER)
+  fun save(project: Project, @PathParam id: Id<Project>, @AttrParam role: Role): Project {
+    require(id == project.id) { "Wrong id" }
+    require(role == OWNER) { "Not an owner" }
     projectRepository.save(project)
     // TODO: propagate to all members
     return project

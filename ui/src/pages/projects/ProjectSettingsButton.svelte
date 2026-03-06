@@ -19,7 +19,7 @@
   export let show = false
 
   async function submit() {
-    project = await api.post('projects', project)
+    project = await api.post('projects' + (isNew ? '' : '/' + project.id), project)
     showToast(t.general.saved)
     show = false
     if (isNew) setTimeout(() => navigate(`/projects/${project.id}`), 500)
