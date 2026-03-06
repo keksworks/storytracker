@@ -1,5 +1,5 @@
 import langs from '../i18n/langs.json'
-import {defaultLang, detectLang, type Dict, init, langs as allLangs, mergeDicts, type Options, rememberLang, resolve} from '@codeborne/i18n-json'
+import {defaultLang, detectLang, type Dict, init, langs as allLangs, mergeDicts, type Options, resolve} from '@codeborne/i18n-json'
 import {navigate as navigatorNavigate} from 'svelte5-router'
 import type enDict from 'i18n/en.json'
 
@@ -10,9 +10,7 @@ export let t = {} as typeof enDict
 
 export async function initTranslations(opts?: Partial<Options>) {
   allLangs.splice(0, 1, ...langs)
-  let lang = location.pathname.match(/^\/[a-z]{2}(\/|$)/) ? location.pathname.substring(1, 3) : undefined
-  if (lang) rememberLang(lang)
-  else lang = detectLang(() => navigator.languages?.find(l => l.startsWith('et')) ? 'et' : undefined)
+  let lang = detectLang(() => navigator.languages?.find(l => l.startsWith('et')) ? 'et' : undefined)
   const promise = lang == 'et' ? import('i18n/et.json') :
       import('i18n/en.json')
   let dict = await promise as unknown as typeof enDict
