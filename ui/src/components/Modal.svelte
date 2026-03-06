@@ -24,7 +24,7 @@
 
   onDestroy(() => {
     document.body.classList.remove('modal-open')
-    setTimeout(() => modal?.remove())
+    modal?.remove()
   })
 </script>
 
