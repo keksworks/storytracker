@@ -6,12 +6,13 @@
   import ProjectMembers from 'src/pages/projects/ProjectMembers.svelte'
 
   export let project: ProjectContext
+  export let isOwner = false
 
-  export let show = false
+  let show = false
 </script>
 
 <Button label={t.projects.members} on:click={() => show = true}/>
 
 <Modal bind:show title={t.projects.members} wide>
-  <ProjectMembers {project}/>
+  <ProjectMembers {project} {isOwner}/>
 </Modal>

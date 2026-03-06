@@ -7,9 +7,9 @@
   import Button from 'src/components/Button.svelte'
   import Modal from 'src/components/Modal.svelte'
   import MemberForm from 'src/pages/projects/MemberForm.svelte'
-  import {user} from 'src/stores/auth'
 
   export let project: ProjectContext
+  export let isOwner = false
 
   let editMember: ProjectMemberRequest|false = false
 
@@ -25,8 +25,6 @@
     project.members = project.members.replaceById(m)
     editMember = false
   }
-
-  $: canEdit = $user.role == Role.OWNER || project.members.find(m => m.user.id == $user.id)?.member.role == Role.OWNER
 </script>
 
 <SortableTable labels={t.users} columns={[
@@ -44,14 +42,14 @@
     <td>{t.users.roles[m.member.role]}</td>
     <td>{formatDateTime(m.user.lastLoginAt)}</td>
     <td>
-      {#if canEdit}
+      {#if isOwner}
         <Button label={t.general.edit} on:click={() => edit(m)}/>
       {/if}
     </td>
   </tr>
 </SortableTable>
 
-{#if canEdit}
+{#if isOwner}
   <Button label={t.projects.invite} on:click={invite} color="secondary"/>
 {/if}
 

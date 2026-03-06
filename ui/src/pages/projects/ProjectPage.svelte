@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Id, type Project, type ProjectMemberUser, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
+  import {type Id, type Project, type ProjectMemberUser, Role, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
@@ -13,6 +13,7 @@
   import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
+  import {user} from 'src/stores/auth'
 
   export let id: Id<Project>
 
@@ -21,6 +22,8 @@
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
   let velocity = 10
+
+  $: isOwner = $user.role == Role.OWNER || project?.members?.find(m => m.user.id == $user.id)?.member.role == Role.OWNER
 
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
@@ -138,8 +141,10 @@
 
 <div class="h-screen sm:overflow-hidden flex flex-col">
   <Header title={project?.name}>
-    {#if project?.members}<ProjectMembersButton {project}/>{/if}
-    {#if project}<ProjectSettingsButton {project}/>{/if}
+    {#if project?.members}
+      <ProjectMembersButton {project} {isOwner}/>
+      <ProjectSettingsButton {project} {isOwner}/>
+    {/if}
     {#if !isMobile}{@render search()}{/if}
   </Header>
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
