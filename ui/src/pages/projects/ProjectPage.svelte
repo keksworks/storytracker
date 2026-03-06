@@ -23,10 +23,6 @@
   let searchResults: Story[] | undefined
   let velocity = 10
 
-  $: role = project?.members?.find(m => m.user.id == $user.id)?.member?.role
-  $: isOwner = $user.isAdmin || role == Role.OWNER
-  $: canEdit = isOwner || role == Role.MEMBER
-
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
     if (v) velocity = v
@@ -69,7 +65,12 @@
   onMount(async () => {
     project = await api.get('projects/' + id)
     velocity = project!.velocity
-    api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => project!.members = r)
+    api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => {
+      project!.members = r
+      const role = project?.members?.find(m => m.user.id == $user.id)?.member?.role
+      project!.isOwner = $user.isAdmin || role == Role.OWNER
+      project!.canEdit = project!.isOwner || role == Role.MEMBER
+    })
     await loadStories(project!.currentIterationNum)
   })
 
@@ -144,8 +145,8 @@
 <div class="h-screen sm:overflow-hidden flex flex-col">
   <Header title={project?.name}>
     {#if project?.members}
-      <ProjectMembersButton {project} {isOwner}/>
-      <ProjectSettingsButton {project} {isOwner}/>
+      <ProjectMembersButton {project}/>
+      <ProjectSettingsButton {project}/>
     {/if}
     {#if !isMobile}{@render search()}{/if}
   </Header>
@@ -168,9 +169,9 @@
         <ProjectPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
 
         <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
-          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity} disabled={!canEdit}>⚡{velocity}</button>
+          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
           <span slot="right">
-            {#if canEdit}
+            {#if project?.canEdit}
               <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
             {/if}
           </span>
@@ -178,7 +179,7 @@
 
         <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <span slot="right">
-            {#if canEdit}
+            {#if project?.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
             {/if}
           </span>

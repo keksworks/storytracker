@@ -11,9 +11,8 @@
   import {showToast} from 'src/stores/toasts'
   import type {ProjectContext} from 'src/pages/projects/context'
 
-  export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3} as ProjectContext
+  export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3, isOwner: true} as ProjectContext
   export let label = t.projects.settings
-  export let isOwner = true
 
   const isNew = !project.id
   export let show = false
@@ -36,6 +35,6 @@
     <NumberField label={t.projects.iterationWeeks} bind:value={project.iterationWeeks} required={false} min={1} max={4}/>
     <NumberField label={t.projects.velocityAveragedOver} bind:value={project.velocityAveragedOver} required={false} min={1} max={10}/>
     <SelectField label={t.projects.startDay} bind:value={project.startDay} options={t.weekDays}/>
-    <Button type="submit" label={t.general.save} disabled={!isOwner}/>
+    <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
   </Form>
 </Modal>

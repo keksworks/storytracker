@@ -9,7 +9,6 @@
   import MemberForm from 'src/pages/projects/MemberForm.svelte'
 
   export let project: ProjectContext
-  export let isOwner = false
 
   let editMember: ProjectMemberRequest|false = false
 
@@ -42,14 +41,14 @@
     <td>{t.users.roles[m.member.role]}</td>
     <td>{formatDateTime(m.user.lastLoginAt)}</td>
     <td>
-      {#if isOwner}
+      {#if project.isOwner}
         <Button label={t.general.edit} on:click={() => edit(m)}/>
       {/if}
     </td>
   </tr>
 </SortableTable>
 
-{#if isOwner}
+{#if project.isOwner}
   <Button label={t.projects.invite} on:click={invite} color="secondary"/>
 {/if}
 

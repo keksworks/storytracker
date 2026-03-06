@@ -11,7 +11,7 @@
   export let show: boolean | string | undefined
   export let project: ProjectContext
   export let stories: Story[] | undefined
-  export let movable = true
+  export let movable = project.canEdit
   export let velocity = 0
   export let status: StoryStatus | undefined = undefined
 </script>

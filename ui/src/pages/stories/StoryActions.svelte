@@ -8,6 +8,7 @@
   export let story: Story
   export let save: (move?: boolean) => void
   export let open: boolean
+  export let disabled: boolean
 
   const size = 'sm'
 
@@ -46,20 +47,20 @@
 
 <div title={t.stories.statuses[story.status]} class="status">
   {#if open}
-    <Button {size} color="primary" variant="soft" on:click={justSave}>{t.general.save}</Button>
+    <Button {size} color="primary" variant="soft" on:click={justSave} {disabled}>{t.general.save}</Button>
   {:else if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
-    <Button {size} color="secondary" variant="soft" on:click={start}>{t.stories.actions.start}</Button>
+    <Button {size} color="secondary" variant="soft" on:click={start} {disabled}>{t.stories.actions.start}</Button>
   {:else if story.status === StoryStatus.STARTED}
-    <Button {size} color="secondary" on:click={finish}>{t.stories.actions.finish}</Button>
+    <Button {size} color="secondary" on:click={finish} {disabled}>{t.stories.actions.finish}</Button>
   {:else if story.status === StoryStatus.DELIVERED}
     <div class="flex gap-2 items-start">
-      <Button {size} color="success" on:click={accept}>{t.stories.actions.accept}</Button>
-      <Button {size} color="danger" on:click={reject}>{t.stories.actions.reject}</Button>
+      <Button {size} color="success" on:click={accept} {disabled}>{t.stories.actions.accept}</Button>
+      <Button {size} color="danger" on:click={reject} {disabled}>{t.stories.actions.reject}</Button>
     </div>
   {:else if story.status === StoryStatus.FINISHED}
-    <Button {size} color="warning" on:click={deliver}>{t.stories.actions.deliver}</Button>
+    <Button {size} color="warning" on:click={deliver} {disabled}>{t.stories.actions.deliver}</Button>
   {:else if story.status === StoryStatus.REJECTED}
-    <Button {size} color="secondary" variant="soft" on:click={start}>
+    <Button {size} color="secondary" variant="soft" on:click={start} {disabled}>
       <div class="flex items-center space-x-2">
         <span class="w-3 h-3 rounded-full bg-red-700"></span>
         <span>{t.stories.actions.restart}</span>
