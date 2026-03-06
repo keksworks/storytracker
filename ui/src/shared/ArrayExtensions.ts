@@ -35,8 +35,10 @@ Array.prototype.remove = function<T>(i: number) {
   return this
 }
 
-Array.prototype.replaceById = function<T extends {id: string}>(e: T) {
-  this[this.findIndex((a: T) => a.id == e.id)] = e
+Array.prototype.replaceById = function<T extends {id: any}>(e: T) {
+  let index = this.findIndex((a: T) => a.id === e.id)
+  if (index < 0) index = this.length
+  this[index] = e
   return this
 }
 

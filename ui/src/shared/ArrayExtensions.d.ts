@@ -12,5 +12,5 @@ interface Array<T extends any> {
   countBy<R>(by: (e: T) => string|number): {[by: string]: number}
   toObject(): {[by: string]: any}
   remove(i: number): this
-  replaceById<E extends T & {id: string}>(e: E): this
+  replaceById<E extends T & {id: any}>(e: E): this
 }

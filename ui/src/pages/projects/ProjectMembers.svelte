@@ -1,9 +1,8 @@
 <script lang="ts">
   import type {ProjectContext} from 'src/pages/projects/context'
   import SortableTable from 'src/components/SortableTable.svelte'
-  import {t} from 'src/i18n'
+  import {formatDateTime, t} from 'src/i18n'
   import ContactLink from 'src/components/ContactLink.svelte'
-  import {formatDateTime} from '@codeborne/i18n-json'
   import {type ProjectMemberRequest, type ProjectMemberUser, Role} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import Modal from 'src/components/Modal.svelte'
@@ -11,15 +10,19 @@
 
   export let project: ProjectContext
 
-  let edit: ProjectMemberRequest|false = false
+  let editMember: ProjectMemberRequest|false = false
 
   function invite() {
-    edit = {role: Role.MEMBER} as ProjectMemberRequest
+    editMember = {role: Role.MEMBER} as ProjectMemberRequest
+  }
+
+  function edit(m: ProjectMemberUser) {
+    editMember = {id: m.id, email: m.user.email, name: m.user.name, initials: m.user.initials, role: m.member.role} as ProjectMemberRequest
   }
 
   function onsaved(m: ProjectMemberUser) {
-    edit = false
-    project.members = [...project.members, m]
+    project.members = project.members.replaceById(m)
+    editMember = false
   }
 </script>
 
@@ -28,7 +31,8 @@
     ['initials', m => m.user.initials],
     ['email', m => m.user.email],
     ['role', m => m.member.role],
-    ['lastLoginAt', m => m.user.lastLoginAt]
+    ['lastLoginAt', m => m.user.lastLoginAt],
+    ''
   ]} items={project.members} let:item={m}>
   <tr>
     <td>{m.user.name}</td>
@@ -36,13 +40,14 @@
     <td><ContactLink contact={m.user.email}/></td>
     <td>{t.users.roles[m.member.role]}</td>
     <td>{formatDateTime(m.user.lastLoginAt)}</td>
+    <td><Button label={t.general.edit} on:click={() => edit(m)}/></td>
   </tr>
 </SortableTable>
 
-<Button label={t.projects.invite} on:click={invite}/>
+<Button label={t.projects.invite} on:click={invite} color="secondary"/>
 
-<Modal bind:show={edit} title={t.projects.invite}>
-  {#if edit}
-    <MemberForm {project} member={edit} {onsaved}/>
+<Modal bind:show={editMember} title={t.projects.invite}>
+  {#if editMember}
+    <MemberForm {project} member={editMember} {onsaved}/>
   {/if}
 </Modal>

@@ -54,10 +54,16 @@ class ProjectRoutes(
     projectMemberRepository.listWithUsers(id)
 
   @POST("/:id/members") @Access(ADMIN, OWNER)
-  fun addMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
-    val user = userRepository.by(User::email eq req.email) ?:
-    User(req.name, req.email, MEMBER, initials = req.initials).also { userRepository.save(it) }
-    val member = ProjectMember(id, user.id, req.role).also { projectMemberRepository.save(it) }
+  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
+    val existingMember = req.id?.let { projectMemberRepository.get(it) }
+    require(existingMember == null || existingMember.projectId == id)
+    val existingUser = existingMember?.userId?.let { userRepository.get(it) }
+      ?: userRepository.by(User::email eq req.email)
+    val user = existingUser?.copy(email = req.email, name = req.name, initials = req.initials)
+      ?: User(req.name, req.email, MEMBER, initials = req.initials)
+    userRepository.save(user)
+    val member = existingMember?.copy(role = req.role) ?: ProjectMember(projectId = id, user.id, req.role)
+    projectMemberRepository.save(member)
     return ProjectMemberUser(member, user)
   }
 
@@ -120,4 +126,4 @@ class ProjectRoutes(
   }
 }
 
-data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String)
+data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String, val id: Id<ProjectMember>? = null)
