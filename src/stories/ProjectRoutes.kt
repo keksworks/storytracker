@@ -42,7 +42,7 @@ class ProjectRoutes(
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
-  @POST @Access(ADMIN, OWNER)
+  @POST @Access(ADMIN, OWNER, MEMBER)
   fun save(project: Project, @AttrParam user: User): Project {
     require(user.role == OWNER || projectMemberRepository.role(project.id, user.id) == OWNER) { "Not an owner" }
     projectRepository.save(project)
@@ -53,8 +53,9 @@ class ProjectRoutes(
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
     projectMemberRepository.listWithUsers(id)
 
-  @POST("/:id/members") @Access(ADMIN, OWNER)
-  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
+  @POST("/:id/members") @Access(ADMIN, OWNER, MEMBER)
+  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest, @AttrParam role: Role): ProjectMemberUser {
+    require(role == OWNER) { "Not an owner" }
     val existingMember = req.id?.let { projectMemberRepository.get(it) }
     require(existingMember == null || existingMember.projectId == id)
     val existingUser = existingMember?.userId?.let { userRepository.get(it) }

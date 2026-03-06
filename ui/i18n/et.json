@@ -93,6 +93,7 @@
     "name": "Nimi",
     "description": "Kirjeldus",
     "members": "Liikmed",
+    "member": "Liige",
     "invite": "Kutsu liige",
     "settings": "Seaded",
     "defaultStoryPoints": "Vaikimisi loo punktid",

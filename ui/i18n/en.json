@@ -71,6 +71,7 @@
     "name": "Name",
     "description": "Description",
     "members": "Members",
+    "member": "Member",
     "invite": "Invite member",
     "settings": "Settings",
     "defaultStoryPoints": "Default story points",
