@@ -16,20 +16,20 @@ class UserRoutes(
   fun all(@QueryParam from: LocalDate, @QueryParam until: LocalDate) =
     userRepository.list(or(User::isAdmin to true, User::lastLoginAt to null, User::lastLoginAt to BetweenExcl(from, until.plusDays(1))))
 
-  @POST @Access(ADMIN)
+  @POST
   fun save(user: User): User {
     userRepository.save(user)
     return user
   }
 
-  @PUT("/:id/lang") @Access(ADMIN)
+  @PUT("/:id/lang")
   fun updateLang(@PathParam id: Id<User>, req: ChangeLangRequest): User {
     val user = userRepository.get(id)
     userRepository.save(user.copy(lang = req.lang))
     return user
   }
 
-  @GET("/:id") @Access(ADMIN)
+  @GET("/:id")
   fun user(@PathParam id: Id<User>) = userRepository.get(id)
 }
 

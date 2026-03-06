@@ -9,7 +9,8 @@ import klite.ForbiddenException
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import users.Role.*
+import users.Role.ADMIN
+import users.Role.VIEWER
 
 class AccessCheckerTest: BaseMocks() {
   val checker = create<AccessChecker>()
@@ -37,7 +38,7 @@ class AccessCheckerTest: BaseMocks() {
 
   @Test fun `forbids access without matching role`() = runTest {
     every { exchange.session["userId"] } returns user.id.toString()
-    every { exchange.route.annotations } returns listOf(Access(OWNER))
+    every { exchange.route.annotations } returns listOf(Access(ADMIN))
     assertThrows<ForbiddenException> { checker.before(exchange) }
     verify { exchange.attr("user", user) }
   }

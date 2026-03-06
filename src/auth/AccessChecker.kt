@@ -7,6 +7,8 @@ import klite.HttpExchange
 import klite.NotFoundRoute
 import klite.RequestMethod.OPTIONS
 import users.Role
+import users.Role.ADMIN
+import users.Role.OWNER
 import users.User
 import users.UserRepository
 import kotlin.annotation.AnnotationTarget.CLASS
@@ -27,7 +29,7 @@ class AccessChecker(private val userRepository: UserRepository): Before {
     if (user == null && !isPublic) throw ForbiddenException()
     if (user != null && !isPublic) {
       if (access == null) error("@Access annotation is required for non-@Public routes")
-      val userRole = if (user.isAdmin) Role.ADMIN else Role.MEMBER
+      val userRole = if (user.isAdmin) ADMIN else OWNER
       if (access.roles.none { it == userRole }) throw ForbiddenException()
     }
     if (user != null) userRepository.setAppUser(user)

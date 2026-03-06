@@ -17,6 +17,7 @@ import users.User
 import users.UserRepository
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.full.findAnnotation
 
 @Access(ADMIN, OWNER, MEMBER, VIEWER)
 class ProjectRoutes(
@@ -30,8 +31,9 @@ class ProjectRoutes(
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
-      val role = if (e.user.isAdmin) OWNER else projectMemberRepository.role(Id(it), e.user.id)
-      if (role == null) throw ForbiddenException()
+      val role = if (e.user.isAdmin) ADMIN else projectMemberRepository.role(Id(it), e.user.id)
+      val allowedRoles = e.route.findAnnotation<Access>()?.roles?.toList() ?: emptyList()
+      if (role !in allowedRoles) throw ForbiddenException()
       e.attr("role", role)
     }
   }
@@ -49,10 +51,9 @@ class ProjectRoutes(
     return project
   }
 
-  @POST("/:id") @Access(ADMIN, OWNER, MEMBER)
-  fun save(project: Project, @PathParam id: Id<Project>, @AttrParam role: Role): Project {
+  @POST("/:id") @Access(ADMIN, OWNER)
+  fun save(project: Project, @PathParam id: Id<Project>): Project {
     require(id == project.id) { "Wrong id" }
-    require(role == OWNER) { "Not an owner" }
     projectRepository.save(project)
     // TODO: propagate to all members
     return project
@@ -61,9 +62,8 @@ class ProjectRoutes(
   @GET("/:id/members") fun members(@PathParam id: Id<Project>): List<ProjectMemberUser> =
     projectMemberRepository.listWithUsers(id)
 
-  @POST("/:id/members") @Access(ADMIN, OWNER, MEMBER)
-  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest, @AttrParam role: Role): ProjectMemberUser {
-    require(role == OWNER) { "Not an owner" }
+  @POST("/:id/members") @Access(ADMIN, OWNER)
+  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
     val existingMember = req.id?.let { projectMemberRepository.get(it) }
     require(existingMember == null || existingMember.projectId == id)
     val existingUser = existingMember?.userId?.let { userRepository.get(it) }
