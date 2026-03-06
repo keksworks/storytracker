@@ -23,9 +23,6 @@ create trigger users_history after update on users for each row execute function
 --changeset users.lastLoginAt
 alter table users rename column lastOnlineAt to lastLoginAt;
 
---changeset users.member
-update users set role = 'MEMBER' where role = 'VIEWER';
-
 --changeset users.isAdmin
 alter table users add column isAdmin boolean not null default false;
 
