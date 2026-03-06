@@ -1,7 +1,7 @@
 package db
 
+import db.TestData.admin
 import db.TestData.user
-import db.TestData.viewer
 import klite.Config
 import klite.isTest
 import klite.jdbc.DBMigrator
@@ -27,9 +27,9 @@ abstract class DBTest: klite.jdbc.DBTest() {
 
   @BeforeEach override fun startTx() {
     super.startTx()
-    db.exec("call set_app_user(${user.id.value})") {}
+    db.exec("call set_app_user(${admin.id.value})") {}
 
-    val userRepository = UserRepository(db).apply { save(viewer) }
+    val userRepository = UserRepository(db).apply { save(user) }
   }
 
   @AfterEach fun resetTestData() {

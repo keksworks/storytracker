@@ -1,7 +1,7 @@
 package auth
 
 import db.BaseMocks
-import db.TestData.viewer
+import db.TestData.admin
 import db.TestData.user
 import io.mockk.every
 import io.mockk.verify
@@ -26,37 +26,37 @@ class AccessCheckerTest: BaseMocks() {
   }
 
   @Test fun `access granted`() = runTest {
-    every { exchange.session["userId"] } returns user.id.toString()
-    every { exchange.route.annotations } returns listOf(Access(user.role))
+    every { exchange.session["userId"] } returns admin.id.toString()
+    every { exchange.route.annotations } returns listOf(Access(ADMIN))
     checker.before(exchange)
     verify {
-      exchange.attr("user", user)
-      userRepository.setAppUser(user)
+      exchange.attr("user", admin)
+      userRepository.setAppUser(admin)
     }
   }
 
   @Test fun `forbids access without matching role`() = runTest {
-    every { exchange.session["userId"] } returns viewer.id.toString()
+    every { exchange.session["userId"] } returns user.id.toString()
     every { exchange.route.annotations } returns listOf(Access(OWNER))
     assertThrows<ForbiddenException> { checker.before(exchange) }
-    verify { exchange.attr("user", viewer) }
+    verify { exchange.attr("user", user) }
   }
 
   @Test fun `Access annotation overrides Public (eg on class)`() = runTest {
-    every { exchange.session["userId"] } returns viewer.id.toString()
+    every { exchange.session["userId"] } returns user.id.toString()
     every { exchange.route.annotations } returns listOf(Public(), Access(ADMIN))
     assertThrows<ForbiddenException> { checker.before(exchange) }
   }
 
   @Test fun `allows access for route with multiple roles`() = runTest {
-    every { exchange.session["userId"] } returns user.id.toString()
+    every { exchange.session["userId"] } returns admin.id.toString()
     every { exchange.route.annotations } returns listOf(Access(ADMIN, VIEWER))
     checker.before(exchange)
-    verify { exchange.attr("user", user) }
+    verify { exchange.attr("user", admin) }
   }
 
   @Test fun `requires @Access annotation`() = runTest {
-    every { exchange.session["userId"] } returns user.id.toString()
+    every { exchange.session["userId"] } returns admin.id.toString()
     assertThrows<IllegalStateException> { checker.before(exchange) }
   }
 }

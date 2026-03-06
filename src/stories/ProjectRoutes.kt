@@ -30,14 +30,14 @@ class ProjectRoutes(
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
-      val role = if (e.user.role == OWNER) OWNER else projectMemberRepository.role(Id(it), e.user.id)
+      val role = if (e.user.isAdmin) OWNER else projectMemberRepository.role(Id(it), e.user.id)
       if (role == null) throw ForbiddenException()
       e.attr("role", role)
     }
   }
 
   @GET fun list(@AttrParam user: User) =
-    if (user.role == OWNER) projectRepository.list()
+    if (user.isAdmin) projectRepository.list()
     else projectRepository.listForMember(user.id)
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
@@ -69,7 +69,7 @@ class ProjectRoutes(
     val existingUser = existingMember?.userId?.let { userRepository.get(it) }
       ?: userRepository.by(User::email eq req.email)
     val user = existingUser?.copy(email = req.email, name = req.name, initials = req.initials)
-      ?: User(req.name, req.email, MEMBER, initials = req.initials)
+      ?: User(req.name, req.email, initials = req.initials)
     userRepository.save(user)
     val member = existingMember?.copy(role = req.role) ?: ProjectMember(projectId = id, user.id, req.role)
     projectMemberRepository.save(member)

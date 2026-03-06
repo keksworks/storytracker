@@ -17,7 +17,7 @@ export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentI
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
 // class stories.ProjectMemberRequest
-export interface ProjectMemberRequest {email: Email; initials: string; name: string; role: Role}
+export interface ProjectMemberRequest {email: Email; id?: Id<ProjectMember>; initials: string; name: string; role: Role}
 // class stories.ProjectMemberUser
 export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
 // class stories.Story$Attachment
@@ -43,7 +43,7 @@ export interface ChangeLangRequest {lang: string}
 // class users.Role
 export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
-export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; lang: string; lastLoginAt?: Instant; lastName: string; name: string; role: Role; updatedAt?: Instant; username?: string}
+export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`
@@ -57,10 +57,10 @@ export type Email = `${string}@${string}`
 export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDNESDAY', THURSDAY = 'THURSDAY', FRIDAY = 'FRIDAY', SATURDAY = 'SATURDAY', SUNDAY = 'SUNDAY'}
 
 // db.TestData
+export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
 export const date = "2025-03-03" as LocalDate
 export const now = "2025-03-03T00:00:00Z" as Instant
 export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3} as Project
 export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
 export const story2 = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 2","order":2.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
-export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"lang":"en","lastName":"Admin","name":"Test Admin","role":"ADMIN"} as User
-export const viewer = {"createdAt":"2025-03-03T00:00:00Z","email":"viewer@azib.net","firstName":"Test","id":200000002,"lang":"en","lastName":"Viewer","name":"Test Viewer","role":"VIEWER"} as User
+export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":200000002,"isAdmin":false,"lang":"en","lastName":"User","name":"Test User"} as User

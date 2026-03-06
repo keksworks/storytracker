@@ -16,12 +16,12 @@ enum class Role {
 data class User(
   val name: String,
   override val email: Email,
-  val role: Role,
   val avatarUrl: URI? = null,
   val initials: String? = null,
   val username: String? = null,
   val lastLoginAt: Instant? = null,
   val lang: String = "en",
+  val isAdmin: Boolean = false,
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   override val id: Id<User> = Id(),

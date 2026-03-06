@@ -25,3 +25,12 @@ alter table users rename column lastOnlineAt to lastLoginAt;
 
 --changeset users.member
 update users set role = 'MEMBER' where role = 'VIEWER';
+
+--changeset users.isAdmin
+alter table users add column isAdmin boolean not null default false;
+
+--changeset users.isAdmin:migrate
+update users set isAdmin = true where role = 'OWNER';
+
+--changeset users.role:drop context:test
+alter table users drop column role;

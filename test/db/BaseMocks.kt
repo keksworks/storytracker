@@ -1,7 +1,7 @@
 package db
 
+import db.TestData.admin
 import db.TestData.user
-import db.TestData.viewer
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -39,8 +39,8 @@ abstract class BaseMocks {
     }
 
     userRepository.apply {
+      every { get(admin.id) } returns admin
       every { get(user.id) } returns user
-      every { get(viewer.id) } returns viewer
     }
   }
 }

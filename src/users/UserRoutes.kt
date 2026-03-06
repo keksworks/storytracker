@@ -14,7 +14,7 @@ class UserRoutes(
 ) {
   @GET
   fun all(@QueryParam from: LocalDate, @QueryParam until: LocalDate) =
-    userRepository.list(or(User::role to ADMIN, User::lastLoginAt to null, User::lastLoginAt to BetweenExcl(from, until.plusDays(1))))
+    userRepository.list(or(User::isAdmin to true, User::lastLoginAt to null, User::lastLoginAt to BetweenExcl(from, until.plusDays(1))))
 
   @POST @Access(ADMIN)
   fun save(user: User): User {

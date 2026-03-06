@@ -5,8 +5,8 @@ import ch.tutteli.atrium.api.fluent.en_GB.toContain
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import db.DBTest
+import db.TestData.admin
 import db.TestData.project
-import db.TestData.user
 import org.junit.jupiter.api.Test
 import users.UserRepository
 
@@ -19,9 +19,9 @@ class ProjectRepositoryTest: DBTest() {
     expect(repository.get(project.id)).toEqual(project)
     expect(repository.list()).toContain(project)
 
-    UserRepository(db).save(user)
-    expect(repository.listForMember(user.id)).toBeEmpty()
-    memberRepository.save(ProjectMember(project.id, user.id))
-    expect(repository.listForMember(user.id)).toContain(project)
+    UserRepository(db).save(admin)
+    expect(repository.listForMember(admin.id)).toBeEmpty()
+    memberRepository.save(ProjectMember(project.id, admin.id))
+    expect(repository.listForMember(admin.id)).toContain(project)
   }
 }

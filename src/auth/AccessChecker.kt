@@ -27,7 +27,8 @@ class AccessChecker(private val userRepository: UserRepository): Before {
     if (user == null && !isPublic) throw ForbiddenException()
     if (user != null && !isPublic) {
       if (access == null) error("@Access annotation is required for non-@Public routes")
-      if (access.roles.none { it == user.role }) throw ForbiddenException()
+      val userRole = if (user.isAdmin) Role.ADMIN else Role.MEMBER
+      if (access.roles.none { it == userRole }) throw ForbiddenException()
     }
     if (user != null) userRepository.setAppUser(user)
   }

@@ -9,7 +9,6 @@ import io.mockk.verify
 import klite.oauth.OAuthTokenResponse
 import klite.oauth.UserProfile
 import org.junit.jupiter.api.Test
-import users.Role.OWNER
 import users.User
 
 class AuthUserProviderTest: BaseMocks() {
@@ -31,7 +30,7 @@ class AuthUserProviderTest: BaseMocks() {
     val user = provider.provide(profile, tokenResponse, exchange) as User
 
     expect(user.email).toEqual(user.email)
-    expect(user.role).toEqual(OWNER)
+    expect(user.isAdmin).toEqual(true)
     verify { userRepository.save(user) }
   }
 }
