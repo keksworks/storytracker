@@ -23,7 +23,9 @@
   let searchResults: Story[] | undefined
   let velocity = 10
 
-  $: isOwner = $user.role == Role.OWNER || project?.members?.find(m => m.user.id == $user.id)?.member.role == Role.OWNER
+  $: role = project?.members?.find(m => m.user.id == $user.id)?.member?.role
+  $: isOwner = $user.isAdmin || role == Role.OWNER
+  $: canEdit = isOwner || role == Role.MEMBER
 
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
@@ -166,12 +168,20 @@
         <ProjectPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
 
         <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
-          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
-          <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
-        </ProjectPanel>
+          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity} disabled={!canEdit}>⚡{velocity}</button>
+          <span slot="right">
+            {#if canEdit}
+              <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
+            {/if}
+          </span>
+       </ProjectPanel>
 
         <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
-          <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
+          <span slot="right">
+            {#if canEdit}
+              <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
+            {/if}
+          </span>
         </ProjectPanel>
 
         <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
