@@ -10,7 +10,7 @@ export let t = {} as typeof enDict
 
 export async function initTranslations(opts?: Partial<Options>) {
   allLangs.splice(0, 1, ...langs)
-  let lang = detectLang(() => navigator.languages?.find(l => l.startsWith('et')) ? 'et' : undefined)
+  const lang = detectLang()
   const promise = lang == 'et' ? import('i18n/et.json') :
       import('i18n/en.json')
   let dict = await promise as unknown as typeof enDict
