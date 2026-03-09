@@ -86,9 +86,10 @@ class ProjectRoutes(
     epicRepository.list(Epic::projectId to id)
 
   @POST("/:id/epics") @Access(ADMIN, OWNER, MEMBER)
-  fun saveEpic(@PathParam id: Id<Project>, epic: Epic) {
+  fun saveEpic(@PathParam id: Id<Project>, epic: Epic): Epic {
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.save(epic)
+    return epic
   }
 
   @DELETE("/:id/epics/:epicId") @Access(ADMIN, OWNER, MEMBER)
