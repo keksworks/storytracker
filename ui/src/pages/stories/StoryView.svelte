@@ -111,9 +111,10 @@
           {@const m = project.members[story.assignedTo]}
           <span title={m?.user.name}>({m?.user.initials})</span>
         {/if}
-        <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
+        <ul class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
           {#each story.tags as tag}
-            <li class="hover:text-green-600 whitespace-nowrap cursor-pointer" on:click|stopPropagation={() => onSearch(tag)}>{tag}</li>
+            <li class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
+                on:click|stopPropagation={() => onSearch(tag)}>{tag}</li>
           {/each}
         </ul>
       {/if}
