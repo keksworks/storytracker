@@ -1,15 +1,15 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Id, type ProjectMemberUser, type Story, type StoryAttachment, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
+  import {type Id, type ProjectMemberUser, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from './StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {onMount} from 'svelte'
   import StoryActions from './StoryActions.svelte'
   import {t} from 'src/i18n'
-  import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
   import StoryTagsEditor from './StoryTagsEditor.svelte'
+  import StoryComments from './StoryComments.svelte'
   import {copyToClipboard} from './clipboard'
   import SelectField from 'src/forms/SelectField.svelte'
   import api from 'src/api/api'
@@ -61,14 +61,6 @@
     }
   }
 
-  function addComment() {
-    story.comments = [...story.comments, {
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      createdBy: $user.id,
-      attachments: [] as StoryAttachment[],
-    } as StoryComment]
-  }
 
   function scrollIntoView() {
     view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
@@ -162,24 +154,7 @@
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
 
-      <h4>{t.stories.comments}</h4>
-      {#each story.comments as comment}
-        <div>
-          <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
-          <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
-          {#each comment.attachments as attachment}
-            {@const url = `/api/projects/${story.projectId}/stories/${story.id}/attachments/${encodeURIComponent(attachment.filename)}`}
-            <a href={url} target="_blank">
-              {#if attachment.width && attachment.height}
-                <img src={url} class="max-h-32 mt-2">
-              {:else}
-                {attachment.filename}
-              {/if}
-            </a>
-          {/each}
-        </div>
-      {/each}
-      <Button variant="outlined" size="sm" class="mt-2" on:click={addComment}>＋</Button>
+      <StoryComments bind:comments={story.comments} urlBase={`/api/projects/${story.projectId}/stories/${story.id}`} canEdit={project.canEdit} />
     </div>
   {/if}
 </div>

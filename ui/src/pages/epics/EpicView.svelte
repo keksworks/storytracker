@@ -1,16 +1,16 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Epic, type StoryComment} from 'src/api/types'
+  import {type Epic} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {onMount} from 'svelte'
   import {t} from 'src/i18n'
-  import {user} from 'src/stores/auth'
   import Button from 'src/components/Button.svelte'
   import {copyToClipboard} from 'src/pages/stories/clipboard'
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {linkify} from 'src/shared/linkify'
+  import StoryComments from 'src/pages/stories/StoryComments.svelte'
 
   export let project: ProjectContext
   export let epic: Epic
@@ -37,14 +37,6 @@
     }
   }
 
-  function addComment() {
-    epic.comments = [...(epic.comments || []), {
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      createdBy: $user.id,
-      attachments: [],
-    } as StoryComment]
-  }
 
   function scrollIntoView() {
     view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
@@ -124,30 +116,7 @@
            on:blur={() => epic.description = linkify(epic.description || '')}
            on:click={handleDescriptionClick}></div>
 
-      <h4>{t.stories.comments}</h4>
-      {#if epic.comments}
-        {#each epic.comments as comment}
-          <div>
-            <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
-            <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
-            {#if comment.attachments}
-              {#each comment.attachments as attachment}
-                {@const url = `/api/projects/${epic.projectId}/epics/${epic.id}/attachments/${encodeURIComponent(attachment.filename)}`}
-                <a href={url} target="_blank">
-                  {#if attachment.width && attachment.height}
-                    <img src={url} class="max-h-32 mt-2">
-                  {:else}
-                    {attachment.filename}
-                  {/if}
-                </a>
-              {/each}
-            {/if}
-          </div>
-        {/each}
-      {/if}
-      {#if project.canEdit}
-        <Button variant="outlined" size="sm" class="mt-2" on:click={addComment}>＋</Button>
-      {/if}
+      <StoryComments bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`} canEdit={project.canEdit}/>
     </div>
   {/if}
 </div>
