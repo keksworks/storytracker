@@ -1,17 +1,42 @@
 <script lang="ts">
-  import type {Epic} from 'src/api/types'
+  import type {Epic, StoryComment} from 'src/api/types'
   import {t} from 'src/i18n'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
-  import EpicsList from 'src/pages/epics/EpicsList.svelte'
+  import EpicList from 'src/pages/epics/EpicList.svelte'
   import Spinner from 'src/components/Spinner.svelte'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import {replaceValues} from '@codeborne/i18n-json'
+  import api from 'src/api/api'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
   export let project: ProjectContext
   export let epics: Epic[] | undefined
   export let movable = project.canEdit
+
+  function addEpic() {
+    epics = [{
+      projectId: project!.id,
+      comments: [] as StoryComment[],
+    } as Epic, ...epics!]
+  }
+
+  function onSaved(epic: Epic) {
+    let index = epics!.findIndex(e => e.id == epic.id)
+    if (index < 0) index = epics!.findIndex(e => !e.id)
+    if (index >= 0) epics![index] = epic
+  }
+
+  async function onDelete(epic: Epic) {
+    if (epic.id) {
+      if (!confirm(replaceValues(t.epics.deleteConfirm, epic))) return
+      await api.delete(`projects/${project.id}/epics/${epic.id}`)
+    }
+    let index = epics!.findIndex(e => e.id == epic.id)
+    epics!.splice(index, 1)
+    epics = epics
+  }
 </script>
 
 {#if show}
@@ -22,12 +47,14 @@
         <slot name="left"/>
       </span>
       <span>
-        <slot name="right"/>
+        {#if project.canEdit}
+          <Button label="＋ {t.epics.add}" on:click={() => addEpic()} variant="outlined"/>
+        {/if}
         <Button title={t.general.close} on:click={() => show = undefined} variant="ghost" class="max-sm:!hidden">✕</Button>
       </span>
     </h5>
     {#if epics}
-      <EpicsList {project} {epics} {movable} {...$$restProps}/>
+      <EpicList {project} {epics} {movable} {onSaved} {onDelete}/>
     {:else}
       <Spinner/>
     {/if}
