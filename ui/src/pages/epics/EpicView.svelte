@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Epic} from 'src/api/types'
+  import {type Epic, type Story, StoryStatus} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {onMount} from 'svelte'
@@ -14,6 +14,7 @@
 
   export let project: ProjectContext
   export let epic: Epic
+  export let stories: Story[]
   export let movable = true
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
@@ -23,6 +24,9 @@
   let open = !epic.id
 
   $: reallyMovable = movable && !open
+  $: taggedStories = stories.filter(s => s.tags?.includes(epic.tag))
+  $: acceptedCount = taggedStories.filter(s => s.status === StoryStatus.ACCEPTED).length
+  $: progress = Math.round(acceptedCount / (taggedStories.length || 1) * 100)
 
   async function save() {
     epic.tag ||= epic.name.toLowerCase()
@@ -80,6 +84,11 @@
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
+  {#if epic.tag && taggedStories.length > 0}
+    <div class="h-[2px] w-full bg-purple-200">
+      <div class="h-full bg-purple-600 transition-all duration-500" style="width: {progress}%"></div>
+    </div>
+  {/if}
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">

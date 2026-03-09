@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type {Epic, StoryComment} from 'src/api/types'
+  import type {Epic, Story, StoryComment} from 'src/api/types'
   import {t} from 'src/i18n'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
@@ -13,6 +13,7 @@
   export let show: boolean | string | undefined
   export let project: ProjectContext
   export let epics: Epic[] | undefined
+  export let stories: Story[]
   export let movable = project.canEdit
   export let onSearch = (tag: string) => {}
 
@@ -55,7 +56,7 @@
       </span>
     </h5>
     {#if epics}
-      <EpicList {project} {epics} {movable} {onSaved} {onDelete} {onSearch}/>
+      <EpicList {project} {epics} {stories} {movable} {onSaved} {onDelete} {onSearch}/>
     {:else}
       <Spinner/>
     {/if}
