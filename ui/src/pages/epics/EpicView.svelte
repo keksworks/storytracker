@@ -104,7 +104,7 @@
       </div>
 
       <h4>{t.stories.description}</h4>
-      <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={epic.description} contenteditable="true"
+      <div class="bg-white whitespace-pre-line p-2 min-h-16" bind:innerHTML={epic.description} contenteditable="true"
            on:blur={() => epic.description = linkify(epic.description || '')}
            on:click={handleDescriptionClick}></div>
 
