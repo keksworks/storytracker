@@ -98,7 +98,7 @@
 
       <div class="flex gap-2 items-center mb-2">
          <span class="text-sm font-semibold uppercase">{t.epics.tag}:</span>
-         <div class="bg-white px-2 py-1 rounded min-w-[100px]" contenteditable="plaintext-only" bind:innerText={epic.tag}></div>
+         <div class="bg-white px-2 py-1 rounded text-purple-700 font-bold flex-1" contenteditable="plaintext-only" bind:innerText={epic.tag}></div>
       </div>
 
       <h4>{t.stories.description}</h4>
