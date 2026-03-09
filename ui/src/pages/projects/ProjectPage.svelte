@@ -10,7 +10,7 @@
   import {replaceValues} from '@codeborne/i18n-json'
   import ProjectMembersButton from 'src/pages/projects/ProjectMembersButton.svelte'
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
-  import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
+  import StoryPanel from 'src/pages/stories/StoryPanel.svelte'
   import EpicsPanel from 'src/pages/epics/EpicsPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
@@ -171,30 +171,30 @@
       <ProjectUpdatesListener {project} bind:stories/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        <ProjectPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
+        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
 
-        <ProjectPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
           <span slot="right">
             {#if project?.canEdit}
               <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
             {/if}
           </span>
-       </ProjectPanel>
+       </StoryPanel>
 
-        <ProjectPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <span slot="right">
             {#if project?.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
             {/if}
           </span>
-        </ProjectPanel>
+        </StoryPanel>
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>
-        </ProjectPanel>
+        </StoryPanel>
       </div>
     {/if}
   </div>
