@@ -1,13 +1,13 @@
 <script lang="ts">
   import {type StoryComment} from 'src/api/types'
-  import {t} from 'src/i18n'
-  import {formatDateTime} from '@codeborne/i18n-json'
+  import {formatDateTime, t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import {user} from 'src/stores/auth'
+  import type {ProjectContext} from 'src/pages/projects/context'
 
+  export let project: ProjectContext
   export let comments: StoryComment[] | undefined
   export let urlBase: string
-  export let canEdit: boolean
 
   function addComment() {
     comments = [...(comments || []), {
@@ -23,7 +23,6 @@
 {#if comments}
   {#each comments as comment}
     <div>
-      <div class="text-sm text-muted text-right py-2">{formatDateTime(comment.updatedAt)}</div>
       <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
       {#if comment.attachments}
         {#each comment.attachments as attachment}
@@ -37,9 +36,14 @@
           </a>
         {/each}
       {/if}
+      <div class="flex justify-between text-sm text-muted py-2">
+        <div>{project.members[comment.createdBy]?.user?.name}</div>
+        <div>{formatDateTime(comment.updatedAt)}</div>
+      </div>
     </div>
   {/each}
 {/if}
-{#if canEdit}
+
+{#if project.canEdit}
   <Button variant="outlined" size="sm" class="mt-2" on:click={addComment}>＋</Button>
 {/if}

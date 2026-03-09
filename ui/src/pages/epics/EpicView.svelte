@@ -116,7 +116,7 @@
            on:blur={() => epic.description = linkify(epic.description || '')}
            on:click={handleDescriptionClick}></div>
 
-      <StoryComments bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`} canEdit={project.canEdit}/>
+      <StoryComments {project} bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`}/>
     </div>
   {/if}
 </div>

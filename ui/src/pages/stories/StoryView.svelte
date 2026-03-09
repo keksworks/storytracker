@@ -40,8 +40,8 @@
   async function save(move?: boolean) {
     open = false
     story = await api.post(`projects/${story.projectId}/stories`, story)
-    if (story.assignedTo && !project.members.find(m => m.user.id === story.assignedTo)) {
-      api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members = [...project.members, m])
+    if (story.assignedTo && !project.members[story.assignedTo]) {
+      api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members[m.user.id] = m)
     }
     onSaved(story)
     if (move) setTimeout(() => {
@@ -60,7 +60,6 @@
       save()
     }
   }
-
 
   function scrollIntoView() {
     view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
@@ -109,8 +108,8 @@
       {:else}
         <span class="title flex-1">{story.name}</span>
         {#if story.assignedTo}
-          {@const m = project.members?.find(m => m.user.id == story.assignedTo)}
-          <span title="{m?.user.firstName} {m?.user.lastName}">({m?.user.initials})</span>
+          {@const m = project.members[story.assignedTo]}
+          <span title={m?.user.name}>({m?.user.initials})</span>
         {/if}
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm text-green-700 font-bold">
           {#each story.tags as tag}
@@ -143,7 +142,7 @@
       <div class="flex gap-2">
         <SelectField bind:value={story.type} options={t.stories.types} title={t.stories.type}/>
         <SelectField bind:value={story.status} options={t.stories.statuses} title={t.stories.status} on:change={() => onStatusChanged(story)}/>
-        <SelectField bind:value={story.assignedTo} emptyOption="" options={project.members.map(m => [m.user.id, m.user.firstName + ' ' + m.user.lastName]).toObject()} title={t.stories.assignedTo}/>
+        <SelectField bind:value={story.assignedTo} emptyOption="" options={Object.values(project.members).map(m => [m.user.id, m.user.name]).toObject()} title={t.stories.assignedTo}/>
       </div>
 
       <h4>{t.stories.description}</h4>
@@ -154,7 +153,7 @@
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
 
-      <StoryComments bind:comments={story.comments} urlBase={`/api/projects/${story.projectId}/stories/${story.id}`} canEdit={project.canEdit} />
+      <StoryComments {project} bind:comments={story.comments} urlBase={`/api/projects/${story.projectId}/stories/${story.id}`}/>
     </div>
   {/if}
 </div>

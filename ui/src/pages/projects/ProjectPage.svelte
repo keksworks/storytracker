@@ -33,7 +33,8 @@
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
     epics = await api.get<Epic[]>(`projects/${id}/epics`)
-    project!.tags = [...new Set(stories.flatMap(s => s.tags).concat(epics.map(e => e.tag)))]
+    project!.epicTags = new Set(epics.map(e => e.tag))
+    project!.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project!.epicTags]))]
   }
 
   let show: Record<string, boolean> = {
@@ -70,8 +71,8 @@
     project = await api.get('projects/' + id)
     velocity = project!.velocity
     api.get<ProjectMemberUser[]>(`projects/${id}/members`).then(r => {
-      project!.members = r
-      const role = project?.members?.find(m => m.user.id == $user.id)?.member?.role
+      project!.members = r.indexBy(m => m.user.id)
+      const role = project?.members[$user.id]?.member?.role
       project!.isOwner = $user.isAdmin || role == Role.OWNER
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })

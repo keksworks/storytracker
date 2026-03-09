@@ -1,7 +1,8 @@
-import type {Project, ProjectMemberUser} from 'src/api/types'
+import type {Id, Project, ProjectMemberUser, User} from 'src/api/types'
 
 export type ProjectContext = Project & {
-  members: ProjectMemberUser[]
+  members: Record<Id<User>, ProjectMemberUser>
+  epicTags: Set<string>
   isOwner: boolean
   canEdit: boolean
 }

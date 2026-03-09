@@ -21,7 +21,7 @@
   }
 
   function onsaved(m: ProjectMemberUser) {
-    project.members = project.members.replaceById(m)
+    project.members[m.user.id] = m
     editMember = false
   }
 </script>
@@ -33,7 +33,7 @@
     ['role', m => m.member.role],
     ['lastLoginAt', m => m.user.lastLoginAt],
     ''
-  ]} items={project.members} let:item={m}>
+  ]} items={Object.values(project.members)} let:item={m}>
   <tr>
     <td>{m.user.name}</td>
     <td>{m.user.initials}</td>
