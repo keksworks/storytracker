@@ -21,3 +21,6 @@ create trigger epics_history after update on epics for each row execute function
 
 --changeset epics.projectId:bigint
 alter table epics alter column projectId type bigint using projectId::bigint;
+
+--changeset epics:grant-delete
+grant delete on epics to app;

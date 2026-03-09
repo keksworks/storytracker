@@ -166,6 +166,7 @@
   },
   "epics": {
     "add": "Lisa eepik",
+    "delete": "Kustuta",
     "tag": "Silt",
     "deleteConfirm": "Kas kustutada eepik #{id} {name}?"
   },

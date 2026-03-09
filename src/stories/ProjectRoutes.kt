@@ -85,6 +85,19 @@ class ProjectRoutes(
   @GET("/:id/epics") fun epics(@PathParam id: Id<Project>): List<Epic> =
     epicRepository.list(Epic::projectId to id)
 
+  @POST("/:id/epics") @Access(ADMIN, OWNER, MEMBER)
+  fun saveEpic(@PathParam id: Id<Project>, epic: Epic) {
+    require(epic.projectId == id) { "Invalid epic project" }
+    epicRepository.save(epic)
+  }
+
+  @DELETE("/:id/epics/:epicId") @Access(ADMIN, OWNER, MEMBER)
+  fun deleteEpic(@PathParam id: Id<Project>, @PathParam epicId: Id<Epic>) {
+    val epic = epicRepository.get(epicId)
+    require(epic.projectId == id) { "Invalid epic project" }
+    epicRepository.delete(epicId)
+  }
+
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
     iterationRepository.list(projectId = id)
 

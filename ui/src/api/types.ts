@@ -59,8 +59,9 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 // db.TestData
 export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
 export const date = "2025-03-03" as LocalDate
+export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Epic 1","projectId":1,"tag":"epic1","updatedAt":"2026-03-09T17:58:34Z"} as Epic
 export const now = "2025-03-03T00:00:00Z" as Instant
 export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3} as Project
-export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
-export const story2 = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 2","order":2.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
+export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
+export const story2 = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000005,"name":"Story 2","order":2.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
 export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":200000002,"isAdmin":false,"lang":"en","lastName":"User","name":"Test User"} as User

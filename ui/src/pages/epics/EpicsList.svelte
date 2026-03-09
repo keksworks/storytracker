@@ -11,5 +11,5 @@
 </script>
 
 {#each epics as epic, i (epic.id ?? i)}
-  <EpicView {project} {epic} {epics} {movable} {onSaved} {onDelete}/>
+  <EpicView {project} {epic} {movable} {onSaved} {onDelete}/>
 {/each}

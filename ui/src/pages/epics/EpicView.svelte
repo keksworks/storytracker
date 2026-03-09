@@ -14,7 +14,6 @@
 
   export let project: ProjectContext
   export let epic: Epic
-  export let epics: Epic[]
   export let movable = true
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}

@@ -10,7 +10,6 @@ import klite.logger
 import klite.toValues
 import stories.Story.Status.DELETED
 import java.sql.ResultSet
-import java.time.Instant
 import javax.sql.DataSource
 import kotlin.reflect.KProperty1
 
@@ -42,18 +41,13 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     if (storyIds.isEmpty()) 0 else
     db.update(table, mapOf(Story::iteration to iteration.number, Story::updatedAt to nowSec()), Story::id to storyIds)
 
-  fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> {
-    return db.select(table,
-      Story::projectId to projectId,
-      Story::status to NotIn(DELETED),
-      fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
-      q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
-      suffix = defaultOrder) { mapper() }
-  }
+  fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> = db.select(table,
+    Story::projectId to projectId,
+    Story::status to NotIn(DELETED),
+    fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
+    q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
+    suffix = defaultOrder) { mapper() }
 
   fun save(story: Story, skipUpdate: Set<KProperty1<Story, *>>) =
     db.upsert(table, story.persister(), skipUpdateFields = skipUpdate.map { it.name }.toSet())
-
-  fun lastUpdated(id: Id<Project>): Instant? =
-    db.query("select max(updatedAt) as max from $table", Story::projectId to id) { getInstantOrNull("max") }.firstOrNull()
 }

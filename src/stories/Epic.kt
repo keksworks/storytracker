@@ -1,16 +1,11 @@
 package stories
 
-import db.CrudRepository
-import db.Entity
-import db.Id
-import db.getJson
-import db.jsonb
+import db.*
 import klite.jdbc.create
+import klite.jdbc.delete
 import klite.jdbc.nowSec
 import klite.toValues
-import stories.Story.Blocker
 import stories.Story.Comment
-import stories.Story.Task
 import users.User
 import java.sql.ResultSet
 import java.time.Instant
@@ -31,4 +26,5 @@ data class Epic(
 class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
   override fun Epic.persister() = toValues(Epic::comments to jsonb(comments))
   override fun ResultSet.mapper() = create(Epic::comments to getJson<List<Comment>>("comments"))
+  fun delete(id: Id<Epic>) = db.delete(table, Epic::id to id)
 }
