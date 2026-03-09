@@ -10,8 +10,9 @@
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
+  export let onStorySaved: (story: Story) => void = () => {}
 </script>
 
 {#each epics as epic, i (epic.id ?? i)}
-  <EpicView {project} {epic} {stories} {movable} {onSaved} {onDelete} {onSearch}/>
+  <EpicView {project} {epic} {stories} {movable} {onSaved} {onDelete} {onSearch} {onStorySaved}/>
 {/each}

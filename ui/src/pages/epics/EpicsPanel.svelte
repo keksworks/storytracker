@@ -16,6 +16,7 @@
   export let stories: Story[]
   export let movable = project.canEdit
   export let onSearch = (tag: string) => {}
+  export let onStorySaved: (story: Story) => void = () => {}
 
   function addEpic() {
     epics = [{
@@ -56,7 +57,7 @@
       </span>
     </h5>
     {#if epics}
-      <EpicList {project} {epics} {stories} {movable} {onSaved} {onDelete} {onSearch}/>
+      <EpicList {project} {epics} {stories} {movable} {onSaved} {onDelete} {onSearch} {onStorySaved}/>
     {:else}
       <Spinner/>
     {/if}

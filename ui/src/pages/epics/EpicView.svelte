@@ -19,6 +19,7 @@
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
+  export let onStorySaved: (story: Story) => void = () => {}
 
   let view: HTMLElement
   let open = !epic.id
@@ -30,6 +31,19 @@
   $: total = taggedStories.length || 1
   $: acceptedPercent = Math.round(acceptedCount / total * 100)
   $: finishedPercent = Math.round(finishedCount / total * 100)
+  
+  let isDropTarget = false
+
+  async function onDrop(e: DragEvent) {
+    isDropTarget = false
+    const id = parseInt(e.dataTransfer?.getData('id')!)
+    const story = stories.find(s => s.id === id)
+    if (story && !story.tags?.includes(epic.tag)) {
+      story.tags = [...(story.tags || []), epic.tag]
+      const saved = await api.post<Story>(`projects/${story.projectId}/stories`, story)
+      onStorySaved(saved)
+    }
+  }
 
   async function save() {
     epic.tag ||= epic.name.toLowerCase()
@@ -60,6 +74,7 @@
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', epic.id.toString())}
+     on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
@@ -131,5 +146,9 @@
     text-transform: uppercase;
     font-size: 0.8rem;
     @apply py-1;
+  }
+
+  .drop-target {
+    box-shadow: inset 0 0 0 2px purple;
   }
 </style>
