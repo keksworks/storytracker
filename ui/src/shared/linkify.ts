@@ -30,3 +30,12 @@ export function linkify(html: string): string {
   walk(doc.body)
   return doc.body.innerHTML
 }
+
+export function handleDescriptionClick(e: MouseEvent) {
+  const a = (e.target as HTMLElement).closest('a')
+  if (a) {
+    e.preventDefault()
+    window.open(a.href, '_blank')
+  }
+}
+

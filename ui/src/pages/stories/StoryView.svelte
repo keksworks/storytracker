@@ -15,7 +15,7 @@
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {onStatusChanged} from './status'
-  import {linkify} from 'src/shared/linkify'
+  import {handleDescriptionClick, linkify} from 'src/shared/linkify'
 
   export let project: ProjectContext
   export let story: Story
@@ -71,14 +71,6 @@
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
   })
-
-  function handleDescriptionClick(e: MouseEvent) {
-    const a = (e.target as HTMLElement).closest('a')
-    if (a) {
-      e.preventDefault()
-      window.open(a.href, '_blank')
-    }
-  }
 </script>
 
 <!--svelte-ignore a11y-no-static-element-interactions -->

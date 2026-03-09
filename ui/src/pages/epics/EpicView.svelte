@@ -9,7 +9,7 @@
   import {copyToClipboard} from 'src/pages/stories/clipboard'
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
-  import {linkify} from 'src/shared/linkify'
+  import {handleDescriptionClick, linkify} from 'src/shared/linkify'
   import StoryComments from 'src/pages/stories/StoryComments.svelte'
 
   export let project: ProjectContext
@@ -37,7 +37,6 @@
     }
   }
 
-
   function scrollIntoView() {
     view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
   }
@@ -48,14 +47,6 @@
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
   })
-
-  function handleDescriptionClick(e: MouseEvent) {
-    const a = (e.target as HTMLElement).closest('a')
-    if (a) {
-      e.preventDefault()
-      window.open(a.href, '_blank')
-    }
-  }
 </script>
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
