@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Dropdown from 'src/components/Dropdown.svelte'
   import Button from 'src/components/Button.svelte'
 </script>

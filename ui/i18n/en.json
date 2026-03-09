@@ -107,6 +107,7 @@
     "search": {
       "placeholder": "Search stories..."
     },
+    "points": "Points",
     "tags": "Tags",
     "comments": "Comments",
     "deleteCommentConfirm": "Really delete comment?",

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type StoryComment} from 'src/api/types'
+  import type {StoryComment} from 'src/api/types'
   import {formatDateTime, t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import {user} from 'src/stores/auth'

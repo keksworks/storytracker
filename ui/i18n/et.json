@@ -130,6 +130,7 @@
       "placeholder": "Otsi lugusid..."
     },
     "tags": "Sildid",
+    "points": "Punktid",
     "comments": "Kommentaarid",
     "deleteCommentConfirm": "Kas kustutada kommentaar?",
     "status": "Olek",
