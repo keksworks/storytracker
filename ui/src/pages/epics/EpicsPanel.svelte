@@ -14,6 +14,7 @@
   export let project: ProjectContext
   export let epics: Epic[] | undefined
   export let movable = project.canEdit
+  export let onSearch = (tag: string) => {}
 
   function addEpic() {
     epics = [{
@@ -54,7 +55,7 @@
       </span>
     </h5>
     {#if epics}
-      <EpicList {project} {epics} {movable} {onSaved} {onDelete}/>
+      <EpicList {project} {epics} {movable} {onSaved} {onDelete} {onSearch}/>
     {:else}
       <Spinner/>
     {/if}

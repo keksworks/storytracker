@@ -190,7 +190,7 @@
           </span>
         </ProjectPanel>
 
-        <EpicsPanel name="epics" bind:show={show.epics} {project} bind:epics/>
+        <EpicsPanel name="epics" bind:show={show.epics} {project} bind:epics {onSearch}/>
 
         <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>

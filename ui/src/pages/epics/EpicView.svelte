@@ -17,6 +17,7 @@
   export let movable = true
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
+  export let onSearch: (tag: string) => void = () => {}
 
   let view: HTMLElement
   let open = !epic.id
@@ -66,7 +67,8 @@
       {:else}
         <span class="title flex-1">{epic.name}</span>
         {#if epic.tag}
-          <span class="text-sm text-purple-700 font-bold ml-2 border border-purple-300 rounded px-1">{epic.tag}</span>
+          <span class="text-sm text-purple-700 font-bold ml-2 border border-purple-300 rounded px-1 cursor-pointer"
+                on:click|stopPropagation={() => onSearch(epic.tag)}>{epic.tag}</span>
         {/if}
       {/if}
     </div>

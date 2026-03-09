@@ -8,8 +8,9 @@
   export let movable = true
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
+  export let onSearch: (tag: string) => void = () => {}
 </script>
 
 {#each epics as epic, i (epic.id ?? i)}
-  <EpicView {project} {epic} {movable} {onSaved} {onDelete}/>
+  <EpicView {project} {epic} {movable} {onSaved} {onDelete} {onSearch}/>
 {/each}
