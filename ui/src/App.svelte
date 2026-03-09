@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {t} from 'src/i18n'
+  import {navigate, t} from 'src/i18n'
   import {user} from 'src/stores/auth'
   import {Route, Router} from 'svelte5-router'
   import Toasts from './components/Toasts.svelte'
@@ -9,6 +9,12 @@
   import HomePage from 'src/pages/HomePage.svelte'
   import ProjectsPage from 'src/pages/projects/ProjectsPage.svelte'
   import LoginPage from 'src/pages/login/LoginPage.svelte'
+  import {onMount} from 'svelte'
+
+  onMount(() => {
+    if ($user && location.pathname == '/')
+      navigate('/projects')
+  })
 </script>
 
 <svelte:head>
