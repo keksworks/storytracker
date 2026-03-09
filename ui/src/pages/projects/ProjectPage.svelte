@@ -32,9 +32,8 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
-    project!.tags = [...new Set(stories.flatMap(s => s.tags))]
-
     epics = await api.get<Epic[]>(`projects/${id}/epics`)
+    project!.tags = [...new Set(stories.flatMap(s => s.tags).concat(epics.map(e => e.tag)))]
   }
 
   let show: Record<string, boolean> = {
