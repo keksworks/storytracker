@@ -26,7 +26,10 @@
   $: reallyMovable = movable && !open
   $: taggedStories = stories.filter(s => s.tags?.includes(epic.tag))
   $: acceptedCount = taggedStories.filter(s => s.status === StoryStatus.ACCEPTED).length
-  $: progress = Math.round(acceptedCount / (taggedStories.length || 1) * 100)
+  $: finishedCount = taggedStories.filter(s => [StoryStatus.FINISHED, StoryStatus.DELIVERED].includes(s.status)).length
+  $: total = taggedStories.length || 1
+  $: acceptedPercent = Math.round(acceptedCount / total * 100)
+  $: finishedPercent = Math.round(finishedCount / total * 100)
 
   async function save() {
     epic.tag ||= epic.name.toLowerCase()
@@ -84,9 +87,10 @@
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
-  {#if epic.tag && taggedStories.length > 0}
-    <div class="h-[2px] w-full bg-purple-200">
-      <div class="h-full bg-purple-600 transition-all duration-500" style="width: {progress}%"></div>
+  {#if !open && taggedStories.length}
+    <div class="h-[2px] w-full bg-purple-100 flex">
+      <div class="h-full bg-purple-600 transition-all duration-500" style="width: {acceptedPercent}%" title="{acceptedCount} {t.stories.statuses.ACCEPTED}"></div>
+      <div class="h-full bg-purple-300 transition-all duration-500" style="width: {finishedPercent}%" title="{finishedCount} {t.stories.statuses.FINISHED}"></div>
     </div>
   {/if}
   {#if open}
