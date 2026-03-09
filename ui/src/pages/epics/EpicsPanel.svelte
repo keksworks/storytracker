@@ -3,11 +3,11 @@
   import {t} from 'src/i18n'
   import Icon from 'src/icons/Icon.svelte'
   import Button from 'src/components/Button.svelte'
-  import EpicList from 'src/pages/epics/EpicList.svelte'
   import Spinner from 'src/components/Spinner.svelte'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {replaceValues} from '@codeborne/i18n-json'
   import api from 'src/api/api'
+  import EpicView from 'src/pages/epics/EpicView.svelte'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
@@ -57,7 +57,9 @@
       </span>
     </h5>
     {#if epics}
-      <EpicList {project} {epics} {stories} {movable} {onSaved} {onDelete} {onSearch} {onStorySaved}/>
+      {#each epics as epic, i (epic.id ?? i)}
+        <EpicView {project} {epic} {stories} {movable} {onSaved} {onDelete} {onSearch} {onStorySaved}/>
+      {/each}
     {:else}
       <Spinner/>
     {/if}
