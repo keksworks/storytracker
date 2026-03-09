@@ -20,11 +20,17 @@
     await tick()
     ;([...document.querySelectorAll('.comment')]?.last() as HTMLElement)?.focus()
   }
+
+  function onDelete(i: number) {
+    if (!confirm(t.stories.deleteCommentConfirm)) return
+    comments!.splice(i, 1)
+    comments = comments
+  }
 </script>
 
 <h4>{t.stories.comments}</h4>
 {#if comments}
-  {#each comments as comment}
+  {#each comments as comment, i}
     <div>
       <div class="comment bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
       {#if comment.attachments}
@@ -39,14 +45,19 @@
           </a>
         {/each}
       {/if}
-      <div class="flex justify-between text-sm text-muted py-2">
+      <div class="flex justify-between items-center text-sm text-muted mb-1.5">
         <div>{project.members[comment.createdBy]?.user?.name}</div>
-        <div>{formatDateTime(comment.updatedAt)}</div>
+        <div class="flex items-center">
+          {formatDateTime(comment.updatedAt)}
+          {#if project.canEdit}
+            <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(i)}/>
+          {/if}
+        </div>
       </div>
     </div>
   {/each}
 {/if}
 
 {#if project.canEdit}
-  <Button variant="outlined" size="sm" class="mt-2" on:click={addComment}>＋</Button>
+  <Button variant="outlined" size="sm" on:click={addComment}>＋</Button>
 {/if}

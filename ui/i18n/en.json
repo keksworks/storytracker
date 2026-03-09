@@ -109,6 +109,7 @@
     },
     "tags": "Tags",
     "comments": "Comments",
+    "deleteCommentConfirm": "Really delete comment?",
     "status": "Status",
     "statuses": {
       "ACCEPTED": "Accepted",

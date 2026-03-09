@@ -131,6 +131,7 @@
     },
     "tags": "Sildid",
     "comments": "Kommentaarid",
+    "deleteCommentConfirm": "Kas kustutada kommentaar?",
     "status": "Olek",
     "statuses": {
       "ACCEPTED": "Aktsepteeritud",
