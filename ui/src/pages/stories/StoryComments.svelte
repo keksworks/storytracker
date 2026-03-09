@@ -4,18 +4,21 @@
   import Button from 'src/components/Button.svelte'
   import {user} from 'src/stores/auth'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import {tick} from 'svelte'
 
   export let project: ProjectContext
   export let comments: StoryComment[] | undefined
   export let urlBase: string
 
-  function addComment() {
+  async function addComment() {
     comments = [...(comments || []), {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: $user.id,
       attachments: [],
     } as StoryComment]
+    await tick()
+    ;([...document.querySelectorAll('.comment')]?.last() as HTMLElement)?.focus()
   }
 </script>
 
@@ -23,7 +26,7 @@
 {#if comments}
   {#each comments as comment}
     <div>
-      <div class="bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
+      <div class="comment bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
       {#if comment.attachments}
         {#each comment.attachments as attachment}
           {@const url = `${urlBase}/attachments/${encodeURIComponent(attachment.filename)}`}
