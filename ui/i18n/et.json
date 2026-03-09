@@ -121,6 +121,7 @@
     "done": "Valmis",
     "backlog": "Planeeritud",
     "icebox": "Jääkast",
+    "epics": "Eepikud",
     "search": "Otsi"
   },
   "stories": {
@@ -161,8 +162,12 @@
     },
     "createdAt": "Loodud",
     "updatedAt": "Uuendatud",
-    "points": "Raskuspunktid",
     "assignedTo": "Määratud"
+  },
+  "epics": {
+    "add": "Lisa eepik",
+    "tag": "Silt",
+    "deleteConfirm": "Kas kustutada eepik #{id} {name}?"
   },
   "iterations": {
     "number": "Iteratsiooni number",

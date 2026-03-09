@@ -99,6 +99,7 @@
     "done": "Done",
     "backlog": "Backlog",
     "icebox": "Icebox",
+    "epics": "Epics",
     "search": "Search"
   },
   "stories": {
@@ -139,8 +140,12 @@
     },
     "createdAt": "Created",
     "updatedAt": "Updated",
-    "points": "Difficulty points",
     "assignedTo": "Assigned to"
+  },
+  "epics": {
+    "add": "Add epic",
+    "tag": "Tag",
+    "deleteConfirm": "Really delete epic #{id} {name}?"
   },
   "iterations": {
     "number": "Iteration number",

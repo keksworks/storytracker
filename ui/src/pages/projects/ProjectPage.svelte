@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Id, type Project, type ProjectMemberUser, Role, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
+  import {type Epic, type Id, type Project, type ProjectMemberUser, Role, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
@@ -11,6 +11,7 @@
   import ProjectMembersButton from 'src/pages/projects/ProjectMembersButton.svelte'
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
   import ProjectPanel from 'src/pages/stories/ProjectPanel.svelte'
+  import EpicsPanel from 'src/pages/epics/EpicsPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
   import {user} from 'src/stores/auth'
@@ -19,6 +20,7 @@
 
   let project: ProjectContext | undefined
   let stories: Story[] = []
+  let epics: Epic[] = []
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
   let velocity = 10
@@ -31,12 +33,15 @@
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
     project!.tags = [...new Set(stories.flatMap(s => s.tags))]
+
+    epics = await api.get<Epic[]>(`projects/${id}/epics`)
   }
 
   let show: Record<string, boolean> = {
     done: false,
     backlog: true,
-    icebox: !isMobile
+    icebox: !isMobile,
+    epics: false
   }
 
   function hideAll(key?: keyof typeof show) {
@@ -134,6 +139,32 @@
     stories.splice(index, 1)
     stories = stories
   }
+
+  function onEpicSaved(epic: Epic) {
+    let index = epics.findIndex(e => e.id == epic.id)
+    if (index < 0) index = epics.findIndex(e => !e.id)
+    if (index >= 0) epics[index] = epic
+  }
+
+  async function onEpicDelete(epic: Epic) {
+    if (epic.id) {
+      if (!confirm(replaceValues(t.epics.deleteConfirm, epic))) return
+      await api.delete(`projects/${id}/epics/${epic.id}`)
+    }
+    let index = epics.findIndex(e => e.id == epic.id)
+    epics.splice(index, 1)
+    epics = epics
+  }
+
+  function addEpic() {
+    epics = [{
+      projectId: project!.id,
+      name: '',
+      tag: '',
+      comments: []
+    } as unknown as Epic, ...epics]
+    show.epics = true
+  }
 </script>
 
 <svelte:head>
@@ -184,6 +215,14 @@
             {/if}
           </span>
         </ProjectPanel>
+
+        <EpicsPanel name="epics" bind:show={show.epics} {project} {epics} onSaved={onEpicSaved} onDelete={onEpicDelete}>
+          <span slot="right">
+            {#if project?.canEdit}
+              <Button label="＋ {t.epics.add}" on:click={() => addEpic()} variant="outlined"/>
+            {/if}
+          </span>
+        </EpicsPanel>
 
         <ProjectPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>
