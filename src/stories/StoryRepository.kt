@@ -14,7 +14,7 @@ import javax.sql.DataSource
 import kotlin.reflect.KProperty1
 
 class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
-  override val defaultOrder get() = "order by ord"
+  override val defaultOrder get() = "order by iteration, ord"
 
   init {
     val maxId = db.query("select max(id) from $table") { getLong(1) }.firstOrNull()

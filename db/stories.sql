@@ -39,6 +39,12 @@ alter table stories add column ord double precision not null default 0;
 --changeset stories:project-ord
 create index on stories(projectId, ord);
 
+--changeset stories:project-ord:drop
+drop index stories_projectId_ord_idx;
+
+--changeset stories:project-iteration,ord-idx
+create index on stories(projectId, iteration, ord);
+
 --changeset iterations:drop-imported-future
 update stories s set iteration = null where iteration in (select number from iterations i where i.projectid = s.projectid and endDate > '2025-04-28');
 delete from iterations where endDate > '2025-04-28';
