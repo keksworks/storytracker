@@ -195,7 +195,7 @@
         </StoryPanel>
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
-        <ProjectHistoryPanel bind:show={show.history} {project}/>
+        <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
 
         <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>

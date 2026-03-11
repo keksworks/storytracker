@@ -104,6 +104,7 @@
     "history": "History"
   },
   "stories": {
+    "story": "Story",
     "description": "Description",
     "search": {
       "placeholder": "Search stories..."
@@ -146,6 +147,7 @@
     "assignedTo": "Assigned to"
   },
   "epics": {
+    "epic": "Epic",
     "add": "Add epic",
     "delete": "Delete",
     "tag": "Tag",

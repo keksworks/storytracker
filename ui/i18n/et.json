@@ -126,6 +126,7 @@
     "history": "Ajalugu"
   },
   "stories": {
+    "story": "Lugu",
     "description": "Kirjeldus",
     "search": {
       "placeholder": "Otsi lugusid..."
@@ -168,6 +169,7 @@
     "assignedTo": "Määratud"
   },
   "epics": {
+    "epic": "Eepik",
     "add": "Lisa eepik",
     "delete": "Kustuta",
     "tag": "Silt",
