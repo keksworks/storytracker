@@ -29,5 +29,5 @@ alter table users add column isAdmin boolean not null default false;
 --changeset users.isAdmin:migrate
 update users set isAdmin = true where role = 'OWNER';
 
---changeset users.role:drop context:test
+--changeset users.role:drop
 alter table users drop column role;
