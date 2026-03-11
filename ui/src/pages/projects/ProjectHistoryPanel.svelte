@@ -24,7 +24,7 @@
     if (column === 'status') return t.stories.statuses[val] ?? val
     if (column === 'type') return t.stories.types[val] ?? val
     if (column === 'role') return t.users.roles[val] ?? val
-    if (column === 'assignedTo') return getUserName(Number(val))
+    if (column === 'assignedto') return getUserName(Number(val))
     return val
   }
 
