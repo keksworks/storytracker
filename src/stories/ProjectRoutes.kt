@@ -3,6 +3,8 @@ package stories
 import auth.Access
 import auth.user
 import db.Id
+import history.Change
+import history.ChangeHistoryRepository
 import klite.*
 import klite.annotations.*
 import klite.jdbc.*

@@ -1,4 +1,4 @@
-package stories
+package history
 
 import db.Id
 import users.User
