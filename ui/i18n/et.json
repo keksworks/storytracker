@@ -122,7 +122,8 @@
     "backlog": "Planeeritud",
     "icebox": "Jääkast",
     "epics": "Eepikud",
-    "search": "Otsi"
+    "search": "Otsi",
+    "history": "Ajalugu"
   },
   "stories": {
     "description": "Kirjeldus",

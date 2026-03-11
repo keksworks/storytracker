@@ -12,6 +12,7 @@
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
   import StoryPanel from 'src/pages/stories/StoryPanel.svelte'
   import EpicsPanel from 'src/pages/epics/EpicsPanel.svelte'
+  import ProjectHistoryPanel from 'src/pages/projects/ProjectHistoryPanel.svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
   import {user} from 'src/stores/auth'
@@ -39,7 +40,8 @@
     done: false,
     backlog: true,
     icebox: !isMobile,
-    epics: false
+    epics: false,
+    history: false
   }
 
   function hideAll(key?: keyof typeof show) {
@@ -193,6 +195,7 @@
         </StoryPanel>
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
+        <ProjectHistoryPanel bind:show={show.history} {project}/>
 
         <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
           <span slot="right">{searchQuery}</span>

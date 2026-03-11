@@ -100,7 +100,8 @@
     "backlog": "Backlog",
     "icebox": "Icebox",
     "epics": "Epics",
-    "search": "Search"
+    "search": "Search",
+    "history": "History"
   },
   "stories": {
     "description": "Description",

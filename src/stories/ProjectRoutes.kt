@@ -28,6 +28,7 @@ class ProjectRoutes(
   private val epicRepository: EpicRepository,
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
+  private val changeHistoryRepository: ChangeHistoryRepository,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
@@ -101,6 +102,9 @@ class ProjectRoutes(
 
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
     iterationRepository.list(projectId = id)
+
+  @GET("/:id/history") fun history(@PathParam id: Id<Project>): List<Change> =
+    changeHistoryRepository.list(id)
 
   @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
     storyRepository.list(id, fromIteration, q)

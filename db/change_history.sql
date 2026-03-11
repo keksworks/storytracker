@@ -15,6 +15,11 @@ alter table change_history add column projectId bigint;
 --changeset change_history.idx
 create index change_history_id_idx on change_history("table", rowId);
 
+--changeset change_history.rowId:bigint
+drop index change_history_id_idx;
+alter table change_history alter column rowId type bigint using rowId::bigint;
+create index change_history_id_idx on change_history("table", rowId);
+
 --changeset change_history:revoke-app-update
 revoke update on change_history from app;
 
@@ -56,7 +61,7 @@ begin
 end; $$
 
 --changeset change_history.projectId:fill
-update change_history h set projectId = (select projectId from stories s where s.id::text = h.rowId) where "table" = 'stories' and projectId is null;
-update change_history h set projectId = (select projectId from epics e where e.id::text = h.rowId) where "table" = 'epics' and projectId is null;
-update change_history h set projectId = (select projectId from project_members m where m.id::text = h.rowId) where "table" = 'project_members' and projectId is null;
-update change_history h set projectId = rowId::bigint where "table" = 'projects' and projectId is null;
+update change_history h set projectId = (select projectId from stories s where s.id = h.rowId) where "table" = 'stories' and projectId is null;
+update change_history h set projectId = (select projectId from epics e where e.id = h.rowId) where "table" = 'epics' and projectId is null;
+update change_history h set projectId = (select projectId from project_members m where m.id = h.rowId) where "table" = 'project_members' and projectId is null;
+update change_history h set projectId = rowId where "table" = 'projects' and projectId is null;
