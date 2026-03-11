@@ -151,7 +151,7 @@
   {/if}
 </div>
 
-<style global>
+<style>
   h4 {
     text-transform: uppercase;
     font-size: 0.8rem;

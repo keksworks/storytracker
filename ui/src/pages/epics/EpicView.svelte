@@ -15,7 +15,7 @@
   export let project: ProjectContext
   export let epic: Epic
   export let stories: Story[]
-  export let movable = true
+  export let movable = false
   export let onSaved: (epic: Epic) => void = () => {}
   export let onDelete: (epic: Epic) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
@@ -31,7 +31,7 @@
   $: total = taggedStories.length || 1
   $: acceptedPercent = Math.round(acceptedCount / total * 100)
   $: finishedPercent = Math.round(finishedCount / total * 100)
-  
+
   let isDropTarget = false
 
   async function onDrop(e: DragEvent) {
@@ -141,7 +141,7 @@
   {/if}
 </div>
 
-<style global>
+<style>
   h4 {
     text-transform: uppercase;
     font-size: 0.8rem;
@@ -149,6 +149,6 @@
   }
 
   .drop-target {
-    box-shadow: inset 0 0 0 2px purple;
+    @apply bg-purple-200;
   }
 </style>
