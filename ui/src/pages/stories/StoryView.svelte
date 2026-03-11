@@ -100,7 +100,7 @@
       {:else}
         <span class="title flex-1">{story.name}</span>
         {#if story.assignedTo}
-          {@const m = project.members[story.assignedTo]}
+          {@const m = project.members?.[story.assignedTo]}
           <span title={m?.user.name}>({m?.user.initials})</span>
         {/if}
         <ul class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
