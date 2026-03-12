@@ -142,12 +142,6 @@
 </div>
 
 <style>
-  h4 {
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    @apply py-1;
-  }
-
   .drop-target {
     @apply bg-purple-200;
   }

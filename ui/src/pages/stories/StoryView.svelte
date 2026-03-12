@@ -150,15 +150,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  h4 {
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    @apply py-1;
-  }
-
-  .drop-target {
-    box-shadow: inset 0 1px 0 0 black;
-  }
-</style>

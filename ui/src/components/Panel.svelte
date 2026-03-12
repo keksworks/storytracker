@@ -12,7 +12,7 @@
 </script>
 
 {#if show}
-  <div class="panel">
+  <div class="panel {$$props.class}">
     <h5 class="panel-title">
       <span>
         <Icon {name} size="lg"/> {t.panels[name]}
