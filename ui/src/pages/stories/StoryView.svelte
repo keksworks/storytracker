@@ -45,13 +45,16 @@
     }
     onSaved(story)
     if (move) setTimeout(() => {
-      const before = story.status === StoryStatus.ACCEPTED ?
-        stories.find(s => s.status !== story.status) :
-        stories.find(s => s.status !== StoryStatus.ACCEPTED && s.status !== story.status)
+      const sOrd = statusOrd(story.status)
+      const before = stories.find(s => statusOrd(s.status) > sOrd)
       if (!before || before.order > story.order) return
       onDrag({id: story.id, beforeId: before.id})
       setTimeout(() => scrollIntoView(), 100)
     })
+  }
+
+  function statusOrd(s: StoryStatus) {
+    return Object.values(StoryStatus).indexOf(s)
   }
 
   function saveOnEnter(e: KeyboardEvent) {
