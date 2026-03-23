@@ -72,7 +72,7 @@
         </div>
       {/if}
       <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
-                  highlightId={highlightStoryId} on:highlighted={() => highlightStoryId = undefined}/>
+                  bind:highlightId={highlightStoryId}/>
     {/each}
 
     {#if movable}

@@ -1,10 +1,10 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {createEventDispatcher, onMount, tick} from 'svelte'
   import {type Id, type ProjectMemberUser, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from './StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
+  import {onMount, tick} from 'svelte'
   import StoryActions from './StoryActions.svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
@@ -29,8 +29,6 @@
   export let onLocate: ((story: Story) => void) | undefined = undefined
   export let highlightId: number | undefined = undefined
 
-  const dispatch = createEventDispatcher()
-
   let view: HTMLElement
   let open = !story.id
   let highlighted = false
@@ -44,7 +42,7 @@
 
   $: if (highlightId === story.id) {
     highlight()
-    dispatch('highlighted')
+    highlightId = undefined
   }
 
   let isDropTarget = false
