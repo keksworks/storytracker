@@ -20,6 +20,7 @@
   export let onDelete: (story: Story) => void = () => {}
   export let onLocate: ((story: Story) => void) | undefined = undefined
   export let highlightStoryId: number | undefined = undefined
+  export let flashStoryId: number | undefined = undefined
 
   let iterations: ({number?: number, points: number, startDate: string}|null)[] = []
   $: {
@@ -72,7 +73,7 @@
         </div>
       {/if}
       <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
-                  bind:highlightId={highlightStoryId}/>
+                  bind:highlightId={highlightStoryId} bind:flashId={flashStoryId}/>
     {/each}
 
     {#if movable}

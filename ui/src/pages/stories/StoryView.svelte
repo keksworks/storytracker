@@ -28,6 +28,7 @@
   export let onDelete: (story: Story) => void = () => {}
   export let onLocate: ((story: Story) => void) | undefined = undefined
   export let highlightId: number | undefined = undefined
+  export let flashId: number | undefined = undefined
 
   let view: HTMLElement
   let open = !story.id
@@ -40,9 +41,19 @@
     setTimeout(() => highlighted = false, 2000)
   }
 
+  export function flash() {
+    highlighted = true
+    setTimeout(() => highlighted = false, 2000)
+  }
+
   $: if (highlightId === story.id) {
     highlight()
     highlightId = undefined
+  }
+
+  $: if (flashId === story.id) {
+    flash()
+    flashId = undefined
   }
 
   let isDropTarget = false
