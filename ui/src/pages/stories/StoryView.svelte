@@ -1,10 +1,10 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
+  import {createEventDispatcher, onMount, tick} from 'svelte'
   import {type Id, type ProjectMemberUser, type Story, StoryStatus, StoryType} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import StoryPointsSelect from './StoryPointsSelect.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
-  import {onMount} from 'svelte'
   import StoryActions from './StoryActions.svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
@@ -26,9 +26,26 @@
   export let onSearch: (tag: string) => void = () => {}
   export let onSaved: (story: Story) => void = () => {}
   export let onDelete: (story: Story) => void = () => {}
+  export let onLocate: ((story: Story) => void) | undefined = undefined
+  export let highlightId: number | undefined = undefined
+
+  const dispatch = createEventDispatcher()
 
   let view: HTMLElement
   let open = !story.id
+  let highlighted = false
+
+  export async function highlight() {
+    highlighted = true
+    await tick()
+    view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    setTimeout(() => highlighted = false, 2000)
+  }
+
+  $: if (highlightId === story.id) {
+    highlight()
+    dispatch('highlighted')
+  }
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
@@ -92,7 +109,7 @@
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
-     on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget}
+     on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
@@ -128,7 +145,13 @@
     </div>
 
     <div class="flex items-center gap-3 max-sm:float-right">
-      <StoryActions {story} {save} {open} disabled={!project.canEdit}/>
+      {#if onLocate}
+        <span on:click|stopPropagation>
+          <Button label="⌖" variant="ghost" size="sm" class="!text-2xl" on:click={() => onLocate!(story)} title={t.stories.locate}/>
+        </span>
+      {:else}
+        <StoryActions {story} {save} {open} disabled={!project.canEdit}/>
+      {/if}
       <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={project.currentIterationNum > story.iteration!}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
@@ -165,3 +188,19 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .highlight {
+    animation: flash 2s ease-out;
+  }
+
+  @keyframes flash {
+    0% { background-color: #fef08a; }
+  }
+
+  h4 {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    @apply py-1;
+  }
+</style>

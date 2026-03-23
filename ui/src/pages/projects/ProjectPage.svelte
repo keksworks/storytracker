@@ -25,6 +25,7 @@
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
   let velocity = 10
+  let highlightStoryId: number | undefined
 
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
@@ -65,6 +66,12 @@
       searchQuery = undefined
       if (isMobile) show.backlog = true
     }
+  }
+
+  function onLocate(story: Story) {
+    if (story.status === StoryStatus.UNSCHEDULED) show.icebox = true
+    else show.backlog = true
+    highlightStoryId = story.id
   }
 
   let pastLoaded = false
@@ -179,7 +186,7 @@
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete}/>
 
-        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
           <span slot="right">
             {#if project.canEdit}
@@ -188,7 +195,7 @@
           </span>
        </StoryPanel>
 
-        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId>
           <span slot="right">
             {#if project.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
@@ -199,7 +206,7 @@
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
         <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete}>
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete} {onLocate}>
           <span slot="right">{searchQuery}</span>
         </StoryPanel>
       </div>

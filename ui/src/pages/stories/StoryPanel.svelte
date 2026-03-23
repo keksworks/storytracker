@@ -18,6 +18,8 @@
   export let onSearch: (tag: string) => void = () => {}
   export let onSaved: (story: Story) => void = () => {}
   export let onDelete: (story: Story) => void = () => {}
+  export let onLocate: ((story: Story) => void) | undefined = undefined
+  export let highlightStoryId: number | undefined = undefined
 
   let iterations: ({number?: number, points: number, startDate: string}|null)[] = []
   $: {
@@ -69,7 +71,8 @@
           <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
         </div>
       {/if}
-      <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete}/>
+      <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
+                  highlightId={highlightStoryId} on:highlighted={() => highlightStoryId = undefined}/>
     {/each}
 
     {#if movable}

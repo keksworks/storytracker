@@ -144,7 +144,8 @@
     },
     "createdAt": "Created",
     "updatedAt": "Updated",
-    "assignedTo": "Assigned to"
+    "assignedTo": "Assigned to",
+    "locate": "Locate in backlog/icebox"
   },
   "epics": {
     "epic": "Epic",

@@ -166,7 +166,8 @@
     },
     "createdAt": "Loodud",
     "updatedAt": "Uuendatud",
-    "assignedTo": "Määratud"
+    "assignedTo": "Määratud",
+    "locate": "Leia Planeerimisest/Jääkastist"
   },
   "epics": {
     "epic": "Eepik",
