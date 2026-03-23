@@ -36,13 +36,15 @@
     project!.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project!.epicTags]))]
   }
 
-  let show: Record<string, boolean> = {
+  let show: Record<string, boolean> = JSON.parse(localStorage['projectPanels:' + id] || 'null') || {
     done: false,
     backlog: true,
     icebox: !isMobile,
     epics: false,
     history: false
   }
+
+  $: localStorage['projectPanels:' + id] = JSON.stringify(show)
 
   function hideAll(key?: keyof typeof show) {
     Object.keys(show).forEach(k => k != key && (show[k] = false))
