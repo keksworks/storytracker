@@ -34,25 +34,22 @@
   let open = !story.id
   let highlighted = false
 
-  export async function highlight() {
+  export async function highlight(scroll = false) {
     highlighted = true
-    await tick()
-    view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
-    setTimeout(() => highlighted = false, 2000)
-  }
-
-  export function flash() {
-    highlighted = true
+    if (scroll) {
+      await tick()
+      view?.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+    }
     setTimeout(() => highlighted = false, 2000)
   }
 
   $: if (highlightId === story.id) {
-    highlight()
+    highlight(true)
     highlightId = undefined
   }
 
   $: if (flashId === story.id) {
-    flash()
+    highlight()
     flashId = undefined
   }
 
