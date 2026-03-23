@@ -171,7 +171,7 @@
         {#if isMobile}{@render search()}{/if}
       </div>
     </aside>
-    {#if !project || !stories}
+    {#if !project || !project.members || !stories}
       <Spinner/>
     {:else}
       <ProjectUpdatesListener {project} bind:stories/>
@@ -182,7 +182,7 @@
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
           <span slot="right">
-            {#if project?.canEdit}
+            {#if project.canEdit}
               <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>
             {/if}
           </span>
@@ -190,7 +190,7 @@
 
         <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete}>
           <span slot="right">
-            {#if project?.canEdit}
+            {#if project.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
             {/if}
           </span>
