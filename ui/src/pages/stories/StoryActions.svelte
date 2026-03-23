@@ -9,6 +9,7 @@
   export let save: (move?: boolean) => void
   export let open: boolean
   export let disabled: boolean
+  export let onLocate: ((story: Story) => void) | undefined = undefined
 
   const size = 'sm'
 
@@ -48,6 +49,10 @@
 <div title={t.stories.statuses[story.status]} class="status">
   {#if open}
     <Button {size} color="primary" variant="soft" on:click={justSave} {disabled}>{t.general.save}</Button>
+  {:else if onLocate}
+    <span on:click|stopPropagation>
+      <Button label="⌖" variant="ghost" size="sm" class="!text-2xl" on:click={() => onLocate!(story)} title={t.stories.locate}/>
+    </span>
   {:else if story.status === StoryStatus.UNSTARTED && story.type !== StoryType.RELEASE}
     <Button {size} color="secondary" variant="soft" on:click={start} {disabled}>{t.stories.actions.start}</Button>
   {:else if story.status === StoryStatus.STARTED}

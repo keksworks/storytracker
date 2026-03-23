@@ -145,13 +145,7 @@
     </div>
 
     <div class="flex items-center gap-3 max-sm:float-right">
-      {#if onLocate}
-        <span on:click|stopPropagation>
-          <Button label="⌖" variant="ghost" size="sm" class="!text-2xl" on:click={() => onLocate!(story)} title={t.stories.locate}/>
-        </span>
-      {:else}
-        <StoryActions {story} {save} {open} disabled={!project.canEdit}/>
-      {/if}
+      <StoryActions {story} {save} {open} {onLocate} disabled={!project.canEdit}/>
       <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={project.currentIterationNum > story.iteration!}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
