@@ -16,6 +16,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import {onStatusChanged} from './status'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
+  import {autoscroll, stopAutoscroll} from 'src/shared/autoscroll'
 
   export let project: ProjectContext
   export let story: Story
@@ -33,6 +34,17 @@
   function onDrop(e: DragEvent) {
     onDrag({id: parseInt(e.dataTransfer?.getData('id')!), beforeId: story.id})
     isDropTarget = false
+  }
+
+  function onDragOver(e: DragEvent) {
+    e.preventDefault()
+    isDropTarget = true
+    autoscroll(e)
+  }
+
+  function onDragLeave() {
+    isDropTarget = false
+    stopAutoscroll()
   }
 
   $: reallyMovable = movable && !open
@@ -80,7 +92,7 @@
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
-     on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
+     on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>

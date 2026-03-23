@@ -5,6 +5,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import Panel from 'src/components/Panel.svelte'
   import StoryView from 'src/pages/stories/StoryView.svelte'
+  import {autoscroll, stopAutoscroll} from 'src/shared/autoscroll'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
@@ -73,7 +74,8 @@
 
     {#if movable}
       <div class="min-h-16" draggable={movable} on:drop={onDrop}
-           on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}>
+           on:dragover={e => {e.preventDefault(); isDropTarget = true; autoscroll(e)}}
+           on:dragleave={() => {isDropTarget = false; stopAutoscroll()}} class:drop-target={isDropTarget}>
       </div>
     {/if}
   {:else}
