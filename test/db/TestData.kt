@@ -2,6 +2,7 @@ package db
 
 import klite.Email
 import stories.Epic
+import stories.Iteration
 import stories.Project
 import stories.Story
 import users.User
@@ -17,6 +18,7 @@ object TestData {
   val user = User("Test User", Email("user@azib.net"), createdAt = now)
 
   val project = Project(Id(1), "Project 1", "Description", createdAt = now)
+  val iteration = Iteration(project.id, 1, startDate = date, endDate = date.plusDays(7))
   val epic = Epic(Id(), project.id, "Epic 1", tag = "epic1", createdAt = now)
   val story = Story(Id(), project.id, "Story 1", createdAt = now)
   val story2 = Story(Id(), project.id, "Story 2", order = 2.0, createdAt = now)

@@ -59,5 +59,8 @@ class IterationAdvancer(
     projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity))
     storyRepository.setIteration(iteration, acceptedStories.map { it.id })
     log.info("Saved $iteration")
+
+    Transaction.current()?.commit()
+    storyRepository.reindexStoryOrder(p.id)
   }
 }

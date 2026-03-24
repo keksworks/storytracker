@@ -41,6 +41,10 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     if (storyIds.isEmpty()) 0 else
     db.update(table, mapOf(Story::iteration to iteration.number, Story::updatedAt to nowSec()), Story::id to storyIds)
 
+  fun reindexStoryOrder(projectId: Id<Project>) =
+    db.exec("with ordered as (select id, row_number() over (order by ord) as new_ord from $table where projectId = ? and iteration is null) " +
+      "update $table set ord = ordered.new_ord from ordered where $table.id = ordered.id", projectId)
+
   fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> = db.select(table,
     Story::projectId to projectId,
     Story::status to NotIn(DELETED),
