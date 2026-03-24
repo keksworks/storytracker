@@ -118,7 +118,7 @@
      on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} on:keydown={e => (e.key === 'Enter' || e.key === ' ') && (open = !open)} role="button" tabindex="0">
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} role="button" tabindex="0">
     <span title={t.stories.types[story.type]} class="max-sm:float-left mr-1">
       {#if story.type == StoryType.FEATURE}
         <Icon name="star-filled" class="text-yellow-500"/>
@@ -144,8 +144,8 @@
         {/if}
         <div class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
           {#each story.tags as tag}
-            <span class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
-                on:click|stopPropagation={() => onSearch(tag)} on:keydown={e => e.key === 'Enter' && onSearch(tag)} role="button" tabindex="0">{tag}</span>
+            <button class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
+                on:click|stopPropagation={() => onSearch(tag)}>{tag}</button>
           {/each}
         </div>
       {/if}
