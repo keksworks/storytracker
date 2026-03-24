@@ -39,4 +39,14 @@
       stories = stories
     })
   }
+
+  let lastHiddenAt = 0
+  function onVisibilityChange() {
+    if (document.visibilityState === 'hidden')
+      lastHiddenAt = Date.now()
+    else if (lastHiddenAt && Date.now() - lastHiddenAt >= 6 * 60 * 60 * 1000)
+      location.reload()
+  }
 </script>
+
+<svelte:document on:visibilitychange={onVisibilityChange}/>
