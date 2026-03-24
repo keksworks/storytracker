@@ -77,7 +77,7 @@
      on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} on:keydown={e => (e.key === 'Enter' || e.key === ' ') && (open = !open)} role="button" tabindex="0">
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} role="button" tabindex="0">
     <span title={t.panels.epics} class="max-sm:float-left mr-1">
       <Icon name="epics" class="text-purple-600"/>
     </span>
@@ -90,8 +90,8 @@
       {:else}
         <span class="title flex-1">{epic.name}</span>
         {#if epic.tag}
-          <span class="text-sm text-purple-700 font-bold ml-2 border border-purple-300 rounded px-1 cursor-pointer"
-                on:click|stopPropagation={() => onSearch(epic.tag)} on:keydown={e => e.key === 'Enter' && onSearch(epic.tag)} role="button" tabindex="0">{epic.tag}</span>
+          <button class="text-sm text-purple-700 font-bold ml-2 border border-purple-300 rounded px-1 cursor-pointer"
+                on:click|stopPropagation={() => onSearch(epic.tag)}>{epic.tag}</button>
         {/if}
       {/if}
     </div>
