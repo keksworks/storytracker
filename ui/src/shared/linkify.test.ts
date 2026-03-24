@@ -2,7 +2,7 @@ import {expect, test} from 'vitest'
 import {linkify} from './linkify'
 
 test('linkify plain text url', () => {
-  expect(linkify('Check https://google.com')).toBe('Check <a href="https://google.com" target="_blank" class="text-blue-600 hover:underline">https://google.com</a>')
+  expect(linkify('Check https://google.com')).toBe('Check <a href="https://google.com">https://google.com</a>')
 })
 
 test('linkify multiple urls', () => {

@@ -22,7 +22,7 @@
     "svelte5-router": "^3.0.2"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^6.1.0",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tailwindcss/forms": "^0.5.5",
     "@testing-library/svelte": "^5.2.8",
     "@tsconfig/svelte": "^3.0.0",
@@ -38,7 +38,7 @@
     "svelte-preprocess": "^5.1.4",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
-    "vite": "^6.3.5",
+    "vite": "^7.3.1",
     "vite-plugin-run": "^0.5.1",
     "vitest": "^3.2.4"
   }
