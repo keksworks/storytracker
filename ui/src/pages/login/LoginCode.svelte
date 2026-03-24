@@ -1,10 +1,11 @@
 <script lang="ts">
-  import {navigate, replaceValues, t} from 'src/i18n'
+  import {replaceValues, t} from 'src/i18n'
   import api from 'src/api/api'
   import {initSession} from 'src/stores/auth'
   import Form from 'src/forms/Form.svelte'
   import FormField from 'src/forms/FormField.svelte'
   import Button from 'src/components/Button.svelte'
+  import {navigate} from 'src/router'
 
   export let waitingForCode = false
   export let path = 'auth/email'

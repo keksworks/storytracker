@@ -1,12 +1,12 @@
 <script lang="ts">
   import {Role} from 'src/api/types'
   import {user} from 'src/stores/auth'
-  import Link from 'src/components/Link.svelte'
+  import {Link} from 'src/router'
   import {t} from 'src/i18n'
 
   const menu = [
-    {path: '', label: t.home.title, roles: []},
-    {path: 'projects', label: t.projects.title, roles: [Role.ADMIN, Role.OWNER, Role.VIEWER]}
+    {path: '/', label: t.home.title, roles: []},
+    {path: '/projects', label: t.projects.title, roles: [Role.ADMIN, Role.OWNER, Role.VIEWER]}
   ]
 </script>
 

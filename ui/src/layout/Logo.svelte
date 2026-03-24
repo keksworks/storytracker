@@ -1,8 +1,8 @@
 <script lang="ts">
   import {t} from 'src/i18n'
-  import Link from 'src/components/Link.svelte'
+  import {Link} from 'src/router'
 </script>
 
-<Link to="">
-  <img class="h-7" src="/img/logo.png" title={t.title} alt="Codeborne logo">
+<Link to="/">
+  <img class="h-7" src="/img/logo.png" title={t.title} alt="Logo">
 </Link>

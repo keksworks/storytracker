@@ -1,4 +1,4 @@
-import {refreshOnNextNavigate} from 'src/i18n'
+import {refreshOnNextNavigate} from 'src/router'
 
 export const requesterId = Math.random().toString(36).substring(2)
 export const headers = {

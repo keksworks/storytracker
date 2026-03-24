@@ -1,6 +1,5 @@
 import langs from '../i18n/langs.json'
 import {defaultLang, detectLang, type Dict, init, langs as allLangs, mergeDicts, type Options, resolve} from '@codeborne/i18n-json'
-import {navigate as navigatorNavigate} from 'svelte5-router'
 import type enDict from 'i18n/en.json'
 
 export * from '@codeborne/i18n-json'
@@ -35,20 +34,3 @@ export const yesterday = date.toLocaleDateString('lt')
 
 date.setDate(date.getDate() + 2)
 export const tomorrow = date.toLocaleDateString('lt')
-
-export function path(to: string) {
-  return to.startsWith('/') ? to : `/${to}`
-}
-
-let refreshNavigate = false
-export function refreshOnNextNavigate() {
-  refreshNavigate = true
-}
-
-export function navigate(to: string, opts?: Parameters<typeof navigatorNavigate>[1]) {
-  if (refreshNavigate) return location.href = path(to)
-  navigatorNavigate(path(to), opts)
-  setTimeout(() => scrollTo({top: 0}))
-}
-
-export const defaultCurrency = 'EUR'

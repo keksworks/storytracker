@@ -1,7 +1,6 @@
 <script lang="ts">
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
-  import Link from 'src/components/Link.svelte'
-  import {navigate} from 'src/i18n'
+  import {Link, navigate} from 'src/router'
 
   export let path: string
 
@@ -34,7 +33,7 @@
           {#each Object.keys(groupedMenu) as dir}
             <div class="nav-group">{dir}</div>
             {#each groupedMenu[dir] as path}
-              <Link to="samples/{path}" class="nav-link {location.pathname.endsWith(path) ? 'active': ''}">
+              <Link to="/samples/{path}" class="nav-link {location.pathname.endsWith(path) ? 'active': ''}">
                 {path.split('/')[1]}
               </Link>
             {/each}

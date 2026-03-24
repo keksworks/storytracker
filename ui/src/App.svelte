@@ -1,7 +1,7 @@
 <script lang="ts">
-  import {navigate, t} from 'src/i18n'
+  import {t} from 'src/i18n'
   import {user} from 'src/stores/auth'
-  import {Route, Router} from 'svelte5-router'
+  import {navigate, Route, Router} from 'src/router'
   import Toasts from './components/Toasts.svelte'
   import NotFoundPage from './layout/NotFoundPage.svelte'
   import Spinner from 'src/components/Spinner.svelte'

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Modal from 'src/components/Modal.svelte'
-  import {navigate, t} from 'src/i18n'
+  import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import Form from 'src/forms/Form.svelte'
   import FormField from 'src/forms/FormField.svelte'
@@ -10,6 +10,7 @@
   import api from 'src/api/api'
   import {showToast} from 'src/stores/toasts'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import {navigate} from 'src/router'
 
   export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3, isOwner: true} as ProjectContext
   export let label = t.projects.settings

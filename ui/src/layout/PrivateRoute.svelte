@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Route} from 'svelte5-router'
+  import {Route} from 'src/router'
   import PrivateRouteGuard from './PrivateRouteGuard.svelte'
   import type {SvelteComponentTyped} from 'svelte'
 

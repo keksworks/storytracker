@@ -1,6 +1,7 @@
 import api from './api/api'
-import {_, navigate, t} from './i18n'
+import {_, t} from './i18n'
 import {showToast, ToastType} from './stores/toasts'
+import {navigate} from 'src/router'
 
 export function jsErrorHandler(message: Event|string, source?: string, line?: number, column?: number, error?: Error) {
   reportError({message, source, line, column}, error)

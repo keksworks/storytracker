@@ -1,5 +1,5 @@
 import api, {headers} from './api'
-import * as i18n from 'src/i18n'
+import * as router from 'src/router'
 import type {MockInstance} from 'vitest'
 
 const successfulResponse = {status: 200, headers: {get: () => undefined}, json: () => 'data'} as any
@@ -21,10 +21,10 @@ describe('api', () => {
 
   it('refreshes on next navigate if version mismatch', async () => {
     window['apiVersion'] = '2.3'
-    vi.spyOn(i18n, 'refreshOnNextNavigate')
+    vi.spyOn(router, 'refreshOnNextNavigate')
     fetch.mockResolvedValue({...successfulResponse, headers: {get: () => '2.2'}})
     await api.requestJson('path', {body: {data: 'data'}})
-    expect(i18n.refreshOnNextNavigate).toHaveBeenCalled()
+    expect(router.refreshOnNextNavigate).toHaveBeenCalled()
     window['apiVersion'] = undefined
   })
 

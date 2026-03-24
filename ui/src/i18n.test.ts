@@ -1,4 +1,4 @@
-import {_, detectLang, dt, ensureSupportedLang, formatAmount, formatCurrency, formatDate, formatDateTime, path, rememberLang, t} from './i18n'
+import {_, detectLang, dt, ensureSupportedLang, formatAmount, formatCurrency, formatDate, formatDateTime, rememberLang, t} from './i18n'
 
 it('translate', () => {
   expect(_('contacts.email')).to.equal('E-mail')
@@ -45,9 +45,4 @@ it('formatAmount', () => {
 it('formatCurrency', () => {
   expect(formatCurrency('EUR')).to.eq('€')
   expect(formatCurrency('USD')).to.eq('US$')
-})
-
-it('adds slash to paths', () => {
-  expect(path('')).to.eq('/')
-  expect(path('dashboard')).to.eq('/dashboard')
 })

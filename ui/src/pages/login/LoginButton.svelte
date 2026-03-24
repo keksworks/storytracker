@@ -1,5 +1,6 @@
 <script lang="ts">
-  import {navigate, t} from 'src/i18n'
+  import {t} from 'src/i18n'
+  import {navigate} from 'src/router'
 
   export let url = '/oauth/google'
   export let redirect = '/'
