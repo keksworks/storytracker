@@ -2,7 +2,6 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
   import Link from 'src/components/Link.svelte'
   import {navigate} from 'src/i18n'
-  import Card from 'src/components/Card.svelte'
 
   export let path: string
 
@@ -46,17 +45,18 @@
 
     <div class="w-full">
       {#if path}
-        <Card title={path.replace('/', ' / ')} smDownFullWidth>
+        <div class="bg-white shadow rounded-lg p-6 sm:p-8">
+          <h3 class="text-lg font-medium leading-6 mb-4">{path.replace('/', ' / ')}</h3>
           <div class="common-grid">
             <svelte:component this={samples[path].default}/>
           </div>
-        </Card>
+        </div>
       {/if}
     </div>
   </div>
 </MainPageLayout>
 
-<style>
+<style lang="postcss">
   .nav {
     @apply flex flex-col
   }

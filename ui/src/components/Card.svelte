@@ -1,5 +1,4 @@
 <script lang="ts">
-
   export let title: string = ''
   export let subtitle: string = ''
   export let size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
