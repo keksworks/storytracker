@@ -140,7 +140,8 @@
       "deliver": "Deliver",
       "accept": "Accept",
       "reject": "Reject",
-      "restart": "Restart"
+      "restart": "Restart",
+      "move": "Move"
     },
     "createdAt": "Created",
     "updatedAt": "Updated",

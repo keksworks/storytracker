@@ -16,7 +16,7 @@
 <svelte:body on:click={handleOutsideClick} on:keyup={handleEscape}/>
 
 <div class="shrink-0 relative md:inline-block" bind:this={dropdown}>
-  <div on:click={() => open = !open} role="menu" tabindex="0">
+  <div on:click={() => open = !open} on:keydown={e => e.key === 'Enter' && (open = !open)} role="button" tabindex="0">
     <slot/>
   </div>
 
@@ -29,7 +29,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   .dropdown {
     @apply origin-top-left min-w-min
     bg-white ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden text-sm

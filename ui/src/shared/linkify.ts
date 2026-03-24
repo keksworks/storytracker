@@ -31,9 +31,10 @@ export function linkify(html: string): string {
   return doc.body.innerHTML
 }
 
-export function handleDescriptionClick(e: MouseEvent) {
+export function handleDescriptionClick(e: MouseEvent | KeyboardEvent) {
   const a = (e.target as HTMLElement).closest('a')
   if (a) {
+    if (e instanceof KeyboardEvent && e.key !== 'Enter') return
     e.preventDefault()
     window.open(a.href, '_blank')
   }

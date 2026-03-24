@@ -118,7 +118,7 @@
      on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} on:keydown={e => (e.key === 'Enter' || e.key === ' ') && (open = !open)} role="button" tabindex="0">
     <span title={t.stories.types[story.type]} class="max-sm:float-left mr-1">
       {#if story.type == StoryType.FEATURE}
         <Icon name="star-filled" class="text-yellow-500"/>
@@ -133,6 +133,7 @@
 
     <div class="flex-grow">
       {#if open}
+        <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={story.name}
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
       {:else}
@@ -141,12 +142,12 @@
           {@const m = project.members?.[story.assignedTo]}
           <span title={m?.user.name}>({m?.user.initials})</span>
         {/if}
-        <ul class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
+        <div class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
           {#each story.tags as tag}
-            <li class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
-                on:click|stopPropagation={() => onSearch(tag)}>{tag}</li>
+            <span class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
+                on:click|stopPropagation={() => onSearch(tag)} on:keydown={e => e.key === 'Enter' && onSearch(tag)} role="button" tabindex="0">{tag}</span>
           {/each}
-        </ul>
+        </div>
       {/if}
     </div>
 
@@ -179,7 +180,7 @@
       <h4>{t.stories.description}</h4>
       <div class="bg-white whitespace-pre-line p-2 min-h-16" bind:innerHTML={story.description} contenteditable="true"
            on:blur={() => story.description = linkify(story.description || '')}
-           on:click={handleDescriptionClick}></div>
+           on:click={handleDescriptionClick} on:keydown={handleDescriptionClick} role="textbox" tabindex="0"></div>
 
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
@@ -189,7 +190,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   .highlight {
     animation: flash 2s ease-out;
   }

@@ -162,7 +162,8 @@
       "deliver": "Tarnida",
       "accept": "Aktsepteeri",
       "reject": "Lükka tagasi",
-      "restart": "Alusta uuesti"
+      "restart": "Alusta uuesti",
+      "move": "Liiguta"
     },
     "createdAt": "Loodud",
     "updatedAt": "Uuendatud",

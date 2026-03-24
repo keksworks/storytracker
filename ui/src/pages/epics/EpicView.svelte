@@ -77,20 +77,21 @@
      on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" on:click={() => open = !open}>
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} on:keydown={e => (e.key === 'Enter' || e.key === ' ') && (open = !open)} role="button" tabindex="0">
     <span title={t.panels.epics} class="max-sm:float-left mr-1">
       <Icon name="epics" class="text-purple-600"/>
     </span>
 
     <div class="flex-grow">
       {#if open}
+        <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={epic.name}
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!epic.id}></div>
       {:else}
         <span class="title flex-1">{epic.name}</span>
         {#if epic.tag}
           <span class="text-sm text-purple-700 font-bold ml-2 border border-purple-300 rounded px-1 cursor-pointer"
-                on:click|stopPropagation={() => onSearch(epic.tag)}>{epic.tag}</span>
+                on:click|stopPropagation={() => onSearch(epic.tag)} on:keydown={e => e.key === 'Enter' && onSearch(epic.tag)} role="button" tabindex="0">{epic.tag}</span>
         {/if}
       {/if}
     </div>
@@ -134,14 +135,14 @@
       <h4>{t.stories.description}</h4>
       <div class="bg-white whitespace-pre-line p-2 min-h-16" bind:innerHTML={epic.description} contenteditable="true"
            on:blur={() => epic.description = linkify(epic.description || '')}
-           on:click={handleDescriptionClick}></div>
+           on:click={handleDescriptionClick} on:keydown={handleDescriptionClick} role="textbox" tabindex="0"></div>
 
       <StoryComments {project} bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`}/>
     </div>
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   .drop-target {
     @apply bg-purple-200;
   }

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {_} from '@codeborne/i18n-json'
 
   export let title: string = ''
   export let subtitle: string = ''
@@ -9,7 +8,7 @@
 </script>
 
 <div class="card bg-white shadow card-{size} {split ? 'card-split' : ''} {$$props.class ?? ''} {smDownFullWidth ? 'mobile-full-w' : ''}"
-     on:click>
+     on:click on:keydown={e => (e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()} role="button" tabindex="0">
   <div class="grid md:grid-cols-3">
     {#if title}
       <div class="card-header {split ? 'md:col-span-1': 'md:col-span-3'}">
@@ -25,7 +24,7 @@
   </div>
 </div>
 
-<style global>
+<style lang="postcss" global>
   .card-lg > .grid > .card-header > .card-title { @apply text-2xl font-semibold }
   .card-lg > .grid > .card-text { @apply text-base }
   .card-lg > .grid > .card-header { @apply px-4 py-5 sm:px-8 sm:pt-8 pb-0 }

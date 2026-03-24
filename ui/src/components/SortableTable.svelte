@@ -101,9 +101,11 @@
             </slot>
           {/each}
           {#if renderMax < items.length}
-            <td colspan={columns.length} class="text-center" style="height: {scrollable?.clientHeight}px">
-              <Spinner class="py-24 h-11"/>
-            </td>
+            <tr>
+              <td colspan={columns.length} class="text-center" style="height: {scrollable?.clientHeight}px">
+                <Spinner class="py-24 h-11"/>
+              </td>
+            </tr>
           {/if}
         {/if}
       {:else}
@@ -119,7 +121,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   table {
     @apply relative bg-white text-black min-w-full md:shadow border-separate border-spacing-0
   }

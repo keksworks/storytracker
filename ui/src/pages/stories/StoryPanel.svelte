@@ -79,7 +79,8 @@
     {#if movable}
       <div class="min-h-16" draggable={movable} on:drop={onDrop}
            on:dragover={e => {e.preventDefault(); isDropTarget = true; autoscroll(e)}}
-           on:dragleave={() => {isDropTarget = false; stopAutoscroll()}} class:drop-target={isDropTarget}>
+           on:dragleave={() => {isDropTarget = false; stopAutoscroll()}} class:drop-target={isDropTarget}
+           role="region" aria-label={t.stories.actions.move}>
       </div>
     {/if}
   {:else}
@@ -87,7 +88,7 @@
   {/if}
 </Panel>
 
-<style global>
+<style lang="postcss" global>
   .panel h4 {
     text-transform: uppercase;
     font-size: 0.8rem;
