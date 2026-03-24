@@ -7,7 +7,7 @@
 </script>
 
 <div class="card bg-white shadow card-{size} {split ? 'card-split' : ''} {$$props.class ?? ''} {smDownFullWidth ? 'mobile-full-w' : ''}"
-     on:click on:keydown={e => (e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()} role="button" tabindex="0">
+     on:click on:keydown={e => e.key === 'Enter' && e.currentTarget.click()} role="button" tabindex="0">
   <div class="grid md:grid-cols-3">
     {#if title}
       <div class="card-header {split ? 'md:col-span-1': 'md:col-span-3'}">
