@@ -35,7 +35,6 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
-    project!.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project!.epicTags]))]
   }
 
   let show: Record<string, boolean> = JSON.parse(localStorage['projectPanels:' + id] || 'null') || {
@@ -86,12 +85,12 @@
       project!.isOwner = $user.isAdmin || role == Role.OWNER
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })
-    api.get<Epic[]>(`projects/${id}/epics`).then(r => {
-      epics = r
-      project!.epicTags = new Set(epics.map(e => e.tag))
-    })
+    api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
     await loadStories(project!.currentIterationNum)
   })
+
+  $: if (project) project.epicTags = new Set(epics.map(e => e.tag))
+  $: if (project) project.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project.epicTags ?? []]))]
 
   $: if (show.done && !pastLoaded) {
     loadStories(0)
