@@ -60,7 +60,7 @@ begin
   return new;
 end; $$
 
---changeset change_history.projectId:fill
+--changeset change_history.projectId:fill onFail:MARK_RAN
 update change_history h set projectId = (select projectId from stories s where s.id = h.rowId) where "table" = 'stories' and projectId is null;
 update change_history h set projectId = (select projectId from epics e where e.id = h.rowId) where "table" = 'epics' and projectId is null;
 update change_history h set projectId = (select projectId from project_members m where m.id = h.rowId) where "table" = 'project_members' and projectId is null;
