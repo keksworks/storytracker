@@ -48,6 +48,7 @@
   async function save() {
     epic.tag ||= epic.name.toLowerCase()
     epic = await api.post(`projects/${epic.projectId}/epics`, epic)
+    project.epicTags.add(epic.tag)
     onSaved(epic)
   }
 
