@@ -47,6 +47,11 @@ class ProjectRoutes(
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
+  @GET("/:id/export") fun export(@PathParam id: Id<Project>, e: HttpExchange): Any {
+    e.fileName("project-$id.json", attachment = true)
+    return projectRepository.get(id)
+  }
+
   @POST @Access(ADMIN, OWNER, MEMBER)
   fun create(project: Project, @AttrParam user: User): Project {
     projectRepository.create(project)

@@ -82,7 +82,8 @@
     "velocity": "Velocity",
     "velocityOverride": "Temporary velocity override",
     "updatedAt": "Updated",
-    "search": "Search projects..."
+    "search": "Search projects...",
+    "export": "Export"
   },
   "weekDays": {
     "MONDAY": "Monday",

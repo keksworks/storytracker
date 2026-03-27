@@ -104,7 +104,8 @@
     "velocity": "Kiirus",
     "velocityOverride": "Ajutine kiiruse asendus",
     "updatedAt": "Uuendatud",
-    "search": "Otsi projekte..."
+    "search": "Otsi projekte...",
+    "export": "Ekspordi"
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",
