@@ -103,7 +103,8 @@
     "startDay": "Iteratsiooni alguspäev",
     "velocity": "Kiirus",
     "velocityOverride": "Ajutine kiiruse asendus",
-    "updatedAt": "Uuendatud"
+    "updatedAt": "Uuendatud",
+    "search": "Otsi projekte..."
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",

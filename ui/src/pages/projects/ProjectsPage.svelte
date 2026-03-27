@@ -8,24 +8,30 @@
   import {onMount} from 'svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {formatDate} from '@codeborne/i18n-json'
+  import FormField from 'src/forms/FormField.svelte'
 
   let projects: Project[]
+  let search = ''
 
   onMount(async () => {
     projects = await api.get('projects')
   })
+
+  $: searchLowerCase = search.toLowerCase()
+  $: filteredProjects = projects?.filter(p => p.name.toLowerCase().includes(searchLowerCase))
 </script>
 
 <MainPageLayout title={t.projects.title}>
-  <span slot="header">
+  <span slot="header" class="flex gap-4">
     <ProjectSettingsButton label={t.projects.new}/>
+    <FormField type="search" placeholder={t.projects.search} bind:value={search} autofocus/>
   </span>
 
   {#if !projects}
     <Spinner/>
   {/if}
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 my-3 text-lg">
-    {#each projects ?? [] as p}
+    {#each filteredProjects ?? [] as p}
       <Link to="/projects/{p.id}" class="project border rounded-lg px-4 py-3 bg-white hover:bg-stone-50">
         <div class="font-semibold">{p.name}</div>
         <div class="flex justify-between text-muted">

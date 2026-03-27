@@ -81,7 +81,8 @@
     "startDay": "Iteration start day",
     "velocity": "Velocity",
     "velocityOverride": "Temporary velocity override",
-    "updatedAt": "Updated"
+    "updatedAt": "Updated",
+    "search": "Search projects..."
   },
   "weekDays": {
     "MONDAY": "Monday",
