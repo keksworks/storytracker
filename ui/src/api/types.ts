@@ -16,6 +16,8 @@ export interface Epic {comments: Array<StoryComment>; createdAt: Instant; create
 export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number}
+// class stories.ProjectExport
+export interface ProjectExport {epics: Array<Epic>; project: Project; stories: Array<Story>}
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
 // class stories.ProjectMemberRequest
