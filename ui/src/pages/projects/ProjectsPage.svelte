@@ -4,7 +4,7 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
-  import {Link, navigate} from 'src/router'
+  import {Link} from 'src/router'
   import {onMount} from 'svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {formatDate} from '@codeborne/i18n-json'
@@ -21,9 +21,7 @@
   $: filteredProjects = projects?.filter(p => p.name.toLowerCase().includes(searchLowerCase))
 
   function onKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && filteredProjects.length) {
-      navigate(`/projects/${filteredProjects[0].id}`)
-    }
+    if (e.key === 'Enter') (document.querySelector('a.project') as HTMLElement)?.click()
   }
 </script>
 
