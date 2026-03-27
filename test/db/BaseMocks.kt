@@ -1,7 +1,10 @@
 package db
 
 import db.TestData.admin
+import db.TestData.epic
 import db.TestData.project
+import db.TestData.story
+import db.TestData.story2
 import db.TestData.user
 import history.ChangeHistoryRepository
 import io.mockk.clearAllMocks
@@ -55,6 +58,14 @@ abstract class BaseMocks {
 
     projectRepository.apply {
       every { get(project.id) } returns project
+    }
+
+    storyRepository.apply {
+      every { list(project.id) } returns listOf(story, story2)
+    }
+
+    epicRepository.apply {
+      every { list(Epic::projectId to project.id) } returns listOf(epic)
     }
   }
 }
