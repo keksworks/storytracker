@@ -4,7 +4,7 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
-  import {Link} from 'src/router'
+  import {Link, navigate} from 'src/router'
   import {onMount} from 'svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {formatDate} from '@codeborne/i18n-json'
@@ -19,12 +19,18 @@
 
   $: searchLowerCase = search.toLowerCase()
   $: filteredProjects = projects?.filter(p => p.name.toLowerCase().includes(searchLowerCase))
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter' && filteredProjects.length) {
+      navigate(`/projects/${filteredProjects[0].id}`)
+    }
+  }
 </script>
 
 <MainPageLayout title={t.projects.title}>
   <span slot="header" class="flex gap-4">
     <ProjectSettingsButton label={t.projects.new}/>
-    <FormField type="search" placeholder={t.projects.search} bind:value={search} autofocus/>
+    <FormField type="search" placeholder={t.projects.search} bind:value={search} autofocus on:keydown={onKeyDown}/>
   </span>
 
   {#if !projects}
