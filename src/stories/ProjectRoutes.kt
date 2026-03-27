@@ -47,9 +47,13 @@ class ProjectRoutes(
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
 
-  @GET("/:id/export") fun export(@PathParam id: Id<Project>, e: HttpExchange): Any {
+  @GET("/:id/export") fun export(@PathParam id: Id<Project>, e: HttpExchange): ProjectExport {
     e.fileName("project-$id.json", attachment = true)
-    return projectRepository.get(id)
+    return ProjectExport(
+      get(id),
+      epics(id),
+      stories(id)
+    )
   }
 
   @POST @Access(ADMIN, OWNER, MEMBER)
@@ -161,3 +165,5 @@ class ProjectRoutes(
 }
 
 data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String, val id: Id<ProjectMember>? = null)
+
+data class ProjectExport(val project: Project, val epics: List<Epic>, val stories: List<Story>)
