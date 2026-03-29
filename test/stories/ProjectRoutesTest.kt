@@ -76,4 +76,21 @@ class ProjectRoutesTest: BaseMocks() {
     val result = routes.members(project.id)
     expect(result).toEqual(listOf(projectMemberUser))
   }
+
+  @Test fun saveMember() {
+    val request = ProjectMemberRequest(
+      email = user.email,
+      role = Role.MEMBER,
+      name = user.name,
+      initials = "TU"
+    )
+    every { userRepository.by(any()) } returns user
+    val result = routes.saveMember(project.id, request)
+    expect(result.user.email).toEqual(user.email)
+    expect(result.member.role).toEqual(Role.MEMBER)
+
+    verify {userRepository.save(any()) }
+    verify {projectMemberRepository.save(any()) }
+  }
+
 }
