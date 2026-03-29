@@ -11,7 +11,7 @@ import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
-class UserRoutesTest: BaseMocks() {
+class  UserRoutesTest: BaseMocks() {
   val routes = create<UserRoutes>()
 
   @Test fun all() {

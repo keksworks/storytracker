@@ -1,10 +1,8 @@
 package db
 
 import klite.Email
-import stories.Epic
-import stories.Iteration
-import stories.Project
-import stories.Story
+import stories.*
+import users.Role
 import users.User
 import java.time.LocalDate
 import java.time.ZoneOffset.UTC
@@ -22,4 +20,6 @@ object TestData {
   val epic = Epic(Id(), project.id, "Epic 1", tag = "epic1", createdAt = now)
   val story = Story(Id(), project.id, "Story 1", createdAt = now)
   val story2 = Story(Id(), project.id, "Story 2", order = 2.0, createdAt = now)
+  val projectMember = ProjectMember(project.id, user.id, Role.MEMBER)
+  val projectMemberUser = ProjectMemberUser(projectMember, user)
 }
