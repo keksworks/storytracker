@@ -73,12 +73,13 @@
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'}
-      flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
+      flex flex-col border-b" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', epic.id.toString())}
      on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} role="button" tabindex="0">
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" class:cursor-move={reallyMovable}
+       on:click={() => open = !open} role="button" tabindex="0">
     <span title={t.panels.epics} class="max-sm:float-left mr-1">
       <Icon name="epics" class="text-purple-600"/>
     </span>
