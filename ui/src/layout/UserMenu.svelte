@@ -6,7 +6,7 @@
   import Button from 'src/components/Button.svelte'
   import LoginButton from 'src/pages/login/LoginButton.svelte'
   import {isMobile} from 'src/pages/projects/context'
-  import {activePath} from 'src/router'
+  import {activePath} from '@keksworks/svelte-tiny-router'
 
   let isDropdownOpen = false
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
-  import {Link, navigate} from 'src/router'
+  import {Link, navigate} from '@keksworks/svelte-tiny-router'
 
   export let path: string
 

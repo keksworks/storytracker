@@ -5,7 +5,7 @@
   import Form from 'src/forms/Form.svelte'
   import FormField from 'src/forms/FormField.svelte'
   import Button from 'src/components/Button.svelte'
-  import {navigate} from 'src/router'
+  import {navigate} from '@keksworks/svelte-tiny-router'
 
   export let waitingForCode = false
   export let path = 'auth/email'

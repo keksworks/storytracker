@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {navigate} from 'src/router'
+  import {navigate} from '@keksworks/svelte-tiny-router'
   import {user} from 'src/stores/auth'
 
   $: if (!$user) navigate('login', {replace: true})

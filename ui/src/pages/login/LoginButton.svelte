@@ -1,6 +1,6 @@
 <script lang="ts">
   import {t} from 'src/i18n'
-  import {navigate} from 'src/router'
+  import {navigate} from '@keksworks/svelte-tiny-router'
 
   export let url = '/oauth/google'
   export let redirect = '/'
