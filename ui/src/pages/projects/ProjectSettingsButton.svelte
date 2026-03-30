@@ -10,7 +10,7 @@
   import api from 'src/api/api'
   import {showToast} from 'src/stores/toasts'
   import type {ProjectContext} from 'src/pages/projects/context'
-  import {navigate} from 'src/router'
+  import {navigate} from '@keksworks/svelte-tiny-router'
 
   export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3, isOwner: true} as ProjectContext
   export let label = t.projects.settings

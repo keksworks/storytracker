@@ -1,5 +1,5 @@
 import api, {headers} from './api'
-import * as router from 'src/router'
+import * as router from '@keksworks/svelte-tiny-router'
 import type {MockInstance} from 'vitest'
 
 const successfulResponse = {status: 200, headers: {get: () => undefined}, json: () => 'data'} as any

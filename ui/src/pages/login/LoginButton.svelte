@@ -1,6 +1,6 @@
 <script lang="ts">
   import {t} from 'src/i18n'
-  import {navigate} from 'src/router'
+  import {navigate} from '@keksworks/svelte-tiny-router'
 
   export let url = '/oauth/google'
   export let redirect = '/'
@@ -14,7 +14,7 @@
   {#if label}
     {label}
   {:else}
-    <button on:click|preventDefault={() => navigate('login#' + location.pathname)} title={t.login.email} class="border-l px-2 -my-2 -mr-2 flex items-center">
+    <button on:click|preventDefault={() => navigate('/login#' + location.pathname)} title={t.login.email} class="border-l px-2 -my-2 -mr-2 flex items-center">
       <span class="text-lg mr-1">@</span> {narrow ? '' : t.contacts.email}
     </button>
   {/if}

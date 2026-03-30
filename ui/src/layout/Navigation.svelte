@@ -1,7 +1,7 @@
 <script lang="ts">
   import {Role} from 'src/api/types'
   import {user} from 'src/stores/auth'
-  import {Link} from 'src/router'
+  import {Link} from '@keksworks/svelte-tiny-router'
   import {t} from 'src/i18n'
 
   const menu = [

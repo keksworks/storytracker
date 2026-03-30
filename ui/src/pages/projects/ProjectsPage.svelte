@@ -4,7 +4,7 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
   import api from 'src/api/api'
   import Spinner from 'src/components/Spinner.svelte'
-  import {Link} from 'src/router'
+  import {Link} from '@keksworks/svelte-tiny-router'
   import {onMount} from 'svelte'
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {formatDate} from '@codeborne/i18n-json'
