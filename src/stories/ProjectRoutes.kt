@@ -51,6 +51,7 @@ class ProjectRoutes(
     e.fileName("project-$id.json", attachment = true)
     return ProjectExport(
       get(id),
+      iterations(id),
       epics(id),
       stories(id)
     )
@@ -166,4 +167,4 @@ class ProjectRoutes(
 
 data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String, val id: Id<ProjectMember>? = null)
 
-data class ProjectExport(val project: Project, val epics: List<Epic>, val stories: List<Story>)
+data class ProjectExport(val project: Project, val iterations: List<Iteration>, val epics: List<Epic>, val stories: List<Story>)

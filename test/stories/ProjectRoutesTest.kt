@@ -6,6 +6,7 @@ import db.BaseMocks
 import db.Id
 import db.TestData.admin
 import db.TestData.epic
+import db.TestData.iteration
 import db.TestData.project
 import db.TestData.projectMemberUser
 import db.TestData.story
@@ -41,6 +42,7 @@ class ProjectRoutesTest: BaseMocks() {
   @Test fun export() {
     val projectExport = ProjectExport(
       project,
+      listOf(iteration),
       listOf(epic),
       listOf(story, story2)
     )
@@ -101,8 +103,16 @@ class ProjectRoutesTest: BaseMocks() {
     expect(result.member.userId).toEqual(user.id)
     expect(result.member.role).toEqual(MEMBER)
 
-    verify {
-      projectMemberRepository.save(result.member)
-    }
+    verify { projectMemberRepository.save(result.member) }
+  }
+
+  @Test fun epics() {
+    expect(routes.epics(project.id)).toEqual(listOf(epic))
+  }
+
+  @Test fun saveEpic() {
+    val result = routes.saveEpic(project.id, epic)
+    expect(result).toEqual(epic)
+    verify { epicRepository.save(result) }
   }
 }
