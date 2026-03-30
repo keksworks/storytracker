@@ -122,7 +122,6 @@
       "DELIVERED": "Delivered",
       "FINISHED": "Finished",
       "STARTED": "Started",
-      "PLANNED": "Planned",
       "UNSTARTED": "Unstarted",
       "UNSCHEDULED": "Unscheduled"
     },

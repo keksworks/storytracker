@@ -64,3 +64,6 @@ update stories s set iteration = (select max(number) from iterations i where i.p
 
 --changeset stories.projectId:bigint
 alter table stories alter column projectId type bigint using projectId::bigint;
+
+--changeset stories.status:drop-PLANNED
+update stories set status = 'UNSTARTED' where status = 'PLANNED';

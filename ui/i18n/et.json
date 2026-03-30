@@ -144,7 +144,6 @@
       "DELIVERED": "Tarnitud",
       "FINISHED": "Lõpetatud",
       "STARTED": "Alustatud",
-      "PLANNED": "Planeeritud",
       "UNSTARTED": "Alustamata",
       "UNSCHEDULED": "Ajastamata"
     },
