@@ -11,7 +11,6 @@ const warningsToIgnore = [
 
 const preprocess = sveltePreprocess({
   postcss: true,
-  typescript: {compilerOptions: {target: 'es2020'}}
 })
 
 module.exports = {
