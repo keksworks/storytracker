@@ -3,7 +3,7 @@ const URL_REGEX = /(https?:\/\/[^\s<]+)/g
 export function linkify(html: string): string {
   if (!html) return html
   const parser = new DOMParser()
-  const doc = parser.parseFromString(html, 'text/html')
+  const doc = parser.parseFromString(html.replaceAll('<br>', '\n').replaceAll('<div>', '\n').replaceAll('</div>', ''), 'text/html')
   doc.querySelectorAll('script, style').forEach(el => el.remove())
 
   const walk = (node: Node) => {
