@@ -43,12 +43,12 @@
     setTimeout(() => highlighted = false, 2000)
   }
 
-  $: if (highlightId === story.id) {
+  $: if (highlightId && highlightId === story.id) {
     highlight(true)
     highlightId = undefined
   }
 
-  $: if (flashId === story.id) {
+  $: if (flashId && flashId === story.id) {
     highlight()
     flashId = undefined
   }
