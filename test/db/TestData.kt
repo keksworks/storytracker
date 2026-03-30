@@ -20,6 +20,6 @@ object TestData {
   val epic = Epic(Id(), project.id, "Epic 1", tag = "epic1", createdAt = now)
   val story = Story(Id(), project.id, "Story 1", createdAt = now)
   val story2 = Story(Id(), project.id, "Story 2", order = 2.0, createdAt = now)
-  val projectMember = ProjectMember(project.id, user.id, Role.MEMBER)
+  val projectMember = ProjectMember(project.id, user.id, Role.MEMBER, createdAt = now)
   val projectMemberUser = ProjectMemberUser(projectMember, user)
 }
