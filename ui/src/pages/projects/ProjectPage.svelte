@@ -16,6 +16,7 @@
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
   import {user} from 'src/stores/auth'
+  import ProjectExportButton from 'src/pages/projects/ProjectExportButton.svelte'
 
   export let id: Id<Project>
 
@@ -165,6 +166,7 @@
     {#if project?.members}
       <ProjectMembersButton {project}/>
       <ProjectSettingsButton {project}/>
+      <ProjectExportButton {project}/>
     {/if}
     {#if !isMobile}{@render search()}{/if}
   </Header>

@@ -18,7 +18,7 @@ data class Epic(
   val description: String? = null,
   val tag: String,
   val comments: List<Comment> = emptyList(),
-  val updatedAt: Instant? = nowSec(),
+  val updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
 ): Entity<Epic>

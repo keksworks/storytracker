@@ -1,7 +1,12 @@
 package db
 
 import db.TestData.admin
+import db.TestData.epic
+import db.TestData.project
+import db.TestData.story
+import db.TestData.story2
 import db.TestData.user
+import history.ChangeHistoryRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -10,6 +15,7 @@ import klite.DependencyInjectingRegistry
 import klite.HttpExchange
 import klite.StatusCode.Companion.Found
 import klite.StatusCodeException
+import stories.*
 import users.UserRepository
 import java.net.URI
 
@@ -23,6 +29,13 @@ abstract class BaseMocks {
     val exchange = mockk<HttpExchange>(relaxed = true)
 
     val userRepository = mock<UserRepository>(relaxed = true)
+    val projectRepository = mock<ProjectRepository>(relaxed = true)
+    val projectMemberRepository = mock<ProjectMemberRepository>(relaxed = true)
+    val storyRepository = mock<StoryRepository>(relaxed = true)
+    val epicRepository = mock<EpicRepository>(relaxed = true)
+    val iterationRepository = mock<IterationRepository>(relaxed = true)
+    val attachmentRepository = mock<AttachmentRepository>(relaxed = true)
+    val changeHistoryRepository = mock<ChangeHistoryRepository>(relaxed = true)
 
     inline fun <reified T: Any> create() = registry.create(T::class)
 
@@ -41,6 +54,18 @@ abstract class BaseMocks {
     userRepository.apply {
       every { get(admin.id) } returns admin
       every { get(user.id) } returns user
+    }
+
+    projectRepository.apply {
+      every { get(project.id) } returns project
+    }
+
+    storyRepository.apply {
+      every { list(project.id) } returns listOf(story, story2)
+    }
+
+    epicRepository.apply {
+      every { list(Epic::projectId to project.id) } returns listOf(epic)
     }
   }
 }

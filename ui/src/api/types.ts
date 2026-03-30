@@ -16,6 +16,8 @@ export interface Epic {comments: Array<StoryComment>; createdAt: Instant; create
 export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number}
+// class stories.ProjectExport
+export interface ProjectExport {epics: Array<Epic>; project: Project; stories: Array<Story>}
 // class stories.ProjectMember
 export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
 // class stories.ProjectMemberRequest
@@ -61,7 +63,7 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 // db.TestData
 export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
 export const date = "2025-03-03" as LocalDate
-export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Epic 1","projectId":1,"tag":"epic1","updatedAt":"2026-03-24T16:57:46Z"} as Epic
+export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Epic 1","projectId":1,"tag":"epic1"} as Epic
 export const iteration = {"endDate":"2025-03-10","length":1,"number":1,"projectId":1,"startDate":"2025-03-03","teamStrength":100} as Iteration
 export const now = "2025-03-03T00:00:00Z" as Instant
 export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3} as Project
