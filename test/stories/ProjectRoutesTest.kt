@@ -15,7 +15,9 @@ import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import users.Role
+import users.Role.MEMBER
+import users.Role.OWNER
+import users.User
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
@@ -48,10 +50,10 @@ class ProjectRoutesTest: BaseMocks() {
   @Test fun create() {
    val newProject = routes.create(project, user)
     expect(newProject).toEqual(project)
-    verify { projectRepository.create(project) }
     verify {
+      projectRepository.create(project)
       projectMemberRepository.save(match {
-        it.projectId == project.id && it.userId == user.id && it.role == Role.OWNER
+        it.projectId == project.id && it.userId == user.id && it.role == OWNER
       })
     }
   }
@@ -78,19 +80,29 @@ class ProjectRoutesTest: BaseMocks() {
   }
 
   @Test fun saveMember() {
-    val request = ProjectMemberRequest(
-      email = user.email,
-      role = Role.MEMBER,
-      name = user.name,
-      initials = "TU"
-    )
-    every { userRepository.by(any()) } returns user
+    val request = ProjectMemberRequest(user.email, MEMBER, "nimi", "TU")
+    every { userRepository.by(User::email to request.email) } returns user
     val result = routes.saveMember(project.id, request)
     expect(result.user.email).toEqual(user.email)
-    expect(result.member.role).toEqual(Role.MEMBER)
+    expect(result.user.name).toEqual("nimi")
+    expect(result.member.role).toEqual(MEMBER)
 
-    verify {userRepository.save(any()) }
-    verify {projectMemberRepository.save(any()) }
+    verify {
+      userRepository.save(result.user)
+      projectMemberRepository.save(result.member)
+    }
   }
 
+  @Test fun addMeAsMember() {
+    val result = routes.addMeAsMember(project.id, user)
+
+    expect(result.user).toEqual(user)
+    expect(result.member.projectId).toEqual(project.id)
+    expect(result.member.userId).toEqual(user.id)
+    expect(result.member.role).toEqual(MEMBER)
+
+    verify {
+      projectMemberRepository.save(result.member)
+    }
+  }
 }
