@@ -6,6 +6,7 @@
   import Button from 'src/components/Button.svelte'
   import LoginButton from 'src/pages/login/LoginButton.svelte'
   import {isMobile} from 'src/pages/projects/context'
+  import {activePath} from 'src/router'
 
   let isDropdownOpen = false
 </script>
@@ -25,6 +26,6 @@
       </div>
     </svelte:fragment>
   </Dropdown>
-{:else}
+{:else if $activePath !== '/login'}
   <LoginButton redirect={(location.pathname == '/' ? '/projects' : location.pathname)} class="default"/>
 {/if}
