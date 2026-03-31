@@ -140,11 +140,10 @@
     "status": "Olek",
     "statuses": {
       "ACCEPTED": "Aktsepteeritud",
+      "REJECTED": "Tagasi lükatud",
       "DELIVERED": "Tarnitud",
       "FINISHED": "Lõpetatud",
       "STARTED": "Alustatud",
-      "REJECTED": "Tagasi lükatud",
-      "PLANNED": "Planeeritud",
       "UNSTARTED": "Alustamata",
       "UNSCHEDULED": "Ajastamata"
     },

@@ -118,11 +118,10 @@
     "status": "Status",
     "statuses": {
       "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
       "DELIVERED": "Delivered",
       "FINISHED": "Finished",
       "STARTED": "Started",
-      "REJECTED": "Rejected",
-      "PLANNED": "Planned",
       "UNSTARTED": "Unstarted",
       "UNSCHEDULED": "Unscheduled"
     },

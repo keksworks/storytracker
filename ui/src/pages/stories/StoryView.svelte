@@ -43,12 +43,12 @@
     setTimeout(() => highlighted = false, 2000)
   }
 
-  $: if (highlightId === story.id) {
+  $: if (highlightId && highlightId === story.id) {
     highlight(true)
     highlightId = undefined
   }
 
-  $: if (flashId === story.id) {
+  $: if (flashId && flashId === story.id) {
     highlight()
     flashId = undefined
   }
@@ -113,12 +113,13 @@
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
-      flex flex-col border-b {reallyMovable ? 'cursor-move' : 'cursor-default'}" draggable={reallyMovable}
+      flex flex-col border-b" draggable={reallyMovable}
      on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
      on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" on:click={() => open = !open} role="button" tabindex="0">
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" class:cursor-move={reallyMovable}
+       on:click={() => open = !open} role="button" tabindex="0">
     <span title={t.stories.types[story.type]} class="max-sm:float-left mr-1">
       {#if story.type == StoryType.FEATURE}
         <Icon name="star-filled" class="text-yellow-500"/>
