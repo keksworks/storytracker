@@ -1,6 +1,7 @@
 package db
 
 import db.TestData.admin
+import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
 import db.TestData.project
@@ -67,11 +68,15 @@ abstract class BaseMocks {
 
     epicRepository.apply {
       every { list(Epic::projectId to project.id) } returns listOf(epic)
+      every { epicRepository.get(epic.id) } returns epic
     }
 
     iterationRepository.apply {
-      every { list(projectId = project.id) } returns listOf(iteration)
+      every { list(project.id) } returns listOf(iteration)
     }
 
+    changeHistoryRepository.apply {
+      every { list(project.id) } returns listOf(change)
+    }
   }
 }

@@ -1,5 +1,6 @@
 package db
 
+import history.Change
 import klite.Email
 import stories.*
 import users.Role
@@ -22,4 +23,5 @@ object TestData {
   val story2 = Story(Id(), project.id, "Story 2", order = 2.0, createdAt = now)
   val projectMember = ProjectMember(project.id, user.id, Role.MEMBER, createdAt = now)
   val projectMemberUser = ProjectMemberUser(projectMember, user)
+  val change = Change("stories", story.id as Id<Any>, "status", oldValue = "TODO", newValue = "DONE", changedAt = now, changedBy =  user.id)
 }

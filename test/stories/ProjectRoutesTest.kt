@@ -5,6 +5,7 @@ import ch.tutteli.atrium.api.verbs.expect
 import db.BaseMocks
 import db.Id
 import db.TestData.admin
+import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
 import db.TestData.project
@@ -114,5 +115,26 @@ class ProjectRoutesTest: BaseMocks() {
     val result = routes.saveEpic(project.id, epic)
     expect(result).toEqual(epic)
     verify { epicRepository.save(result) }
+  }
+
+  @Test fun deleteEpic() {
+    routes.deleteEpic(project.id, epic.id)
+    verify { epicRepository.delete(epic.id) }
+  }
+
+  @Test fun iterations() {
+    expect(routes.iterations(project.id)).toEqual(listOf(iteration))
+  }
+
+  @Test fun history() {
+    expect(routes.history(project.id)).toEqual(listOf(change))
+  }
+
+  @Test fun stories() {
+    val fromIteration = 1
+    val q = "story"
+    every { storyRepository.list(project.id, fromIteration, q) } returns listOf(story2)
+    val result = routes.stories(project.id, fromIteration, q)
+    expect(result).toEqual(listOf(story2))
   }
 }
