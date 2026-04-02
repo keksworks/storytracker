@@ -64,6 +64,7 @@ abstract class BaseMocks {
 
     storyRepository.apply {
       every { list(project.id) } returns listOf(story, story2)
+      every { storyRepository.get(story.id) } returns story
     }
 
     epicRepository.apply {
@@ -78,5 +79,10 @@ abstract class BaseMocks {
     changeHistoryRepository.apply {
       every { list(project.id) } returns listOf(change)
     }
+
+    attachmentRepository.apply {
+      every { file(project.id, story.id, "file") } returns java.nio.file.Path.of("build.gradle.kts")
+    }
+
   }
 }
