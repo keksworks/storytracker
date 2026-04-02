@@ -38,13 +38,17 @@
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
   }
 
-  let show: Record<string, boolean> = JSON.parse(localStorage['projectPanels:' + id] || 'null') || {
+  let show: Record<string, boolean> = {
     done: false,
     backlog: true,
     icebox: !isMobile,
     epics: false,
     history: false
   }
+
+  Object.entries(JSON.parse(localStorage['projectPanels:' + id] || 'null')).forEach(e => {
+    if (typeof e[1] === 'boolean') show[e[0]] = e[1]
+  })
 
   $: localStorage['projectPanels:' + id] = JSON.stringify(show)
 
