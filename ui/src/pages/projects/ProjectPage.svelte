@@ -36,6 +36,7 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
+    if (!fromIteration) pastLoaded = true
   }
 
   let show: Record<string, boolean> = {
@@ -91,16 +92,13 @@
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
-    await loadStories(project!.currentIterationNum)
+    await loadStories(show.done ? 0 : project!.currentIterationNum)
   })
 
   $: if (project) project.epicTags = new Set(epics.map(e => e.tag))
   $: if (project) project.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project.epicTags ?? []]))]
 
-  $: if (show.done && !pastLoaded) {
-    loadStories(0)
-    pastLoaded = true
-  }
+  $: if (show.done && !pastLoaded) loadStories(0)
 
   $: done = stories.filter(s => s.iteration! < project?.currentIterationNum!)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)

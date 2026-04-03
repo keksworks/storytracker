@@ -31,7 +31,7 @@
   let activeStories: Story[] = []
   let collapsedStories: Story[] = []
 
-  const isDoneStory = (s: Story): boolean => s.iteration! < project.currentIterationNum
+  const isDoneStory = (s: Story) => s.iteration! < project.currentIterationNum
 
   $: if (stories) {
     if (collapseStories) {
