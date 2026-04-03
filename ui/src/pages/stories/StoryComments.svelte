@@ -5,6 +5,7 @@
   import {user} from 'src/stores/auth'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {tick} from 'svelte'
+  import {handleDescriptionClick, linkify} from 'src/shared/linkify'
 
   export let project: ProjectContext
   export let comments: StoryComment[] | undefined
@@ -32,7 +33,14 @@
 {#if comments}
   {#each comments as comment, i}
     <div>
-      <div class="comment bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
+      <div class="comment bg-white whitespace-pre-line p-2 min-h-8"
+           bind:innerHTML={comment.text}
+           contenteditable="true"
+           onblur={() => comment.text = linkify(comment.text || '')}
+           onclick={handleDescriptionClick}
+           onkeydown={handleDescriptionClick}
+           role="textbox"
+           tabindex="0"></div>
       {#if comment.attachments}
         {#each comment.attachments as attachment}
           {@const url = `${urlBase}/attachments/${encodeURIComponent(attachment.filename)}`}
