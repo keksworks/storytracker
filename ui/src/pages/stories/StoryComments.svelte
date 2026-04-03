@@ -10,6 +10,7 @@
   export let project: ProjectContext
   export let comments: StoryComment[] | undefined
   export let urlBase: string
+  export let onSave: () => void = () => {}
 
   async function addComment() {
     comments = [...(comments || []), {
@@ -27,6 +28,11 @@
     comments!.splice(i, 1)
     comments = comments
   }
+
+  function handleCommentKeyDown(e: KeyboardEvent) {
+    handleDescriptionClick(e)
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSave()
+  }
 </script>
 
 <h4>{t.stories.comments}</h4>
@@ -38,7 +44,7 @@
            contenteditable="true"
            onblur={() => comment.text = linkify(comment.text || '')}
            onclick={handleDescriptionClick}
-           onkeydown={handleDescriptionClick}
+           onkeydown={handleCommentKeyDown}
            role="textbox"
            tabindex="0"></div>
       {#if comment.attachments}
