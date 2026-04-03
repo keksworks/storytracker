@@ -77,24 +77,26 @@ declare
   oldValue text;
   newValue text;
   newRec jsonb := to_jsonb(new);
-  oldRec jsonb := to_jsonb(old);
+  oldRec jsonb := case when tg_op = 'INSERT' then '{}'::jsonb else to_jsonb(old) end;
   oldChanges jsonb := '{}'::jsonb;
   newChanges jsonb := '{}'::jsonb;
   pid bigint := case when tg_table_name = 'projects' then new.id else (newRec->>'projectid')::bigint end;
 begin
-  for col, newValue in select * from jsonb_each_text(newRec) loop
-    if (col not in ('updatedat', 'projectid', 'id')) then
-      oldValue := oldRec->>col;
-      if (oldValue is distinct from newValue) then
-        if (oldValue is not null) then
-          oldChanges := oldChanges || jsonb_build_object(col, oldValue);
+  if (tg_op = 'UPDATE') then
+    for col, newValue in select * from jsonb_each_text(newRec) loop
+      if (col not in ('updatedat', 'projectid', 'id')) then
+        oldValue := oldRec->>col;
+        if (oldValue is distinct from newValue) then
+          if (oldValue is not null) then
+            oldChanges := oldChanges || jsonb_build_object(col, oldValue);
+          end if;
+          newChanges := newChanges || jsonb_build_object(col, newValue);
         end if;
-        newChanges := newChanges || jsonb_build_object(col, newValue);
       end if;
-    end if;
-  end loop;
+    end loop;
+  end if;
 
-  if newChanges <> '{}'::jsonb then
+  if (tg_op = 'INSERT' or newChanges <> '{}'::jsonb) then
     insert into change_history ("table", rowId, old, new, changedBy, projectId)
     values (tg_table_name, new.id, oldChanges, newChanges, get_app_user(), pid);
   end if;
