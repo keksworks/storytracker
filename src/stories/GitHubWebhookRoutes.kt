@@ -46,17 +46,16 @@ class GitHubWebhookRoutes(
       if (story.projectId != id) return@forEach log.warn("Story #$storyId is not of the expected project ${id}")
 
       val diffLink = commit.url ?: push.compare?.let { "$it#${commit.id}" }
-      val commentText = buildString {
-        append("🔗 Commit from $repoName\n\n")
-        append("$commitSubject\n\n")
-        if (diffLink != null) append("""<a href="$diffLink">View in GitHub</a>""")
-      }
+      val text = """
+        <a href="$diffLink">🔗 Commit from $repoName</a>
+        $commitSubject
+      """.trimIndent()
 
       val createdBy = commit.author?.email?.let { email ->
         userRepository.by(users.User::email eq Email(email))?.id
       } ?: story.createdBy
 
-      val comment = Story.Comment(commentText, createdBy = createdBy)
+      val comment = Story.Comment(text, createdBy = createdBy)
       val updatedStory = story.copy(comments = story.comments + comment)
       storyRepository.save(updatedStory)
       storyEvents.sendUpdates(id, updatedStory)
