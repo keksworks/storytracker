@@ -154,6 +154,8 @@
     "added": "added",
     "changed": "changed",
     "deleted": "deleted",
+    "movedUp": "moved up",
+    "movedDown": "moved down",
     "system": "System"
   },
   "epics": {

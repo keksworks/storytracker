@@ -105,20 +105,23 @@
         <div class="text-sm">
           <span class="text-stone-500"><i>{formatTable(item.table)}</i> {getEntityName(item)}</span>:
           {#each Object.keys(item.new) as column}
-            {#if column !== 'ord'}
-              {@const oldValue = item.old[column]}
-              {@const newValue = item.new[column]}
-              {#if column === 'tags'}
-                {@const diff = getDiff(oldValue, newValue)}
-                {#each diff.added as tag}
-                  <span class="ml-1 px-1 bg-green-100 text-green-800 rounded text-xs">+{tag}</span>
-                {/each}
-                {#each diff.removed as tag}
-                  <span class="ml-1 px-1 bg-red-100 text-red-800 rounded text-xs line-through text-opacity-50">-{tag}</span>
-                {/each}
-              {:else if column === 'comments'}
-                {@const diff = getCommentDiff(oldValue, newValue)}
-                <span class="ml-1 text-stone-600 italic">
+            {@const oldValue = item.old[column]}
+            {@const newValue = item.new[column]}
+            {#if column === 'ord'}
+              <span class="ml-1 text-stone-600 italic">
+                {Number(newValue) > Number(oldValue) ? t.history.movedDown : t.history.movedUp}
+              </span>
+            {:else if column === 'tags'}
+              {@const diff = getDiff(oldValue, newValue)}
+              {#each diff.added as tag}
+                <span class="ml-1 px-1 bg-green-100 text-green-800 rounded text-xs">+{tag}</span>
+              {/each}
+              {#each diff.removed as tag}
+                <span class="ml-1 px-1 bg-red-100 text-red-800 rounded text-xs line-through text-opacity-50">-{tag}</span>
+              {/each}
+            {:else if column === 'comments'}
+              {@const diff = getCommentDiff(oldValue, newValue)}
+              <span class="ml-1 text-stone-600 italic">
                 {#if diff.type === 'added'}
                   {t.history.added}: "{diff.comment?.text || '...'}"
                 {:else if diff.type === 'deleted'}
@@ -129,12 +132,11 @@
                   ...
                 {/if}
               </span>
-              {:else if oldValue !== newValue}
-                <span class="ml-1"><strong>{column}</strong></span>
-                <span class="text-stone-400 mx-1">→</span>
-                <span class="line-through text-stone-400">{formatValue(oldValue, column)}</span>
-                <span class="font-medium text-stone-800">{formatValue(newValue, column)}</span>
-              {/if}
+            {:else if oldValue !== newValue}
+              <span class="ml-1"><strong>{column}</strong></span>
+              <span class="text-stone-400 mx-1">→</span>
+              <span class="line-through text-stone-400">{formatValue(oldValue, column)}</span>
+              <span class="font-medium text-stone-800">{formatValue(newValue, column)}</span>
             {/if}
           {:else}
             <span class="text-stone-600 italic">{t.general.created}</span>

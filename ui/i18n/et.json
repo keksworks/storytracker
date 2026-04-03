@@ -176,6 +176,8 @@
     "added": "lisatud",
     "changed": "muudetud",
     "deleted": "kustutatud",
+    "movedUp": "liigutatud üles",
+    "movedDown": "liigutatud alla",
     "system": "Süsteem"
   },
   "epics": {
