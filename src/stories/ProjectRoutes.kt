@@ -7,7 +7,9 @@ import history.Change
 import history.ChangeHistoryRepository
 import klite.*
 import klite.annotations.*
-import klite.jdbc.*
+import klite.jdbc.NoTransaction
+import klite.jdbc.eq
+import klite.jdbc.gt
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
@@ -135,7 +137,7 @@ class ProjectRoutes(
 
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 1) }
+    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 10) }
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
