@@ -1,6 +1,7 @@
 package stories
 
 import db.*
+import klite.jdbc.UpdatableEntity
 import klite.jdbc.create
 import klite.jdbc.delete
 import klite.jdbc.nowSec
@@ -18,10 +19,10 @@ data class Epic(
   val description: String? = null,
   val tag: String,
   val comments: List<Comment> = emptyList(),
-  val updatedAt: Instant? = null,
+  override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
-): Entity<Epic>
+): Entity<Epic>, UpdatableEntity
 
 class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
   override fun Epic.persister() = toValues(Epic::comments to jsonb(comments))
