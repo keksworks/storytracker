@@ -19,7 +19,7 @@ export interface GitHubCommit {author?: GitHubAuthor; id: string; message: strin
 // class stories.GitHubPushPayload
 export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: string; ref?: string; repository?: GitHubRepository}
 // class stories.GitHubRepository
-export interface GitHubRepository {full_name: string}
+export interface GitHubRepository {fullName: string}
 // class stories.Iteration
 export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
 // class stories.Project
@@ -37,7 +37,7 @@ export interface StoryAttachment {filename: string; height?: number; id?: number
 // class stories.Story$Blocker
 export interface StoryBlocker {createdAt: Instant; createdBy: Id<User>; resolvedAt?: Instant; text?: string}
 // class stories.Story$Comment
-export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy: Id<User>; text?: string; updatedAt: Instant}
+export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy?: Id<User>; text?: string; updatedAt: Instant}
 // class stories.Story$Review$Status
 export enum StoryReviewStatus {UNSTARTED = 'UNSTARTED', IN_REVIEW = 'IN_REVIEW', PASS = 'PASS', REVISE = 'REVISE'}
 // class stories.Story$Review

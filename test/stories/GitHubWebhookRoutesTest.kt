@@ -11,7 +11,6 @@ import io.mockk.every
 import io.mockk.verify
 import klite.BadRequestException
 import klite.Email
-import klite.i18n.Lang
 import klite.jdbc.eq
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -44,7 +43,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     val commitMessage = "#${story.id.value} Fix the login bug"
     val commitUrl = "https://github.com/org/repo/commit/abc123"
     val authorEmail = "dev@example.com"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/main",
       "repository" to mapOf("full_name" to "org/repo"),
       "compare" to "https://github.com/org/repo/compare/old...new",
@@ -75,7 +74,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
   @Test fun `matches commit author to existing user`() {
     val commitMessage = "#${story.id.value} Fix the login bug"
     val commitUrl = "https://github.com/org/repo/commit/abc123"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/main",
       "repository" to mapOf("full_name" to "org/repo"),
       "commits" to listOf(mapOf(
@@ -103,7 +102,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     val commitMessage = "#${story.id.value} Fix the login bug"
     val commitUrl = "https://github.com/org/repo/commit/abc123"
     val unknownEmail = "nobody@example.com"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/main",
       "repository" to mapOf("full_name" to "org/repo"),
       "commits" to listOf(mapOf(
@@ -129,7 +128,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
 
   @Test fun `ignores commit without story id prefix`() {
     val commitMessage = "Just a regular commit"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/main",
       "repository" to mapOf("full_name" to "org/repo"),
       "commits" to listOf(mapOf(
@@ -147,7 +146,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
 
   @Test fun `ignores commit with non-existent story id`() {
     val commitMessage = "#99999 Fix something"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/master",
       "repository" to mapOf("full_name" to "org/repo"),
       "commits" to listOf(mapOf(
@@ -167,7 +166,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
   @Test fun `uses compare URL when commit URL is missing`() {
     val commitMessage = "#${story.id.value} Added feature"
     val compareUrl = "https://github.com/org/repo/compare/old...new"
-    val payload = Lang.jsonMapper.render(mapOf(
+    val payload = routes.jsonMapper.render(mapOf(
       "ref" to "refs/heads/main",
       "repository" to mapOf("full_name" to "org/repo"),
       "compare" to compareUrl,

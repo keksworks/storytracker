@@ -70,7 +70,7 @@ data class Story(
   data class Comment(
     val text: String?,
     val attachments: List<Attachment> = emptyList(),
-    val createdBy: Id<User>,
+    val createdBy: Id<User>? = null,
     val updatedAt: Instant = nowSec(),
     val createdAt: Instant = nowSec(),
   )

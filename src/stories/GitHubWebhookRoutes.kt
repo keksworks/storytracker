@@ -2,13 +2,12 @@ package stories
 
 import auth.Public
 import db.Id
-import klite.BadRequestException
-import klite.Email
+import klite.*
 import klite.annotations.HeaderParam
 import klite.annotations.POST
 import klite.annotations.PathParam
-import klite.i18n.Lang
 import klite.jdbc.eq
+import klite.json.JsonMapper
 import users.UserRepository
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -21,6 +20,8 @@ class GitHubWebhookRoutes(
   private val storyEvents: StoryEvents,
   private val userRepository: UserRepository,
 ) {
+  val log = logger()
+  val jsonMapper = JsonMapper(keys = SnakeCase)
   private val commitRegex = Regex("^#(\\d+)\\s+(.*)", RegexOption.DOT_MATCHES_ALL)
 
   @POST("/projects/:id/github")
@@ -28,10 +29,10 @@ class GitHubWebhookRoutes(
     val project = projectRepository.get(id)
     verifySignature(payload, signature, project.webhookSecret.toString())
 
-    val push = Lang.jsonMapper.parse<GitHubPushPayload>(payload, typeOf<GitHubPushPayload>())
+    val push = jsonMapper.parse<GitHubPushPayload>(payload, typeOf<GitHubPushPayload>())
     if (push.ref?.endsWith("/main") != true && push.ref?.endsWith("/master") != true) return
 
-    val repoName = push.repository?.full_name ?: "unknown"
+    val repoName = push.repository?.fullName ?: "unknown"
 
     push.commits.forEach { commit ->
       val message = commit.message.trim()
@@ -39,24 +40,23 @@ class GitHubWebhookRoutes(
       val storyId = match.groupValues[1].toLongOrNull() ?: return@forEach
       val commitSubject = match.groupValues[2].lineSequence().firstOrNull()?.take(200) ?: message.take(200)
 
-      val story = try { storyRepository.get(Id(storyId)) } catch (_: Exception) { return@forEach }
-      if (story.projectId != id) return@forEach
+      val story = try { storyRepository.get(Id(storyId)) } catch (_: Exception) {
+        return@forEach log.warn("Commit $commitSubject references non-existent story #$storyId, skipping")
+      }
+      if (story.projectId != id) return@forEach log.warn("Story #$storyId is not of the expected project ${id}")
 
       val diffLink = commit.url ?: push.compare?.let { "$it#${commit.id}" }
       val commentText = buildString {
-        append("🔗 **Commit from $repoName**\n\n")
-        append("**$commitSubject**\n\n")
-        if (diffLink != null) append("[View commit]($diffLink)")
+        append("🔗 Commit from $repoName\n\n")
+        append("$commitSubject\n\n")
+        if (diffLink != null) append("""<a href="$diffLink">View in GitHub</a>""")
       }
 
       val createdBy = commit.author?.email?.let { email ->
         userRepository.by(users.User::email eq Email(email))?.id
-      } ?: story.createdBy ?: Id()
+      } ?: story.createdBy
 
-      val comment = Story.Comment(
-        text = commentText,
-        createdBy = createdBy,
-      )
+      val comment = Story.Comment(commentText, createdBy = createdBy)
       val updatedStory = story.copy(comments = story.comments + comment)
       storyRepository.save(updatedStory)
       storyEvents.sendUpdates(id, updatedStory)
@@ -86,7 +86,7 @@ data class GitHubPushPayload(
 )
 
 data class GitHubRepository(
-  val full_name: String,
+  val fullName: String,
 )
 
 data class GitHubCommit(
