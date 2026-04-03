@@ -5,7 +5,7 @@
 </script>
 
 {#if iteration}
-  <div class="bg-stone-300 px-3 py-2 flex justify-between border-t">
+  <div class="bg-stone-300 px-3 py-2 flex justify-between border-t text-sm">
     <div>
       {#if iteration.number}
         <span class="font-medium mr-2" title={t.iterations.number}>{iteration.number}</span>
