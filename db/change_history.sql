@@ -52,6 +52,18 @@ create table change_history(
   changedBy bigint default get_app_user()
 );
 
+--changeset change_history:migrate-from-archive
+insert into change_history ("table", rowId, projectId, old, new, changedAt, changedBy)
+select "table", rowId, projectId,
+  jsonb_object_agg("column", oldValue) filter (where oldValue is not null),
+  jsonb_object_agg("column", newValue),
+  min(changedAt), min(changedBy)
+from change_history_archive
+group by "table", rowId, projectId, date_trunc('second', changedAt), changedBy;
+
+--changeset change_history_archive:drop context:TODO
+drop table change_history_archive;
+
 --changeset change_history_idx
 create index change_history_idx on change_history("table", rowId);
 
