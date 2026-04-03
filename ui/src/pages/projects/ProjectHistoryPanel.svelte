@@ -105,7 +105,7 @@
         <div class="text-sm">
           <span class="text-stone-500"><i>{formatTable(item.table)}</i> {getEntityName(item)}</span>:
           {#each Object.keys(item.new) as column}
-            {#if column !== 'ord' && column !== 'assignedto'}
+            {#if column !== 'ord'}
               {@const oldValue = item.old[column]}
               {@const newValue = item.new[column]}
               {#if column === 'tags'}
