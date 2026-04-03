@@ -102,9 +102,9 @@
     pastLoaded = true
   }
 
-  $: done = stories.filter(s => s.iteration! < project!.currentIterationNum)
+  $: done = stories.filter(s => s.iteration! < project?.currentIterationNum!)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
-  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
+  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (e.id == e.beforeId) return
