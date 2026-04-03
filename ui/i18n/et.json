@@ -169,7 +169,8 @@
     "createdAt": "Loodud",
     "updatedAt": "Uuendatud",
     "assignedTo": "Määratud",
-    "locate": "Leia Planeerimisest/Jääkastist"
+    "locate": "Leia Planeerimisest/Jääkastist",
+    "collapsed": "{count} veel valmis lugu"
   },
   "epics": {
     "epic": "Eepik",

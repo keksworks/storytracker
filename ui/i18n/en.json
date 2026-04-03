@@ -147,7 +147,8 @@
     "createdAt": "Created",
     "updatedAt": "Updated",
     "assignedTo": "Assigned to",
-    "locate": "Locate in backlog/icebox"
+    "locate": "Locate in backlog/icebox",
+    "collapsed": "{count} more done stories"
   },
   "epics": {
     "epic": "Epic",
