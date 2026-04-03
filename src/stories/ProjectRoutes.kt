@@ -13,14 +13,12 @@ import klite.jdbc.gt
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
-import kotlinx.coroutines.flow.MutableSharedFlow
 import stories.Story.Status.DELETED
 import users.Role
 import users.Role.*
 import users.User
 import users.UserRepository
 import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.findAnnotation
 
 @Access(ADMIN, OWNER, MEMBER, VIEWER)
@@ -33,6 +31,7 @@ class ProjectRoutes(
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
   private val changeHistoryRepository: ChangeHistoryRepository,
+  private val storyEvents: StoryEvents,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
@@ -129,15 +128,13 @@ class ProjectRoutes(
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.also {
       storyRepository.save(it)
-      projectFlows[it.projectId]?.tryEmit(it to requesterId)
+      storyEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 
-  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, String>>>()
-
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 10) }
+    val flow = storyEvents.flow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
@@ -155,7 +152,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED).also {
       storyRepository.save(it)
-      projectFlows[it.projectId]?.tryEmit(it to requesterId)
+      storyEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 

@@ -38,6 +38,7 @@ abstract class BaseMocks {
     val iterationRepository = mock<IterationRepository>(relaxed = true)
     val attachmentRepository = mock<AttachmentRepository>(relaxed = true)
     val changeHistoryRepository = mock<ChangeHistoryRepository>(relaxed = true)
+    val storyEvents = mock<StoryEvents>(relaxed = true)
 
     inline fun <reified T: Any> create() = registry.create(T::class)
 

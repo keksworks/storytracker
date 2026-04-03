@@ -42,3 +42,6 @@ alter table projects rename column velocityAveragedWeeks to velocityAveragedOver
 
 --changeset projects.iteration+1
 update projects set currentIterationNum = currentIterationNum + 1;
+
+--changeset projects.webhookSecret
+alter table projects add column webhookSecret uuid not null default gen_random_uuid();

@@ -83,7 +83,11 @@
     "velocityOverride": "Temporary velocity override",
     "updatedAt": "Updated",
     "search": "Search projects...",
-    "export": "Export"
+    "export": "Export",
+    "webhookUrl": "GitHub webhook URL",
+    "webhookSecret": "Webhook secret",
+    "webhookInstructions": "Set this URL as a webhook in your GitHub repository settings (Settings → Webhooks → Add webhook). Use \"application/json\" content type. Commits with messages starting with \"#storyId\" will be added as comments.",
+    "webhookCopied": "Copied to clipboard"
   },
   "weekDays": {
     "MONDAY": "Monday",
