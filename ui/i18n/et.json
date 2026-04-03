@@ -172,6 +172,12 @@
     "locate": "Leia Planeerimisest/Jääkastist",
     "collapsed": "{count} veel valmis lugu"
   },
+  "history": {
+    "added": "lisatud",
+    "changed": "muudetud",
+    "deleted": "kustutatud",
+    "system": "Süsteem"
+  },
   "epics": {
     "epic": "Eepik",
     "add": "Lisa eepik",

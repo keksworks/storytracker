@@ -150,6 +150,12 @@
     "locate": "Locate in backlog/icebox",
     "collapsed": "{count} more done stories"
   },
+  "history": {
+    "added": "added",
+    "changed": "changed",
+    "deleted": "deleted",
+    "system": "System"
+  },
   "epics": {
     "epic": "Epic",
     "add": "Add epic",

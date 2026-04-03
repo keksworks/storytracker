@@ -29,7 +29,7 @@
   }
 
   function getUserName(id: number | undefined) {
-    if (!id) return 'System'
+    if (!id) return t.history.system
     return project.members[id as Id<User>]?.user.name ?? id
   }
 
@@ -119,11 +119,11 @@
               {@const diff = getCommentDiff(oldValue, newValue)}
               <span class="ml-1 text-stone-600 italic">
                 {#if diff.type === 'added'}
-                  added: "{diff.comment?.text || '...'}"
+                  {t.history.added}: "{diff.comment?.text || '...'}"
                 {:else if diff.type === 'deleted'}
-                  deleted
+                  {t.history.deleted}
                 {:else if diff.type === 'changed'}
-                  changed: "{diff.comment?.text || '...'}"
+                  {t.history.changed}: "{diff.comment?.text || '...'}"
                 {:else}
                   ...
                 {/if}
