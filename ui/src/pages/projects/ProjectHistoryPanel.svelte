@@ -104,10 +104,7 @@
         </div>
         <div class="text-sm">
           <span class="text-stone-500"><i>{formatTable(item.table)}</i> {getEntityName(item)}</span>:
-          {#if Object.keys(item.new).length === 0}
-            <span class="text-stone-600 italic">{t.general.created}</span>
-          {:else}
-            {#each Object.keys(item.new) as column}
+          {#each Object.keys(item.new) as column}
             {@const oldValue = item.old[column]}
             {@const newValue = item.new[column]}
             {#if column === 'tags'}
@@ -137,8 +134,9 @@
               <span class="line-through text-stone-400">{formatValue(oldValue, column)}</span>
               <span class="font-medium text-stone-800">{formatValue(newValue, column)}</span>
             {/if}
+          {:else}
+            <span class="text-stone-600 italic">{t.general.created}</span>
           {/each}
-          {/if}
         </div>
       </div>
     {:else}
