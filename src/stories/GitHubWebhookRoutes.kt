@@ -3,9 +3,13 @@ package stories
 import auth.Public
 import db.Id
 import klite.BadRequestException
-import klite.HttpExchange
+import klite.Email
+import klite.annotations.HeaderParam
 import klite.annotations.POST
+import klite.annotations.PathParam
 import klite.i18n.Lang
+import klite.jdbc.eq
+import users.UserRepository
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.reflect.typeOf
@@ -15,15 +19,13 @@ class GitHubWebhookRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
   private val storyEvents: StoryEvents,
+  private val userRepository: UserRepository,
 ) {
   private val commitRegex = Regex("^#(\\d+)\\s+(.*)", RegexOption.DOT_MATCHES_ALL)
 
   @POST("/projects/:id/github")
-  fun handle(e: HttpExchange) {
-    val projectId = e.path("id")?.toLong()?.let { Id<Project>(it) } ?: throw BadRequestException("Missing project id")
-    val project = projectRepository.get(projectId)
-    val signature = e.header("X-Hub-Signature-256")
-    val payload = e.rawBody
+  fun handle(@PathParam id: Id<Project>, payload: String, @HeaderParam("X-Hub-Signature-256") signature: String?) {
+    val project = projectRepository.get(id)
     verifySignature(payload, signature, project.webhookSecret.toString())
 
     val push = Lang.jsonMapper.parse<GitHubPushPayload>(payload, typeOf<GitHubPushPayload>())
@@ -38,7 +40,7 @@ class GitHubWebhookRoutes(
       val commitSubject = match.groupValues[2].lineSequence().firstOrNull()?.take(200) ?: message.take(200)
 
       val story = try { storyRepository.get(Id(storyId)) } catch (_: Exception) { return@forEach }
-      if (story.projectId != projectId) return@forEach
+      if (story.projectId != id) return@forEach
 
       val diffLink = commit.url ?: push.compare?.let { "$it#${commit.id}" }
       val commentText = buildString {
@@ -47,13 +49,17 @@ class GitHubWebhookRoutes(
         if (diffLink != null) append("[View commit]($diffLink)")
       }
 
+      val createdBy = commit.author?.email?.let { email ->
+        userRepository.by(users.User::email eq Email(email))?.id
+      } ?: story.createdBy ?: Id()
+
       val comment = Story.Comment(
         text = commentText,
-        createdBy = story.createdBy ?: Id(),
+        createdBy = createdBy,
       )
       val updatedStory = story.copy(comments = story.comments + comment)
       storyRepository.save(updatedStory)
-      storyEvents.sendUpdates(projectId, updatedStory)
+      storyEvents.sendUpdates(id, updatedStory)
     }
   }
 
@@ -88,4 +94,9 @@ data class GitHubCommit(
   val message: String,
   val url: String?,
   val timestamp: String?,
+  val author: GitHubAuthor?,
+)
+
+data class GitHubAuthor(
+  val email: String?,
 )

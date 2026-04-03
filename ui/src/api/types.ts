@@ -12,8 +12,10 @@ export type Id<T> = number
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+// class stories.GitHubAuthor
+export interface GitHubAuthor {email?: string}
 // class stories.GitHubCommit
-export interface GitHubCommit {id: string; message: string; timestamp?: string; url?: string}
+export interface GitHubCommit {author?: GitHubAuthor; id: string; message: string; timestamp?: string; url?: string}
 // class stories.GitHubPushPayload
 export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: string; ref?: string; repository?: GitHubRepository}
 // class stories.GitHubRepository
