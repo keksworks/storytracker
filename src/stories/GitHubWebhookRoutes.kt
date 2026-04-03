@@ -79,8 +79,8 @@ class GitHubWebhookRoutes(
 
 data class GitHubPushPayload(
   val ref: String?,
-  val repository: GitHubRepository?,
-  val compare: String?,
+  val repository: GitHubRepository? = null,
+  val compare: String? = null,
   val commits: List<GitHubCommit> = emptyList(),
 )
 
@@ -91,11 +91,11 @@ data class GitHubRepository(
 data class GitHubCommit(
   val id: String,
   val message: String,
-  val url: String?,
-  val timestamp: String?,
-  val author: GitHubAuthor?,
+  val url: String? = null,
+  val timestamp: String? = null,
+  val author: GitHubAuthor? = null,
 )
 
 data class GitHubAuthor(
-  val email: String?,
+  val email: String? = null,
 )

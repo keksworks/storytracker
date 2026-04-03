@@ -25,12 +25,10 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     id = "abc123",
     message = "#${story.id.value} Fix the login bug",
     url = "https://github.com/org/repo/commit/abc123",
-    timestamp = null,
-    author = null,
   )
 
   private fun pushPayload(vararg commits: GitHubCommit = arrayOf(defaultCommit), ref: String = "refs/heads/main") =
-    GitHubPushPayload(ref = ref, repository = GitHubRepository("org/repo"), compare = null, commits = commits.toList())
+    GitHubPushPayload(ref = ref, repository = GitHubRepository("org/repo"), commits = commits.toList())
 
   private fun signed(payload: GitHubPushPayload) = signed(routes.jsonMapper.render(payload))
   private fun signed(json: String) = "sha256=${hmacSHA256(json, project.webhookSecret.toString())}"
@@ -123,9 +121,6 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     handle(pushPayload(GitHubCommit(
       id = "abc123",
       message = "#${story.id.value} Added feature",
-      url = null,
-      timestamp = null,
-      author = null,
     )).copy(compare = compareUrl))
 
     verify {
