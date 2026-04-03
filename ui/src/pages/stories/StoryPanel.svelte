@@ -24,19 +24,17 @@
   export let onLocate: ((story: Story) => void) | undefined = undefined
   export let highlightStoryId: number | undefined = undefined
   export let flashStoryId: number | undefined = undefined
+  export let collapseStory: ((story: Story) => boolean) | undefined = undefined
 
-  let collapseStories = name === 'search'
   let showCollapsed = false
 
   let activeStories: Story[] = []
   let collapsedStories: Story[] = []
 
-  const isDoneStory = (s: Story) => s.iteration! < project.currentIterationNum
-
   $: if (stories) {
-    if (collapseStories) {
-      collapsedStories = stories.filter(s => isDoneStory(s))
-      activeStories = stories.filter(s => !isDoneStory(s))
+    if (collapseStory) {
+      collapsedStories = stories.filter(s => collapseStory(s))
+      activeStories = stories.filter(s => !collapseStory(s))
     } else {
       activeStories = stories
     }

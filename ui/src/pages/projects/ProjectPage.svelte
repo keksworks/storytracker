@@ -189,7 +189,9 @@
       <ProjectUpdatesListener {project} bind:stories onStoryUpdated={s => flashStoryId = s.id}/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId/>
+        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
+                    {onSearch} {onSaved} {onDelete} bind:flashStoryId
+                    collapseStory={s => s.iteration! < project!.currentIterationNum - 3}/>
 
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
@@ -210,7 +212,9 @@
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId>
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
+                    {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
+                    collapseStory={s => s.iteration! < project!.currentIterationNum}>
           <span slot="right">{searchQuery}</span>
         </StoryPanel>
 
