@@ -46,7 +46,7 @@
         {/each}
       {/if}
       <div class="flex justify-between items-center text-sm text-muted mb-1.5">
-        <div>{project.members[comment.createdBy]?.user?.name}</div>
+        <div>{project.members[comment.createdBy!]?.user?.name}</div>
         <div class="flex items-center">
           {formatDateTime(comment.updatedAt)}
           {#if project.canEdit}
