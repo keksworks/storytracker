@@ -52,16 +52,7 @@
     return table
   }
 
-  function parseArray(val: string | undefined): string[] {
-    try {
-      const parsed = JSON.parse(val || '[]')
-      return Array.isArray(parsed) ? parsed : []
-    } catch {
-      return []
-    }
-  }
-
-  function getDiff(oldVal: string | undefined, newVal: string | undefined) {
+  function getDiff(oldVal?: string, newVal?: string) {
     const oldArr = parseArray(oldVal)
     const newArr = parseArray(newVal)
     return {
@@ -70,7 +61,7 @@
     }
   }
 
-  function parseComments(val: string | undefined): any[] {
+  function parseArray(val?: string): string[] {
     try {
       const parsed = JSON.parse(val || '[]')
       return Array.isArray(parsed) ? parsed : []
@@ -79,16 +70,25 @@
     }
   }
 
-  function getCommentDiff(item: Change) {
-    const oldComments = parseComments(item.oldValue)
-    const newComments = parseComments(item.newValue)
+  function parseComments(val?: string): any[] {
+    try {
+      const parsed = JSON.parse(val || '[]')
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
+  function getCommentDiff(oldValue?: string, newValue?: string) {
+    const oldComments = parseComments(oldValue)
+    const newComments = parseComments(newValue)
     if (newComments.length > oldComments.length) return {type: 'added', comment: newComments[newComments.length - 1]}
     if (newComments.length < oldComments.length) return {type: 'deleted'}
 
     for (let i = 0; i < newComments.length; i++) {
-        if (JSON.stringify(newComments[i]) !== JSON.stringify(oldComments[i])) {
-            return {type: 'changed', comment: newComments[i]}
-        }
+      if (JSON.stringify(newComments[i]) !== JSON.stringify(oldComments[i])) {
+        return {type: 'changed', comment: newComments[i]}
+      }
     }
     return {type: 'unknown'}
   }
@@ -104,34 +104,37 @@
         </div>
         <div class="text-sm">
           <span class="text-stone-500"><i>{formatTable(item.table)}</i> {getEntityName(item)}</span>:
-          <strong>{item.column}</strong>
-
-          {#if item.column === 'tags'}
-            {@const diff = getDiff(item.oldValue, item.newValue)}
-            {#each diff.added as tag}
-              <span class="ml-1 px-1 bg-green-100 text-green-800 rounded text-xs">+{tag}</span>
-            {/each}
-            {#each diff.removed as tag}
-              <span class="ml-1 px-1 bg-red-100 text-red-800 rounded text-xs line-through text-opacity-50">-{tag}</span>
-            {/each}
-          {:else if item.column === 'comments'}
-            {@const diff = getCommentDiff(item)}
-            <span class="ml-1 text-stone-600 italic">
-              {#if diff.type === 'added'}
-                added: "{diff.comment?.text || '...'}"
-              {:else if diff.type === 'deleted'}
-                deleted
-              {:else if diff.type === 'changed'}
-                changed: "{diff.comment?.text || '...'}"
-              {:else}
-                ...
-              {/if}
-            </span>
-          {:else if item.oldValue !== item.newValue}
-            <span class="text-stone-400 mx-1">→</span>
-            <span class="line-through text-stone-400">{formatValue(item.oldValue, item.column)}</span>
-            <span class="font-medium text-stone-800">{formatValue(item.newValue, item.column)}</span>
-          {/if}
+          {#each Object.keys(item.new) as column}
+            {@const oldValue = item.old[column]}
+            {@const newValue = item.new[column]}
+            {#if column === 'tags'}
+              {@const diff = getDiff(oldValue, newValue)}
+              {#each diff.added as tag}
+                <span class="ml-1 px-1 bg-green-100 text-green-800 rounded text-xs">+{tag}</span>
+              {/each}
+              {#each diff.removed as tag}
+                <span class="ml-1 px-1 bg-red-100 text-red-800 rounded text-xs line-through text-opacity-50">-{tag}</span>
+              {/each}
+            {:else if column === 'comments'}
+              {@const diff = getCommentDiff(oldValue, newValue)}
+              <span class="ml-1 text-stone-600 italic">
+                {#if diff.type === 'added'}
+                  added: "{diff.comment?.text || '...'}"
+                {:else if diff.type === 'deleted'}
+                  deleted
+                {:else if diff.type === 'changed'}
+                  changed: "{diff.comment?.text || '...'}"
+                {:else}
+                  ...
+                {/if}
+              </span>
+            {:else if oldValue !== newValue}
+              <span class="ml-1"><strong>{column}</strong></span>
+              <span class="text-stone-400 mx-1">→</span>
+              <span class="line-through text-stone-400">{formatValue(oldValue, column)}</span>
+              <span class="font-medium text-stone-800">{formatValue(newValue, column)}</span>
+            {/if}
+          {/each}
         </div>
       </div>
     {:else}

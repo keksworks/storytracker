@@ -55,7 +55,7 @@ create table change_history(
 --changeset change_history:migrate-from-archive
 insert into change_history ("table", rowId, projectId, old, new, changedAt, changedBy)
 select "table", rowId, projectId,
-  jsonb_object_agg("column", oldValue) filter (where oldValue is not null),
+  coalesce(jsonb_object_agg("column", oldValue) filter (where oldValue is not null), '{}'::jsonb),
   jsonb_object_agg("column", newValue),
   min(changedAt), min(changedBy)
 from change_history_archive

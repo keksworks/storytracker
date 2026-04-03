@@ -9,7 +9,7 @@ export interface EmailRequest {email: Email}
 // class db.Id
 export type Id<T> = number
 // class history.Change
-export interface Change {changedAt: Instant; changedBy?: Id<User>; column: string; newValue?: string; oldValue?: string; rowId: Id<any>; table: string}
+export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.Iteration
@@ -62,7 +62,7 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 
 // db.TestData
 export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
-export const change = {"changedAt":"2025-03-03T00:00:00Z","changedBy":200000002,"column":"status","newValue":"DONE","oldValue":"TODO","rowId":200000004,"table":"stories"} as Change
+export const change = {"changedAt":"2025-03-03T00:00:00Z","changedBy":200000002,"new":{"status":"DONE"},"old":{"status":"TODO"},"rowId":200000004,"table":"stories"} as Change
 export const date = "2025-03-03" as LocalDate
 export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000003,"name":"Epic 1","projectId":1,"tag":"epic1"} as Epic
 export const iteration = {"endDate":"2025-03-10","length":1,"number":1,"projectId":1,"startDate":"2025-03-03","teamStrength":100} as Iteration
