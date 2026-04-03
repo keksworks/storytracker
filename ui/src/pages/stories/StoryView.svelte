@@ -168,7 +168,7 @@
           <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(story)}/>
         </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">
-          {formatDateTime(story.createdAt)}
+          {project.members[story.createdBy!]?.user.name} {formatDateTime(story.createdAt)}
         </div>
       </div>
 

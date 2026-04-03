@@ -125,7 +125,7 @@ class ProjectRoutes(
   fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {
     require(story.projectId == id) { "Invalid story project" }
     val existing = storyRepository.by(Story::id to story.id)
-    if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
+    if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe use UpdatableEntity
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.copy(updatedAt = nowSec()).also {
       storyRepository.save(it, skipUpdate = setOf(Story::iteration))

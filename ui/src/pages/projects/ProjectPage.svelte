@@ -126,7 +126,8 @@
     const prev = stories[index - 1]
     const next = stories[index]
     const newStory = {
-      status, projectId: project!.id, order: newOrder(prev, next),
+      status, projectId: project!.id, createdBy: $user.id,
+      order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
       points: project!.defaultStoryPoints
     } as Story
