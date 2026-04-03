@@ -21,11 +21,7 @@ import javax.crypto.spec.SecretKeySpec
 class GitHubWebhookRoutesTest: BaseMocks() {
   val routes = create<GitHubWebhookRoutes>()
 
-  private val defaultCommit = GitHubCommit(
-    id = "abc123",
-    message = "#${story.id.value} Fix the login bug",
-    url = "https://github.com/org/repo/commit/abc123",
-  )
+  private val defaultCommit = GitHubCommit("abc123", "#${story.id.value} Fix the login bug", "https://github.com/org/repo/commit/abc123")
 
   private fun pushPayload(vararg commits: GitHubCommit = arrayOf(defaultCommit), ref: String = "refs/heads/main") =
     GitHubPushPayload(ref = ref, repository = GitHubRepository("org/repo"), commits = commits.toList())
