@@ -16,6 +16,7 @@ Pivotal Tracker replacement for Agile project management.
 * SSE for real-time updates
 * In our experience, no tool can match the visibility and simplicity of this approach
 * Suitable for truly Agile teams
+* GitHub Webhooks support
 
 ## Limitations
 
