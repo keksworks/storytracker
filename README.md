@@ -1,5 +1,7 @@
 # <img src="ui/public/img/logo.png" alt="Logo" height="32" width="32"/> StoryTracker
 
+![Build and Push Docker Image](https://github.com/codeborne/storytracker/actions/workflows/docker.yml/badge.svg)
+
 Pivotal Tracker replacement for Agile project management.
 
 ![My Sample Project Screenshot](screenshot.png)
