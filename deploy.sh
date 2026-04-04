@@ -2,4 +2,5 @@
 
 mkdir -p logs
 docker compose logs -t tracker 2>&1 | gzip > logs/tracker-"$(date +%Y-%m-%d_%H:%M:%S)".log.gz
-docker compose -f compose.yml -f compose.deploy.yml --env-file .env --env-file .env.prod up -d --build
+docker compose pull
+docker compose -f compose.yml -f compose.deploy.yml --env-file .env --env-file .env.prod up -d
