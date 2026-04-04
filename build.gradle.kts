@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.3.0"
+  kotlin("jvm") version "2.3.20"
 }
 
 repositories {
@@ -24,11 +24,11 @@ dependencies {
   implementation("org.postgresql:postgresql:42.7.8")
 
   testImplementation(klite("jdbc-test"))
-  testImplementation("org.junit.jupiter:junit-jupiter:5.13.2")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
-  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.1")
+  testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.3")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
   testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-2")
-  testImplementation("io.mockk:mockk:1.14.6")
+  testImplementation("io.mockk:mockk:1.14.9")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }
 
