@@ -1,6 +1,6 @@
 # <img src="ui/public/img/logo.png" alt="Logo" height="32" width="32"/> StoryTracker
 
-![Build and Push Docker Image](https://github.com/codeborne/storytracker/actions/workflows/docker.yml/badge.svg)
+![Build and Push Docker Image](https://github.com/keksworks/storytracker/actions/workflows/docker.yml/badge.svg)
 
 Pivotal Tracker replacement for Agile project management.
 
@@ -21,6 +21,7 @@ Pivotal Tracker replacement for Agile project management.
 ## Limitations
 
 * Currently designed for self-deployment (no SaaS yet)
+  * Pre-built docker image: `ghcr.io/keksworks/storytracker`
 * Define your organization's domain in .env file
 
 ## Technical stack
