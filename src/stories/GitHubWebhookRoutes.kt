@@ -46,9 +46,11 @@ class GitHubWebhookRoutes(
       if (story.projectId != id) return@forEach log.warn("Story #$storyId is not of the expected project ${id}")
 
       val diffLink = commit.url ?: push.compare?.let { "$it#${commit.id}" }
+      val fileStats = buildFileStats(commit)
       val text = """
         <a href="$diffLink">🔗 Commit from $repoName</a>
         $commitSubject
+        $fileStats
       """.trimIndent()
 
       val createdBy = commit.author?.email?.let { email ->
@@ -74,6 +76,21 @@ class GitHubWebhookRoutes(
     return mac.doFinal(data.toByteArray()).toHexString()
   }
 
+  private fun buildFileStats(commit: GitHubCommit): String {
+    val added = commit.added?.size ?: 0
+    val removed = commit.removed?.size ?: 0
+    val modified = commit.modified?.size ?: 0
+    val totalFiles = added + removed + modified
+    if (totalFiles == 0) return ""
+    
+    val parts = mutableListOf<String>()
+    if (added > 0) parts.add("+${added} file${if (added != 1) "s" else ""}")
+    if (removed > 0) parts.add("-${removed} file${if (removed != 1) "s" else ""}")
+    if (modified > 0) parts.add("~${modified} file${if (modified != 1) "s" else ""}")
+    
+    return "📄 ${parts.joinToString(" ")}"
+  }
+
   private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 }
 
@@ -94,6 +111,9 @@ data class GitHubCommit(
   val url: String? = null,
   val timestamp: String? = null,
   val author: GitHubAuthor? = null,
+  val added: List<String>? = null,
+  val removed: List<String>? = null,
+  val modified: List<String>? = null,
 )
 
 data class GitHubAuthor(

@@ -15,7 +15,7 @@ export interface Epic {comments: Array<StoryComment>; createdAt: Instant; create
 // class stories.GitHubAuthor
 export interface GitHubAuthor {email?: string}
 // class stories.GitHubCommit
-export interface GitHubCommit {author?: GitHubAuthor; id: string; message: string; timestamp?: string; url?: string}
+export interface GitHubCommit {added?: Array<string>; author?: GitHubAuthor; id: string; message: string; modified?: Array<string>; removed?: Array<string>; timestamp?: string; url?: string}
 // class stories.GitHubPushPayload
 export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: string; ref?: string; repository?: GitHubRepository}
 // class stories.GitHubRepository
