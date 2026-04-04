@@ -62,7 +62,39 @@
     "noUser": "User not found"
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "hero": {
+      "tagline": "Agile Project Tracking Done Right",
+      "subtitle": "Inspired by Pivotal Tracker. Built for truly Agile teams.",
+      "cta": "Get Started"
+    },
+    "features": {
+      "title": "Why StoryTracker?",
+      "transparency": {
+        "title": "Full Transparency",
+        "desc": "No stories lost or hidden - everyone sees the same backlog"
+      },
+      "dragAndDrop": {
+        "title": "Drag & Drop",
+        "desc": "Easy drag-based prioritization that just works"
+      },
+      "kanbanFlow": {
+        "title": "Flow-Based Workflow",
+        "desc": "Kanban-style - just work on the next item in your backlog"
+      },
+      "tagViews": {
+        "title": "Smart Tag Views",
+        "desc": "Simple tag-based views for flexible filtering"
+      },
+      "autoVelocity": {
+        "title": "Auto Velocity Tracking",
+        "desc": "Velocity and estimation dates tracked automatically"
+      },
+      "agileFirst": {
+        "title": "Agile-First Design",
+        "desc": "Unmatched visibility and simplicity for real Agile teams"
+      }
+    }
   },
   "projects": {
     "title": "Projects",
