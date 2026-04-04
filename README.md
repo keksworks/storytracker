@@ -72,7 +72,7 @@ Server tests:
 `./gradlew test`
 
 Repository tests are integration tests, connecting to the real database, which runs in Docker.
-The test database name is `cos_test`.
+The test database name is `tracker_test`.
 
 UI tests:
 `cd ui && npm test`
@@ -83,4 +83,4 @@ The easiest way to deploy is via Docker compose:
 
 `docker compose up -d`
 
-This will build and start the application and the database.
+This will pull/build and start the application and the database.
