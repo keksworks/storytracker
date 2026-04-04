@@ -18,7 +18,7 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
 
   init {
     val maxId = db.query("select max(id) from $table") { getLong(1) }.firstOrNull()
-    if (maxId != null && maxId > Id.sequence.get()) {
+    if (maxId != null && maxId >= Id.sequence.get()) {
       Id.sequence.set(maxId + (Math.random() * 10000).toLong())
     }
     logger().info("Initialized next story id to ${Id.sequence.get()}")

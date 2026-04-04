@@ -11,6 +11,7 @@ import java.util.UUID
 
 /** Immutable domain object samples for unit tests */
 object TestData {
+  init { Id.sequence.set(200_000_000) }
   val date = LocalDate.of(2025, 3, 3)
   val now = date.atStartOfDay().toInstant(UTC)
 
