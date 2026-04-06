@@ -80,10 +80,10 @@ class ProjectRoutes(
     export.epics.forEach { epic -> epicRepository.save(epic) }
     export.stories.forEach { story -> storyRepository.save(story) }
     export.memberUsers.forEach { memberUser ->
-      val member = userRepository.by(User::email eq memberUser.user.email)
+      val user = userRepository.by(User::email eq memberUser.user.email)
         ?: User(memberUser.user.name, memberUser.user.email, initials = memberUser.user.initials).also { userRepository.save(it) }
       // TODO: check if not already a member
-      projectMemberRepository.save(ProjectMember(projectId = export.project.id, userId = member.id, role = memberUser.member.role))
+      projectMemberRepository.save(ProjectMember(projectId = export.project.id, userId = user.id, role = memberUser.member.role))
     }
     return export.project
   }

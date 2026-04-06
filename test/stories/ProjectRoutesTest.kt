@@ -15,7 +15,9 @@ import db.TestData.story2
 import db.TestData.user
 import io.mockk.every
 import io.mockk.verify
+import klite.Email
 import klite.ForbiddenException
+import klite.jdbc.eq
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
@@ -24,7 +26,9 @@ import users.User
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
-  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story), listOf(projectMemberUser))
+  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story),
+    listOf(projectMemberUser, projectMemberUser.copy(user = user.copy(email = Email("new@user.com")
+  ))))
 
   @Test fun get() {
     expect(routes.get(project.id)).toEqual(project)
@@ -54,16 +58,21 @@ class ProjectRoutesTest: BaseMocks() {
   }
 
   @Test fun `import new project allowed for everyone`() {
+    val newEmail = Email("new@user.com")
     every { projectRepository.get(project.id) } throws NoSuchElementException()
+    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
+    every { userRepository.by(User::email eq newEmail) } returns null
 
     expect(routes.import(export, user, exchange)).toEqual(project)
 
     verify {
       projectRepository.save(project)
-      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == OWNER })
       iterationRepository.save(iteration)
       epicRepository.save(epic)
       storyRepository.save(story)
+      userRepository.save(match { it.email == newEmail })
+      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == OWNER })
+      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == projectMemberUser.member.role})
     }
   }
 
@@ -194,4 +203,6 @@ class ProjectRoutesTest: BaseMocks() {
     routes.attachment(project.id, story.id, "file", exchange)
     verify { attachmentRepository.file(project.id, story.id, "file") }
   }
+
+
 }
