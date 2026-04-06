@@ -16,7 +16,7 @@
 
      const existing = projects.find(p => p.id == data.project.id)
      if (existing) {
-       const confirmMessage = 'message here'
+       const confirmMessage = t.projects.updateConfirmation.replace('{0}', existing.name)
        if (!confirm(confirmMessage)) return
      }
 

@@ -7,6 +7,8 @@ import history.Change
 import history.ChangeHistoryRepository
 import klite.*
 import klite.annotations.*
+import klite.i18n.Lang
+import klite.i18n.lang
 import klite.jdbc.NoTransaction
 import klite.jdbc.eq
 import klite.jdbc.gt
@@ -61,12 +63,12 @@ class ProjectRoutes(
   }
 
   @POST("/import") @Access(ADMIN, OWNER, MEMBER)
-  fun import(export: ProjectExport, @AttrParam user: User): Project {
+  fun import(export: ProjectExport, @AttrParam user: User, e: HttpExchange): Project {
     val existingProject = runCatching { get(export.project.id) }.getOrNull()
 
     if (existingProject != null) {
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
-      if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException("You do not have permission to overwrite this project")
+      if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException(Lang.translate(e.lang, "importForbidden"))
     }
     projectRepository.save(export.project)
     if (existingProject == null)

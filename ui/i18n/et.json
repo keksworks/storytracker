@@ -138,7 +138,9 @@
     "updatedAt": "Uuendatud",
     "search": "Otsi projekte...",
     "export": "Ekspordi",
-    "import": "Impordi projekt"
+    "import": "Impordi projekt",
+    "importForbidden": "Sul puuduvad õigused projekti ülekirjutamiseks",
+    "updateConfirmation": "See projekt {0} juba olemas, kas oled kindel, et soovid selle üle kirjutada?"
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",
