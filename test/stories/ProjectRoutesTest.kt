@@ -15,6 +15,7 @@ import db.TestData.story2
 import db.TestData.user
 import io.mockk.every
 import io.mockk.verify
+import klite.ForbiddenException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
@@ -23,6 +24,7 @@ import users.User
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
+  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story), listOf(projectMemberUser))
 
   @Test fun get() {
     expect(routes.get(project.id)).toEqual(project)
@@ -51,8 +53,36 @@ class ProjectRoutesTest: BaseMocks() {
     expect(routes.export(project.id, exchange)).toEqual(projectExport)
   }
 
+  @Test fun `import new project allowed for everyone`() {
+    every { projectRepository.get(project.id) } throws NoSuchElementException()
+
+    expect(routes.import(export, user, exchange)).toEqual(project)
+
+    verify {
+      projectRepository.save(project)
+      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == OWNER })
+      iterationRepository.save(iteration)
+      epicRepository.save(epic)
+      storyRepository.save(story)
+    }
+  }
+
+  @Test fun `import of existing project forbidden for non-owner`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
+    assertThrows<ForbiddenException> { routes.import(export, user, exchange) }
+  }
+
+  @Test fun `import of existing project allowed for admin`() {
+    expect(routes.import(export, admin, exchange)).toEqual(project)
+  }
+
+  @Test fun `import of existing project allowed for owner`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns OWNER
+    expect(routes.import(export, user, exchange)).toEqual(project)
+  }
+
   @Test fun create() {
-   val newProject = routes.create(project, user)
+    val newProject = routes.create(project, user)
     expect(newProject).toEqual(project)
     verify {
       projectRepository.create(project)
@@ -157,7 +187,7 @@ class ProjectRoutesTest: BaseMocks() {
   @Test fun `delete story`() {
     val requesterId = "user 123"
     routes.delete(project.id, story.id, requesterId)
-    verify { storyRepository.save(match { it.id == story.id && it.status == Story.Status.DELETED}) }
+    verify { storyRepository.save(match { it.id == story.id && it.status == Story.Status.DELETED }) }
   }
 
   @Test fun attachment() {

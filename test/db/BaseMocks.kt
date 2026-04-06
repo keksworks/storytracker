@@ -58,6 +58,7 @@ abstract class BaseMocks {
     userRepository.apply {
       every { get(admin.id) } returns admin
       every { get(user.id) } returns user
+      every { by(*anyVararg()) } returns null
     }
 
     projectRepository.apply {
