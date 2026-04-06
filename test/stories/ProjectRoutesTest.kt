@@ -26,9 +26,9 @@ import users.User
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
-  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story),
-    listOf(projectMemberUser, projectMemberUser.copy(user = user.copy(email = Email("new@user.com")
-  ))))
+  private val projectMemberUserNew = projectMemberUser.copy(user = user.copy(email = Email("new@user.com"), id = Id()))
+
+  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story), listOf(projectMemberUser, projectMemberUserNew))
 
   @Test fun get() {
     expect(routes.get(project.id)).toEqual(project)
@@ -58,10 +58,9 @@ class ProjectRoutesTest: BaseMocks() {
   }
 
   @Test fun `import new project allowed for everyone`() {
-    val newEmail = Email("new@user.com")
     every { projectRepository.get(project.id) } throws NoSuchElementException()
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
-    every { userRepository.by(User::email eq newEmail) } returns null
+    every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
 
     expect(routes.import(export, user, exchange)).toEqual(project)
 
@@ -70,9 +69,10 @@ class ProjectRoutesTest: BaseMocks() {
       iterationRepository.save(iteration)
       epicRepository.save(epic)
       storyRepository.save(story)
-      userRepository.save(match { it.email == newEmail })
-      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == OWNER })
-      projectMemberRepository.save(match { it.projectId == project.id && it.userId == user.id && it.role == projectMemberUser.member.role})
+      userRepository.create(projectMemberUserNew.user)
+      projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
+      projectMemberRepository.create(projectMemberUser.member)
+      projectMemberRepository.create(projectMemberUserNew.member)
     }
   }
 

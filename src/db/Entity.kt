@@ -1,9 +1,7 @@
 package db
 
 import klite.i18n.Lang
-import klite.jdbc.BaseCrudRepository
-import klite.jdbc.BaseEntity
-import klite.jdbc.getLongOrNull
+import klite.jdbc.*
 import klite.json.parse
 import java.sql.ResultSet
 import java.util.Random
@@ -24,6 +22,12 @@ typealias Entity<T> = BaseEntity<Id<T>>
 
 abstract class CrudRepository<T: Entity<T>>(db: DataSource, table: String): BaseCrudRepository<T, Id<T>>(db, table) {
   override val orderAsc get() = "order by $table.id"
+
+  fun create(entity: T) {
+    if (entity is UpdatableEntity && entity.updatedAt == null)
+      entity.updatedAt = nowSec()
+    db.insert(table, entity.persister())
+  }
 }
 
 fun jsonb(value: Any) = klite.jdbc.jsonb(Lang.jsonMapper.render(value))
