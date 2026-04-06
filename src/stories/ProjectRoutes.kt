@@ -60,6 +60,32 @@ class ProjectRoutes(
     )
   }
 
+  @POST("/import") @Access(ADMIN, OWNER, MEMBER)
+  fun import(export: ProjectExport, @AttrParam user: User): Project {
+    val existingProject = runCatching { get(export.project.id) }.getOrNull()
+
+    if (existingProject != null) {
+      val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
+      if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException("You do not have permission to overwrite this project")
+    }
+    projectRepository.save(export.project)
+    if (existingProject == null)
+      projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
+
+    // TODO: use batch insert/update for speed
+    // TODO: check that we are not overwriting stories by id of another project
+    export.iterations.forEach { iteration -> iterationRepository.save(iteration) }
+    export.epics.forEach { epic -> epicRepository.save(epic) }
+    export.stories.forEach { story -> storyRepository.save(story) }
+    export.memberUsers.forEach { memberUser ->
+      val member = userRepository.by(User::email eq memberUser.user.email)
+        ?: User(memberUser.user.name, memberUser.user.email, initials = memberUser.user.initials).also { userRepository.save(it) }
+      // TODO: check if not already a member
+      projectMemberRepository.save(ProjectMember(projectId = export.project.id, userId = member.id, role = memberUser.member.role))
+    }
+    return export.project
+  }
+
   @POST @Access(ADMIN, OWNER, MEMBER)
   fun create(project: Project, @AttrParam user: User): Project {
     projectRepository.create(project)

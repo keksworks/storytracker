@@ -9,6 +9,7 @@
   import ProjectSettingsButton from 'src/pages/projects/ProjectSettingsButton.svelte'
   import {formatDate} from '@codeborne/i18n-json'
   import FormField from 'src/forms/FormField.svelte'
+  import ProjectImportButton from 'src/pages/projects/ProjectImportButton.svelte'
 
   let projects: Project[]
   let search = ''
@@ -27,6 +28,7 @@
 
 <MainPageLayout title={t.projects.title}>
   <span slot="header" class="flex gap-4">
+    <ProjectImportButton {projects}/>
     <ProjectSettingsButton label={t.projects.new}/>
     <FormField type="search" placeholder={t.projects.search} bind:value={search} autofocus on:keydown={onKeyDown}/>
   </span>

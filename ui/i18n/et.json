@@ -137,7 +137,8 @@
     "velocityOverride": "Ajutine kiiruse asendus",
     "updatedAt": "Uuendatud",
     "search": "Otsi projekte...",
-    "export": "Ekspordi"
+    "export": "Ekspordi",
+    "import": "Impordi projekt"
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",
