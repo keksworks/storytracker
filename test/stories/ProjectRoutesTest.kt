@@ -48,7 +48,8 @@ class ProjectRoutesTest: BaseMocks() {
       project,
       listOf(iteration),
       listOf(epic),
-      listOf(story, story2)
+      listOf(story, story2),
+      listOf(projectMemberUser)
     )
     expect(routes.export(project.id, exchange)).toEqual(projectExport)
   }

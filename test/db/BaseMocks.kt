@@ -5,6 +5,7 @@ import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
 import db.TestData.project
+import db.TestData.projectMemberUser
 import db.TestData.story
 import db.TestData.story2
 import db.TestData.user
@@ -84,5 +85,9 @@ abstract class BaseMocks {
       every { file(project.id, story.id, "file") } returns java.nio.file.Path.of("build.gradle.kts")
     }
 
+    projectMemberRepository.apply {
+      every { listWithUsers(project.id) } returns listOf(projectMemberUser)
+    }
   }
 }
+
