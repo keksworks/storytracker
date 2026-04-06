@@ -62,7 +62,39 @@
     "noUser": "User not found"
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "hero": {
+      "tagline": "Agile Project Tracking Done Right",
+      "subtitle": "Inspired by Pivotal Tracker. Built for truly Agile teams.",
+      "cta": "Get Started"
+    },
+    "features": {
+      "title": "Why StoryTracker?",
+      "transparency": {
+        "title": "Full Transparency",
+        "desc": "No stories lost or hidden - everyone sees the same backlog"
+      },
+      "dragAndDrop": {
+        "title": "Drag & Drop",
+        "desc": "Easy drag-based prioritization that just works"
+      },
+      "kanbanFlow": {
+        "title": "Flow-Based Workflow",
+        "desc": "Kanban-style - just work on the next item in your backlog"
+      },
+      "tagViews": {
+        "title": "Smart Tag Views",
+        "desc": "Simple tag-based views for flexible filtering"
+      },
+      "autoVelocity": {
+        "title": "Auto Velocity Tracking",
+        "desc": "Velocity and estimation dates tracked automatically"
+      },
+      "agileFirst": {
+        "title": "Agile-First Design",
+        "desc": "Unmatched visibility and simplicity for real Agile teams"
+      }
+    }
   },
   "projects": {
     "title": "Projects",
@@ -83,7 +115,11 @@
     "velocityOverride": "Temporary velocity override",
     "updatedAt": "Updated",
     "search": "Search projects...",
-    "export": "Export"
+    "export": "Export",
+    "webhookUrl": "GitHub webhook URL",
+    "webhookSecret": "Webhook secret",
+    "webhookInstructions": "Set this URL as a webhook in your GitHub repository settings (Settings → Webhooks → Add webhook). Use \"application/json\" content type. Commits with messages starting with \"#storyId\" will be added as comments.",
+    "webhookCopied": "Copied to clipboard"
   },
   "weekDays": {
     "MONDAY": "Monday",
@@ -147,7 +183,16 @@
     "createdAt": "Created",
     "updatedAt": "Updated",
     "assignedTo": "Assigned to",
-    "locate": "Locate in backlog/icebox"
+    "locate": "Locate in backlog/icebox",
+    "collapsed": "{count} more done stories"
+  },
+  "history": {
+    "added": "added",
+    "changed": "changed",
+    "deleted": "deleted",
+    "movedUp": "moved up",
+    "movedDown": "moved down",
+    "system": "System"
   },
   "epics": {
     "epic": "Epic",

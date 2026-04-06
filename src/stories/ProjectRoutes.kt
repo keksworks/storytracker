@@ -7,18 +7,18 @@ import history.Change
 import history.ChangeHistoryRepository
 import klite.*
 import klite.annotations.*
-import klite.jdbc.*
+import klite.jdbc.NoTransaction
+import klite.jdbc.eq
+import klite.jdbc.gt
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
-import kotlinx.coroutines.flow.MutableSharedFlow
 import stories.Story.Status.DELETED
 import users.Role
 import users.Role.*
 import users.User
 import users.UserRepository
 import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.findAnnotation
 
 @Access(ADMIN, OWNER, MEMBER, VIEWER)
@@ -31,6 +31,7 @@ class ProjectRoutes(
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
   private val changeHistoryRepository: ChangeHistoryRepository,
+  private val storyEvents: StoryEvents,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
@@ -126,20 +127,16 @@ class ProjectRoutes(
   @POST("/:id/stories") @Access(ADMIN, OWNER, MEMBER)
   fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {
     require(story.projectId == id) { "Invalid story project" }
-    val existing = storyRepository.by(Story::id to story.id)
-    if (existing != null && existing.updatedAt != story.updatedAt) throw StaleEntityException() // TODO: maybe implement UpdatableEntity
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
-    return story.copy(updatedAt = nowSec()).also {
-      storyRepository.save(it, skipUpdate = setOf(Story::iteration))
-      projectFlows[it.projectId]?.tryEmit(it to requesterId)
+    return story.also {
+      storyRepository.save(it)
+      storyEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 
-  private val projectFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, String>>>()
-
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val flow = projectFlows.getOrPut(id) { MutableSharedFlow(extraBufferCapacity = 1) }
+    val flow = storyEvents.flow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
@@ -157,7 +154,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED).also {
       storyRepository.save(it)
-      projectFlows[it.projectId]?.tryEmit(it to requesterId)
+      storyEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 

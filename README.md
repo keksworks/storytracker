@@ -1,5 +1,7 @@
 # <img src="ui/public/img/logo.png" alt="Logo" height="32" width="32"/> StoryTracker
 
+![Build and Push Docker Image](https://github.com/keksworks/storytracker/actions/workflows/docker.yml/badge.svg)
+
 Pivotal Tracker replacement for Agile project management.
 
 ![My Sample Project Screenshot](screenshot.png)
@@ -14,10 +16,12 @@ Pivotal Tracker replacement for Agile project management.
 * SSE for real-time updates
 * In our experience, no tool can match the visibility and simplicity of this approach
 * Suitable for truly Agile teams
+* GitHub Webhooks support
 
 ## Limitations
 
 * Currently designed for self-deployment (no SaaS yet)
+  * Pre-built docker image: `ghcr.io/keksworks/storytracker`
 * Define your organization's domain in .env file
 
 ## Technical stack
@@ -68,7 +72,7 @@ Server tests:
 `./gradlew test`
 
 Repository tests are integration tests, connecting to the real database, which runs in Docker.
-The test database name is `cos_test`.
+The test database name is `tracker_test`.
 
 UI tests:
 `cd ui && npm test`
@@ -79,4 +83,4 @@ The easiest way to deploy is via Docker compose:
 
 `docker compose up -d`
 
-This will build and start the application and the database.
+This will pull/build and start the application and the database.

@@ -6,15 +6,17 @@ import klite.jdbc.BaseEntity
 import klite.jdbc.getLongOrNull
 import klite.json.parse
 import java.sql.ResultSet
+import java.util.Random
 import java.util.concurrent.atomic.AtomicLong
 import javax.sql.DataSource
 
 @JvmInline value class Id<T>(val value: Long) {
   companion object {
-    val sequence = AtomicLong(200000000L)
+    val sequence = AtomicLong(200_000_000 + Random().nextLong(100_000) * 10)
+    fun generate(): Id<Any> = Id(sequence.incrementAndGet())
   }
   constructor(value: String): this(value.toLong())
-  constructor(): this(sequence.incrementAndGet())
+  constructor(): this(generate().value)
   override fun toString() = value.toString()
 }
 

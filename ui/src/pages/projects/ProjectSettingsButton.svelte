@@ -7,6 +7,7 @@
   import TextAreaField from 'src/forms/TextAreaField.svelte'
   import NumberField from 'src/forms/NumberField.svelte'
   import SelectField from 'src/forms/SelectField.svelte'
+  import GitHubWebhookDetails from './GitHubWebhookDetails.svelte'
   import api from 'src/api/api'
   import {showToast} from 'src/stores/toasts'
   import type {ProjectContext} from 'src/pages/projects/context'
@@ -36,6 +37,11 @@
     <NumberField label={t.projects.iterationWeeks} bind:value={project.iterationWeeks} required={false} min={1} max={4}/>
     <NumberField label={t.projects.velocityAveragedOver} bind:value={project.velocityAveragedOver} required={false} min={1} max={10}/>
     <SelectField label={t.projects.startDay} bind:value={project.startDay} options={t.weekDays}/>
+
+    {#if project.id}
+      <GitHubWebhookDetails {project}/>
+    {/if}
+
     <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
   </Form>
 </Modal>

@@ -7,6 +7,7 @@ import klite.jdbc.nowSec
 import java.time.DayOfWeek
 import java.time.DayOfWeek.MONDAY
 import java.time.Instant
+import java.util.UUID
 
 data class Project(
   override val id: Id<Project> = Id(),
@@ -22,6 +23,7 @@ data class Project(
   val reviewTypes: Set<String> = setOf("Test (QA)", "Design", "Code", "Security"),
   val tags: Set<String> = emptySet(), // TODO: persist to db
   val defaultStoryPoints: Int? = 1,
+  val webhookSecret: UUID = UUID.randomUUID(),
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
 ): Entity<Project>, UpdatableEntity

@@ -84,7 +84,39 @@
     "noUser": "Kasutajat ei leitud"
   },
   "home": {
-    "title": "Avaleht"
+    "title": "Avaleht",
+    "hero": {
+      "tagline": "Tarkprojektide jälgimine, mis toimib",
+      "subtitle": "Pivotal Trackeri poolt inspireeritud. Loodud tõeliselt Agile meeskondadele.",
+      "cta": "Alusta"
+    },
+    "features": {
+      "title": "Miks StoryTracker?",
+      "transparency": {
+        "title": "Täielik Läbipaistvus",
+        "desc": "Ükski lugu ei lähe kaotsi - kõik näevad sama backlogut"
+      },
+      "dragAndDrop": {
+        "title": "Lohista & Aseta",
+        "desc": "Lihtne lohista-põhine prioriseerimine, mis lihtsalt töötab"
+      },
+      "kanbanFlow": {
+        "title": "Kanban-Põhine Töövoog",
+        "desc": "Kanban-stiilis - tööta lihtsalt järgmise üksuse kallal oma backlogus"
+      },
+      "tagViews": {
+        "title": "Targad Sildi Vaated",
+        "desc": "Lihtsad sildi-põhised vaated paindlikuks filtreerimiseks"
+      },
+      "autoVelocity": {
+        "title": "Automaatne Kiiruse Jälgimine",
+        "desc": "Kiirus ja hinnangu kuupäevad jälgitakse automaatselt"
+      },
+      "agileFirst": {
+        "title": "Agile-Esimene Disain",
+        "desc": "Ületamatu nähtavus ja lihtsus päris Agile meeskondadele"
+      }
+    }
   },
   "projects": {
     "title": "Projektid",
@@ -169,7 +201,16 @@
     "createdAt": "Loodud",
     "updatedAt": "Uuendatud",
     "assignedTo": "Määratud",
-    "locate": "Leia Planeerimisest/Jääkastist"
+    "locate": "Leia Planeerimisest/Jääkastist",
+    "collapsed": "{count} veel valmis lugu"
+  },
+  "history": {
+    "added": "lisatud",
+    "changed": "muudetud",
+    "deleted": "kustutatud",
+    "movedUp": "liigutatud üles",
+    "movedDown": "liigutatud alla",
+    "system": "Süsteem"
   },
   "epics": {
     "epic": "Eepik",

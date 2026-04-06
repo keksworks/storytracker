@@ -12,8 +12,10 @@ import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
 import klite.smtp.FakeEmailSender
 import klite.smtp.SmtpEmailSender
+import stories.GitHubWebhookRoutes
 import stories.IterationAdvancer
 import stories.ProjectRoutes
+import stories.StoryEvents
 import users.UserRoutes
 import java.nio.file.Path
 import java.time.LocalTime
@@ -58,7 +60,9 @@ fun startServer() = Server(
     annotated<AuthRoutes>(annotations = listOf(Public()))
     annotated<EmailAuthRoutes>("/auth", listOf(Public()))
     annotated<UserRoutes>("/users")
+    register<StoryEvents>()
     annotated<ProjectRoutes>("/projects")
+    annotated<GitHubWebhookRoutes>()
   }
 
   start()

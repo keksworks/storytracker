@@ -6,6 +6,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 
 RUN npm run build
 RUN npm run check
+RUN npm test
 
 FROM eclipse-temurin:21-alpine AS build-server
 WORKDIR /app

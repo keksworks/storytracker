@@ -5,10 +5,12 @@
   import {user} from 'src/stores/auth'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {tick} from 'svelte'
+  import {handleDescriptionClick, linkify} from 'src/shared/linkify'
 
   export let project: ProjectContext
   export let comments: StoryComment[] | undefined
   export let urlBase: string
+  export let onSave: () => void = () => {}
 
   async function addComment() {
     comments = [...(comments || []), {
@@ -26,13 +28,25 @@
     comments!.splice(i, 1)
     comments = comments
   }
+
+  function handleCommentKeyDown(e: KeyboardEvent) {
+    handleDescriptionClick(e)
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSave()
+  }
 </script>
 
 <h4>{t.stories.comments}</h4>
 {#if comments}
   {#each comments as comment, i}
     <div>
-      <div class="comment bg-white whitespace-pre-line p-2" bind:innerHTML={comment.text} contenteditable="true"></div>
+      <div class="comment bg-white whitespace-pre-line p-2 min-h-8"
+           bind:innerHTML={comment.text}
+           contenteditable="true"
+           onblur={() => comment.text = linkify(comment.text || '')}
+           onclick={handleDescriptionClick}
+           onkeydown={handleCommentKeyDown}
+           role="textbox"
+           tabindex="0"></div>
       {#if comment.attachments}
         {#each comment.attachments as attachment}
           {@const url = `${urlBase}/attachments/${encodeURIComponent(attachment.filename)}`}
@@ -46,7 +60,7 @@
         {/each}
       {/if}
       <div class="flex justify-between items-center text-sm text-muted mb-1.5">
-        <div>{project.members[comment.createdBy]?.user?.name}</div>
+        <div>{project.members[comment.createdBy!]?.user?.name}</div>
         <div class="flex items-center">
           {formatDateTime(comment.updatedAt)}
           {#if project.canEdit}

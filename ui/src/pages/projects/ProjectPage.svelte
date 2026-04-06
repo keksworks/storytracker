@@ -36,15 +36,20 @@
 
   async function loadStories(fromIteration: number) {
     stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
+    if (!fromIteration) pastLoaded = true
   }
 
-  let show: Record<string, boolean> = JSON.parse(localStorage['projectPanels:' + id] || 'null') || {
+  let show: Record<string, boolean> = {
     done: false,
     backlog: true,
     icebox: !isMobile,
     epics: false,
     history: false
   }
+
+  Object.entries(JSON.parse(localStorage['projectPanels:' + id] || 'null')).forEach(e => {
+    if (typeof e[1] === 'boolean') show[e[0]] = e[1]
+  })
 
   $: localStorage['projectPanels:' + id] = JSON.stringify(show)
 
@@ -87,20 +92,17 @@
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
-    await loadStories(project!.currentIterationNum)
+    await loadStories(show.done ? 0 : project!.currentIterationNum)
   })
 
   $: if (project) project.epicTags = new Set(epics.map(e => e.tag))
   $: if (project) project.tags = [...new Set(stories.flatMap(s => s.tags).concat([...project.epicTags ?? []]))]
 
-  $: if (show.done && !pastLoaded) {
-    loadStories(0)
-    pastLoaded = true
-  }
+  $: if (show.done && !pastLoaded) loadStories(0)
 
-  $: done = stories.filter(s => s.iteration! < project!.currentIterationNum)
+  $: done = stories.filter(s => s.iteration! < project?.currentIterationNum!)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
-  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project!.currentIterationNum))
+  $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (e.id == e.beforeId) return
@@ -124,7 +126,8 @@
     const prev = stories[index - 1]
     const next = stories[index]
     const newStory = {
-      status, projectId: project!.id, order: newOrder(prev, next),
+      status, projectId: project!.id, createdBy: $user.id,
+      order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
       points: project!.defaultStoryPoints
     } as Story
@@ -186,7 +189,9 @@
       <ProjectUpdatesListener {project} bind:stories onStoryUpdated={s => flashStoryId = s.id}/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId/>
+        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
+                    {onSearch} {onSaved} {onDelete} bind:flashStoryId
+                    collapseStory={s => s.iteration! < project!.currentIterationNum - 3}/>
 
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
@@ -206,11 +211,14 @@
         </StoryPanel>
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
-        <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false} {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId>
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
+                    {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
+                    collapseStory={s => s.iteration! < project!.currentIterationNum}>
           <span slot="right">{searchQuery}</span>
         </StoryPanel>
+
+        <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
       </div>
     {/if}
   </div>

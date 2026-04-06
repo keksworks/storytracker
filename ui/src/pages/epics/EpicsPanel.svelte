@@ -8,6 +8,7 @@
   import api from 'src/api/api'
   import EpicView from 'src/pages/epics/EpicView.svelte'
   import Panel from 'src/components/Panel.svelte'
+  import {user} from 'src/stores/auth'
 
   export let show: boolean | string | undefined
   export let project: ProjectContext
@@ -19,7 +20,7 @@
 
   function addEpic() {
     epics = [{
-      projectId: project!.id,
+      projectId: project!.id, createdBy: $user.id,
       comments: [] as StoryComment[],
     } as Epic, ...epics!]
   }

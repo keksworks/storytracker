@@ -1,6 +1,5 @@
 package stories
 
-import ch.tutteli.atrium.api.fluent.en_GB.notToEqual
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import db.BaseMocks
@@ -16,8 +15,6 @@ import db.TestData.story2
 import db.TestData.user
 import io.mockk.every
 import io.mockk.verify
-import klite.jdbc.StaleEntityException
-import klite.jdbc.nowSec
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
@@ -146,13 +143,8 @@ class ProjectRoutesTest: BaseMocks() {
     val requesterId = "user 123"
     every { storyRepository.by(Story::id to story.id) } returns null
     val result = routes.save(project.id, story, requesterId)
-    expect(result.id).toEqual(story.id)
-    expect(result.projectId).toEqual(project.id)
-    expect(result.updatedAt).notToEqual(null)
-
-    verify {
-      storyRepository.save(result, skipUpdate = setOf(Story::iteration))
-    }
+    expect(result).toEqual(story)
+    verify { storyRepository.save(result) }
   }
 
   @Test fun `save story with wrong project id`() {
@@ -162,22 +154,14 @@ class ProjectRoutesTest: BaseMocks() {
     }
   }
 
-  @Test fun `save story fails if updated in between`() {
-    val existingStory = story.copy(updatedAt = nowSec().minusSeconds(10))
-    val incomingStory = story.copy(updatedAt = nowSec().minusSeconds(20))
-    every { storyRepository.by(Story::id to story.id) } returns existingStory
-    assertThrows<StaleEntityException> { routes.save(project.id, incomingStory, "user 123") }
-  }
-
   @Test fun `delete story`() {
     val requesterId = "user 123"
     routes.delete(project.id, story.id, requesterId)
     verify { storyRepository.save(match { it.id == story.id && it.status == Story.Status.DELETED}) }
   }
 
-   @Test fun attachment() {
-     routes.attachment(project.id, story.id, "file", exchange )
-     verify { attachmentRepository.file(project.id, story.id, "file") }
-   }
-
+  @Test fun attachment() {
+    routes.attachment(project.id, story.id, "file", exchange)
+    verify { attachmentRepository.file(project.id, story.id, "file") }
+  }
 }

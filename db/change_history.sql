@@ -38,6 +38,38 @@ begin
   return case when userId = '' then null else userId end;
 end; $$
 
+--changeset change_history_archive
+alter table change_history rename to change_history_archive;
+
+--changeset change_history:new
+create table change_history(
+  "table" varchar not null,
+  rowId bigint not null,
+  projectId bigint,
+  old jsonb not null default '{}',
+  new jsonb not null default '{}',
+  changedAt timestamptz not null default now(),
+  changedBy bigint default get_app_user()
+);
+
+--changeset change_history:migrate-from-archive
+insert into change_history ("table", rowId, projectId, old, new, changedAt, changedBy)
+select "table", rowId, projectId,
+  coalesce(jsonb_object_agg("column", oldValue) filter (where oldValue is not null), '{}'::jsonb),
+  jsonb_object_agg("column", newValue),
+  min(changedAt), min(changedBy)
+from change_history_archive
+group by "table", rowId, projectId, date_trunc('second', changedAt), changedBy;
+
+--changeset change_history_archive:drop context:TODO
+drop table change_history_archive;
+
+--changeset change_history_idx
+create index change_history_idx on change_history("table", rowId);
+
+--changeset change_history_project_idx
+create index change_history_project_idx on change_history(projectId, changedAt desc);
+
 --changeset add_change_history onChange:RUN separator:none
 create or replace function add_change_history() returns trigger language plpgsql as $$
 declare
@@ -45,23 +77,29 @@ declare
   oldValue text;
   newValue text;
   newRec jsonb := to_jsonb(new);
-  oldRec jsonb := to_jsonb(old);
+  oldRec jsonb := case when tg_op = 'INSERT' then '{}'::jsonb else to_jsonb(old) end;
+  oldChanges jsonb := '{}'::jsonb;
+  newChanges jsonb := '{}'::jsonb;
   pid bigint := case when tg_table_name = 'projects' then new.id else (newRec->>'projectid')::bigint end;
 begin
-  for col, newValue in select * from jsonb_each_text(newRec) loop
-    if (col not in ('updatedat', 'projectid', 'id')) then
-      oldValue := oldRec->>col;
-      if (oldValue is distinct from newValue) then
-        insert into change_history ("table", rowId, "column", oldValue, newValue, changedBy, projectId)
-        values (tg_table_name, new.id, col, oldValue, newValue, get_app_user(), pid);
+  if (tg_op = 'UPDATE') then
+    for col, newValue in select * from jsonb_each_text(newRec) loop
+      if (col not in ('updatedat', 'projectid', 'id')) then
+        oldValue := oldRec->>col;
+        if (oldValue is distinct from newValue) then
+          if (oldValue is not null) then
+            oldChanges := oldChanges || jsonb_build_object(col, oldValue);
+          end if;
+          newChanges := newChanges || jsonb_build_object(col, newValue);
+        end if;
       end if;
-    end if;
-  end loop;
+    end loop;
+  end if;
+
+  if (tg_op = 'INSERT' or newChanges <> '{}'::jsonb) then
+    insert into change_history ("table", rowId, old, new, changedBy, projectId)
+    values (tg_table_name, new.id, oldChanges, newChanges, get_app_user(), pid);
+  end if;
+
   return new;
 end; $$
-
---changeset change_history.projectId:fill onFail:MARK_RAN
-update change_history h set projectId = (select projectId from stories s where s.id = h.rowId) where "table" = 'stories' and projectId is null;
-update change_history h set projectId = (select projectId from epics e where e.id = h.rowId) where "table" = 'epics' and projectId is null;
-update change_history h set projectId = (select projectId from project_members m where m.id = h.rowId) where "table" = 'project_members' and projectId is null;
-update change_history h set projectId = rowId where "table" = 'projects' and projectId is null;

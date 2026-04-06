@@ -30,8 +30,8 @@ alter table stories add column iteration int,
 --changeset stories:reviews
 alter table stories add column reviews jsonb not null default '[]';
 
---changeset stories_history
-create trigger stories_history after update on stories for each row execute function add_change_history();
+--changeset stories_history onChange:RUN
+create or replace trigger stories_history after insert or update on stories for each row execute function add_change_history();
 
 --changeset stories.ord
 alter table stories add column ord double precision not null default 0;

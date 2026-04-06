@@ -1,6 +1,7 @@
 services:
   tracker:
     build: .
+    image: ghcr.io/keksworks/storytracker
     restart: unless-stopped
     depends_on:
       - db
@@ -9,8 +10,8 @@ services:
       - DB_URL=jdbc:postgresql://db/$DB_USER
 
   db:
-    restart: unless-stopped
     image: postgres:17-alpine
+    restart: unless-stopped
     volumes:
       - data:/var/lib/postgresql/data
     environment:
