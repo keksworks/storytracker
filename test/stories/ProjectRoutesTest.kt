@@ -28,7 +28,7 @@ class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
   private val projectMemberUserNew = projectMemberUser.copy(user = user.copy(email = Email("new@user.com"), id = Id()))
 
-  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story), listOf(projectMemberUser, projectMemberUserNew))
+  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story, story2), listOf(projectMemberUser, projectMemberUserNew))
 
   @Test fun get() {
     expect(routes.get(project.id)).toEqual(project)
@@ -69,6 +69,7 @@ class ProjectRoutesTest: BaseMocks() {
       iterationRepository.save(iteration)
       epicRepository.save(epic)
       storyRepository.save(story)
+      storyRepository.save(story2)
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
       projectMemberRepository.create(projectMemberUser.member)
@@ -87,8 +88,26 @@ class ProjectRoutesTest: BaseMocks() {
 
   @Test fun `import of existing project allowed for owner`() {
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
+    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
+
     expect(routes.import(export, user, exchange)).toEqual(project)
+
+    verify {
+      projectRepository.save(project)
+      iterationRepository.save(iteration)
+      epicRepository.save(epic)
+      storyRepository.save(story)
+      storyRepository.save(story2)
+      userRepository.create(projectMemberUserNew.user)
+      projectMemberRepository.create(match{ it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
+    }
   }
+
+//  @Test fun `import fails if stories belong to another project`() {
+//    val wrongExport = export.copy(stories = listOf(story.copy(projectId = Id())))
+//
+//    assertThrows<IllegalArgumentException> { (routes.import(wrongExport, user, exchange)) }
+//  }
 
   @Test fun create() {
     val newProject = routes.create(project, user)
