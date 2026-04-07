@@ -61,6 +61,8 @@ class ProjectRoutesTest: BaseMocks() {
     every { projectRepository.get(project.id) } throws NoSuchElementException()
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
     every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
+    every { epicRepository.list(Epic::projectId to project.id) } returns emptyList()
+    every { storyRepository.list(project.id, any(), any()) } returns emptyList()
 
     expect(routes.import(export, user, exchange)).toEqual(project)
 
@@ -69,6 +71,7 @@ class ProjectRoutesTest: BaseMocks() {
       iterationRepository.save(iteration)
       epicRepository.create(epic)
       storyRepository.create(story)
+      storyRepository.create(story2)
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
       projectMemberRepository.create(projectMemberUser.member)
@@ -88,26 +91,16 @@ class ProjectRoutesTest: BaseMocks() {
   @Test fun `import of existing project allowed for owner`() {
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
-//    every { storyRepository.get(story2.id) } returns null
 
     expect(routes.import(export, user, exchange)).toEqual(project)
 
     verify {
       projectRepository.save(project)
       iterationRepository.save(iteration)
-      epicRepository.create(epic)
-      storyRepository.create(story)
-      storyRepository.create(story2)
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.create(match{ it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
     }
   }
-
-//  @Test fun `import fails if stories belong to another project`() {
-//    val wrongExport = export.copy(stories = listOf(story.copy(projectId = Id())))
-//
-//    assertThrows<IllegalArgumentException> { (routes.import(wrongExport, user, exchange)) }
-//  }
 
   @Test fun create() {
     val newProject = routes.create(project, user)

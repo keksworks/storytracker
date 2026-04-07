@@ -76,9 +76,14 @@ class ProjectRoutes(
 
     // TODO: use batch insert/update for speed
     // TODO: check that we are not overwriting stories by id of another project
+
     export.iterations.forEach { iteration -> iterationRepository.save(iteration) }
-    export.epics.forEach { epic -> epicRepository.create(epic) }
-    export.stories.forEach { story -> storyRepository.create(story) }
+
+    val existingEpics = epics(export.project.id).associateBy { it.id }
+    export.epics.forEach { epic -> if (epic.id !in existingEpics) epicRepository.create(epic) }
+
+    val existingStories = stories(export.project.id).associateBy { it.id }
+    export.stories.forEach { story -> if (story.id !in existingStories) storyRepository.create(story) }
 
     val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
     export.memberUsers.forEach { memberUser ->
