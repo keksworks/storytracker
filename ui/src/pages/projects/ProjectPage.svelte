@@ -47,7 +47,7 @@
     history: false
   }
 
-  Object.entries(JSON.parse(localStorage['projectPanels:' + id] || 'null')).forEach(e => {
+  Object.entries(JSON.parse(localStorage['projectPanels:' + id] || '{}')).forEach(e => {
     if (typeof e[1] === 'boolean') show[e[0]] = e[1]
   })
 
