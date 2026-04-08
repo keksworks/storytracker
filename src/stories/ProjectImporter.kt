@@ -20,44 +20,67 @@ class ProjectImporter(
   fun import(export: ProjectExport, user: User): Project {
     val existingProject = runCatching { projectRepository.get(export.project.id) }.getOrNull()
 
+    handleRole (user, existingProject)
+    importNewProject(export, user, existingProject)
+    importIterations(export)
+    importEpics(export)
+    importStories(export)
+    importMembers(export)
+
+    return export.project
+  }
+
+   private fun handleRole(user: User, existingProject: Project?) {
     if (existingProject != null) {
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
       if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException(Lang.translate(user.lang, "importForbidden"))
     }
+  }
+
+   private fun importNewProject(export: ProjectExport, user: User, existingProject: Project?) {
     projectRepository.save(export.project)
     if (existingProject == null)
       projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
+  }
 
-    // TODO: use batch insert/update for speed
-    val existingIterations = iterationRepository.list(export.project.id).associateBy {  it.number }
+  // TODO: use batch insert/update for speed
+  private fun importIterations(export: ProjectExport) {
+    val existingIterations = iterationRepository.list(export.project.id).associateBy { it.number }
     export.iterations.forEach { iteration ->
       if (iteration.number !in existingIterations) iterationRepository.save(iteration)
     }
+  }
 
+  private fun importEpics(export: ProjectExport) {
     val existingEpics = epicRepository.list(Epic::projectId to export.project.id).associateBy { it.id }
     export.epics.forEach { epic ->
       val existingEpic = existingEpics[epic.id]
       if (existingEpic == null) epicRepository.create(epic)
       else if ((epic.updatedAt ?: MIN) > (existingEpic.updatedAt ?: MIN)) {
-        epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt)) }
+        epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt))
+      }
     }
+  }
 
+ private fun importStories(export: ProjectExport) {
     val existingStories = storyRepository.list(export.project.id).associateBy { it.id }
     export.stories.forEach { story ->
       val exitingStory = existingStories[story.id]
       if (exitingStory == null) storyRepository.create(story)
       else if ((story.updatedAt ?: MIN) > (exitingStory.updatedAt ?: MIN)) {
-        storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt)) }
+        storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt))
+      }
     }
+  }
 
+  private fun importMembers(export: ProjectExport) {
     val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
     export.memberUsers.forEach { memberUser ->
-      val user = userRepository.by(User::email eq memberUser.user.email) ?:
-      memberUser.user.copy(isAdmin = false).also { userRepository.create(it) }
+      val user = userRepository.by(User::email eq memberUser.user.email) ?: memberUser.user.copy(isAdmin = false)
+        .also { userRepository.create(it) }
 
       val member = existingMembers.find { it.member.userId == user.id }
       if (member == null) projectMemberRepository.create(memberUser.member.copy(userId = user.id))
     }
-    return export.project
   }
 }
