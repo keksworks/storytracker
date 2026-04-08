@@ -21,6 +21,7 @@ import users.Role.*
 import users.User
 import users.UserRepository
 import java.time.Instant
+import java.time.Instant.MIN
 import kotlin.reflect.full.findAnnotation
 
 @Access(ADMIN, OWNER, MEMBER, VIEWER)
@@ -80,10 +81,19 @@ class ProjectRoutes(
     export.iterations.forEach { iteration -> iterationRepository.save(iteration) }
 
     val existingEpics = epics(export.project.id).associateBy { it.id }
-    export.epics.forEach { epic -> if (epic.id !in existingEpics) epicRepository.create(epic) }
+    export.epics.forEach { epic ->
+      if (epic.id !in existingEpics) epicRepository.create(epic)
+      else if (compareValues(epic.updatedAt, existingEpics[epic.id]?.updatedAt) > 0) {
+        epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt)) }
+    }
 
     val existingStories = stories(export.project.id).associateBy { it.id }
-    export.stories.forEach { story -> if (story.id !in existingStories) storyRepository.create(story) }
+    export.stories.forEach { story ->
+      val exitingStory = existingStories[story.id]
+      if (exitingStory == null) storyRepository.create(story)
+      else if ((story.updatedAt ?: MIN) > (exitingStory.updatedAt ?: MIN)) {
+        storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt)) }
+    }
 
     val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
     export.memberUsers.forEach { memberUser ->

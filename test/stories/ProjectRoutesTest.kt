@@ -8,11 +8,13 @@ import db.TestData.admin
 import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
+import db.TestData.now
 import db.TestData.project
 import db.TestData.projectMemberUser
 import db.TestData.story
 import db.TestData.story2
 import db.TestData.user
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.verify
 import klite.Email
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
 import users.Role.OWNER
 import users.User
+import java.time.Instant.MIN
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
@@ -92,14 +95,30 @@ class ProjectRoutesTest: BaseMocks() {
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
 
-    expect(routes.import(export, user, exchange)).toEqual(project)
+    val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
+    val newStory = story2.copy(id = Id())
+    val oldStory = story.copy(name = "old name", updatedAt = MIN)
+    val updatedEpic = epic.copy(name = "updated name", updatedAt = now)
+    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(updatedEpic))
+
+
+    expect(routes.import(customExport, user, exchange)).toEqual(project)
 
     verify {
       projectRepository.save(project)
       iterationRepository.save(iteration)
+
+      storyRepository.list(export.project.id)
+      storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
+      storyRepository.create(newStory)
+
+      epicRepository.save(updatedEpic.copy(updatedAt = epic.updatedAt))
+
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.create(match{ it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
     }
+
+    confirmVerified(storyRepository)
   }
 
   @Test fun create() {
