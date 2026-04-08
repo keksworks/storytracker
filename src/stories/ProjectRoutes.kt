@@ -74,19 +74,17 @@ class ProjectRoutes(
     projectRepository.save(export.project)
     if (existingProject == null)
       projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
-
     // TODO: use batch insert/update for speed
     // TODO: check that we are not overwriting stories by id of another project
-
     export.iterations.forEach { iteration -> iterationRepository.save(iteration) }
 
     val existingEpics = epics(export.project.id).associateBy { it.id }
     export.epics.forEach { epic ->
-      if (epic.id !in existingEpics) epicRepository.create(epic)
-      else if (compareValues(epic.updatedAt, existingEpics[epic.id]?.updatedAt) > 0) {
+      val existingEpic = existingEpics[epic.id]
+      if (existingEpic == null) epicRepository.create(epic)
+      else if ((epic.updatedAt ?: MIN) > (existingEpic.updatedAt ?: MIN)) {
         epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt)) }
     }
-
     val existingStories = stories(export.project.id).associateBy { it.id }
     export.stories.forEach { story ->
       val exitingStory = existingStories[story.id]
@@ -94,7 +92,6 @@ class ProjectRoutes(
       else if ((story.updatedAt ?: MIN) > (exitingStory.updatedAt ?: MIN)) {
         storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt)) }
     }
-
     val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
     export.memberUsers.forEach { memberUser ->
       val user = userRepository.by(User::email eq memberUser.user.email) ?:

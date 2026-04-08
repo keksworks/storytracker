@@ -98,27 +98,26 @@ class ProjectRoutesTest: BaseMocks() {
     val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
     val newStory = story2.copy(id = Id())
     val oldStory = story.copy(name = "old name", updatedAt = MIN)
-    val updatedEpic = epic.copy(name = "updated name", updatedAt = now)
-    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(updatedEpic))
-
+    val epicToUpdate = epic.copy(name = "updated name", updatedAt = now)
+    val newEpic = epic.copy(id = Id())
+    val oldEpic = epic.copy(name = "old name", updatedAt = MIN)
+    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic))
 
     expect(routes.import(customExport, user, exchange)).toEqual(project)
 
     verify {
       projectRepository.save(project)
       iterationRepository.save(iteration)
-
       storyRepository.list(export.project.id)
       storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
       storyRepository.create(newStory)
-
-      epicRepository.save(updatedEpic.copy(updatedAt = epic.updatedAt))
-
+      epicRepository.list(Epic::projectId to export.project.id)
+      epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
+      epicRepository.create(newEpic)
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.create(match{ it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
     }
-
-    confirmVerified(storyRepository)
+    confirmVerified(storyRepository, epicRepository)
   }
 
   @Test fun create() {
