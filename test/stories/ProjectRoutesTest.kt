@@ -66,6 +66,7 @@ class ProjectRoutesTest: BaseMocks() {
     every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
     every { epicRepository.list(Epic::projectId to project.id) } returns emptyList()
     every { storyRepository.list(project.id, any(), any()) } returns emptyList()
+    every { iterationRepository.list(project.id) } returns emptyList()
 
     expect(routes.import(export, user, exchange)).toEqual(project)
 
@@ -95,19 +96,23 @@ class ProjectRoutesTest: BaseMocks() {
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
 
+
     val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
     val newStory = story2.copy(id = Id())
     val oldStory = story.copy(name = "old name", updatedAt = MIN)
     val epicToUpdate = epic.copy(name = "updated name", updatedAt = now)
     val newEpic = epic.copy(id = Id())
     val oldEpic = epic.copy(name = "old name", updatedAt = MIN)
-    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic))
+    val newIteration = iteration.copy(projectId = Id(), number = 100)
+    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
+      iterations = listOf(iteration, newIteration))
 
     expect(routes.import(customExport, user, exchange)).toEqual(project)
 
     verify {
       projectRepository.save(project)
-      iterationRepository.save(iteration)
+      iterationRepository.save(newIteration)
+      iterationRepository.list(projectId = project.id)
       storyRepository.list(export.project.id)
       storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
       storyRepository.create(newStory)
