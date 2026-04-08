@@ -2,6 +2,7 @@ package stories
 
 import klite.ForbiddenException
 import klite.i18n.Lang
+import klite.jdbc.UpdatableEntity
 import klite.jdbc.eq
 import users.Role.ADMIN
 import users.Role.OWNER
@@ -34,11 +35,13 @@ class ProjectImporter(
       projectRepository.create(export.project)
       projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
     } else {
-      if ((export.project.updatedAt ?: MIN) > (existingProject.updatedAt ?: MIN)) projectRepository.save(export.project.copy(updatedAt = existingProject.updatedAt))
+      if (export.project.isNewer(existingProject)) projectRepository.save(export.project.copy(updatedAt = existingProject.updatedAt))
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
       if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException(Lang.translate(user.lang, "importForbidden"))
     }
   }
+
+  private fun UpdatableEntity.isNewer(other: UpdatableEntity) = (updatedAt ?: MIN) > (other.updatedAt ?: MIN)
 
   // TODO: use batch insert/update for speed
   private fun importIterations(export: ProjectExport) {
@@ -53,9 +56,7 @@ class ProjectImporter(
     export.epics.forEach { epic ->
       val existingEpic = existingEpics[epic.id]
       if (existingEpic == null) epicRepository.create(epic)
-      else if ((epic.updatedAt ?: MIN) > (existingEpic.updatedAt ?: MIN)) {
-        epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt))
-      }
+      else if (epic.isNewer(existingEpic)) epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt))
     }
   }
 
@@ -64,9 +65,7 @@ class ProjectImporter(
     export.stories.forEach { story ->
       val exitingStory = existingStories[story.id]
       if (exitingStory == null) storyRepository.create(story)
-      else if ((story.updatedAt ?: MIN) > (exitingStory.updatedAt ?: MIN)) {
-        storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt))
-      }
+      else if (story.isNewer(exitingStory)) storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt))
     }
   }
 
