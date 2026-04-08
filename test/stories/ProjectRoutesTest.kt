@@ -29,6 +29,7 @@ import java.time.Instant.MIN
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
+
   private val projectMemberUserNew = projectMemberUser.copy(user = user.copy(email = Email("new@user.com"), id = Id()))
 
   val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story, story2), listOf(projectMemberUser, projectMemberUserNew))
@@ -68,7 +69,7 @@ class ProjectRoutesTest: BaseMocks() {
     every { storyRepository.list(project.id, any(), any()) } returns emptyList()
     every { iterationRepository.list(project.id) } returns emptyList()
 
-    expect(routes.import(export, user, exchange)).toEqual(project)
+    expect(routes.import(export, user)).toEqual(project)
 
     verify {
       projectRepository.save(project)
@@ -85,17 +86,16 @@ class ProjectRoutesTest: BaseMocks() {
 
   @Test fun `import of existing project forbidden for non-owner`() {
     every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
-    assertThrows<ForbiddenException> { routes.import(export, user, exchange) }
+    assertThrows<ForbiddenException> { routes.import(export, user) }
   }
 
   @Test fun `import of existing project allowed for admin`() {
-    expect(routes.import(export, admin, exchange)).toEqual(project)
+    expect(routes.import(export, admin)).toEqual(project)
   }
 
   @Test fun `import of existing project allowed for owner`() {
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
-
 
     val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
     val newStory = story2.copy(id = Id())
@@ -104,10 +104,12 @@ class ProjectRoutesTest: BaseMocks() {
     val newEpic = epic.copy(id = Id())
     val oldEpic = epic.copy(name = "old name", updatedAt = MIN)
     val newIteration = iteration.copy(projectId = Id(), number = 100)
-    val customExport = export.copy(stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
-      iterations = listOf(iteration, newIteration))
+    val customExport = export.copy(
+      stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
+      iterations = listOf(iteration, newIteration)
+    )
 
-    expect(routes.import(customExport, user, exchange)).toEqual(project)
+    expect(routes.import(customExport, user)).toEqual(project)
 
     verify {
       projectRepository.save(project)
@@ -120,10 +122,12 @@ class ProjectRoutesTest: BaseMocks() {
       epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
       epicRepository.create(newEpic)
       userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.create(match{ it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
+      projectMemberRepository.create(match { it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
     }
     confirmVerified(storyRepository, epicRepository)
   }
+
+
 
   @Test fun create() {
     val newProject = routes.create(project, user)
