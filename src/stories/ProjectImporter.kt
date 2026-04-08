@@ -18,10 +18,7 @@ class ProjectImporter(
   private val userRepository: UserRepository
 ) {
   fun import(export: ProjectExport, user: User): Project {
-    val existingProject = runCatching { projectRepository.get(export.project.id) }.getOrNull()
-
-    handleRole(user, existingProject)
-    importNewProject(export, user, existingProject)
+    saveOrCreateProject(export, user)
     importIterations(export)
     importEpics(export)
     importStories(export)
@@ -30,17 +27,17 @@ class ProjectImporter(
     return export.project
   }
 
-   private fun handleRole(user: User, existingProject: Project?) {
-    if (existingProject != null) {
+  private fun saveOrCreateProject(export: ProjectExport, user: User) {
+    val existingProject = runCatching { projectRepository.get(export.project.id) }.getOrNull()
+
+    if (existingProject == null) {
+      projectRepository.create(export.project)
+      projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
+    } else {
+      if ((export.project.updatedAt ?: MIN) > (existingProject.updatedAt ?: MIN)) projectRepository.save(export.project.copy(updatedAt = existingProject.updatedAt))
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
       if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException(Lang.translate(user.lang, "importForbidden"))
     }
-  }
-
-   private fun importNewProject(export: ProjectExport, user: User, existingProject: Project?) {
-    projectRepository.save(export.project)
-    if (existingProject == null)
-      projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
   }
 
   // TODO: use batch insert/update for speed

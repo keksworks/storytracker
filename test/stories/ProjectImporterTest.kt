@@ -44,7 +44,7 @@ class ProjectImporterTestTest: BaseMocks() {
     expect(routes.import(export, user)).toEqual(project)
 
     verify {
-      projectRepository.save(project)
+      projectRepository.create(project)
       iterationRepository.save(iteration)
       epicRepository.create(epic)
       storyRepository.create(story)
@@ -83,14 +83,14 @@ class ProjectImporterTestTest: BaseMocks() {
 
     expect(routes.import(customExport, user)).toEqual(project)
 
+    verify(exactly = 0) { projectRepository.save(any()) }
     verify {
-      projectRepository.save(project)
       iterationRepository.save(newIteration)
       iterationRepository.list(projectId = project.id)
       storyRepository.list(export.project.id)
       storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
       storyRepository.create(newStory)
-      epicRepository.list(Epic::projectId to export.project.id)
+      epicRepository.list(Epic::projectId to export.project.id) // TODO: introduce list(Id<Project>), like storiesRepository
       epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
       epicRepository.create(newEpic)
       userRepository.create(projectMemberUserNew.user)
