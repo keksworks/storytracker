@@ -13,7 +13,7 @@ export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<s
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.GitHubAuthor
-export interface GitHubAuthor {email?: string}
+export interface GitHubAuthor {email?: Email; name?: string}
 // class stories.GitHubCommit
 export interface GitHubCommit {added?: Array<string>; author?: GitHubAuthor; id: string; message: string; modified?: Array<string>; removed?: Array<string>; timestamp?: string; url?: string}
 // class stories.GitHubPushPayload

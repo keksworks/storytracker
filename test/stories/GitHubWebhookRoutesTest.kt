@@ -52,9 +52,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     every { storyRepository.get(story.id) } returns story
     every { userRepository.by(User::email eq Email("dev@example.com")) } returns null
 
-    handle(pushPayload(defaultCommit.copy(
-      author = GitHubAuthor(email = "dev@example.com"),
-    )))
+    handle(pushPayload(defaultCommit.copy(author = GitHubAuthor(email = Email("dev@example.com")))))
 
     verify {
       storyRepository.save(match { savedStory ->
@@ -70,9 +68,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     every { storyRepository.get(story.id) } returns story
     every { userRepository.by(User::email eq user.email) } returns user
 
-    handle(pushPayload(defaultCommit.copy(
-      author = GitHubAuthor(email = user.email.value),
-    )))
+    handle(pushPayload(defaultCommit.copy(author = GitHubAuthor(email = user.email))))
 
     verify {
       storyRepository.save(match { it.comments[0].createdBy == user.id })
@@ -84,7 +80,7 @@ class GitHubWebhookRoutesTest: BaseMocks() {
     every { userRepository.by(User::email eq Email("nobody@example.com")) } returns null
 
     handle(pushPayload(defaultCommit.copy(
-      author = GitHubAuthor(email = "nobody@example.com"),
+      author = GitHubAuthor(email = Email("nobody@example.com")),
     )))
 
     verify {
@@ -101,11 +97,9 @@ class GitHubWebhookRoutesTest: BaseMocks() {
   }
 
   @Test fun `ignores commit with non-existent story id`() {
-    every { storyRepository.get(Id<Story>(99999)) } throws RuntimeException("Not found")
+    every { storyRepository.get(Id(99999)) } throws NoSuchElementException()
 
-    handle(pushPayload(defaultCommit.copy(
-      message = "#99999 Fix something",
-    )))
+    handle(pushPayload(defaultCommit.copy(message = "#99999 Fix something")))
 
     verify(exactly = 0) { storyRepository.save(any()) }
   }
