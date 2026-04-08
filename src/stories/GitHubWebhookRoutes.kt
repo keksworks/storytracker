@@ -8,6 +8,7 @@ import klite.annotations.POST
 import klite.annotations.PathParam
 import klite.jdbc.eq
 import klite.json.JsonMapper
+import users.User
 import users.UserRepository
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -40,7 +41,7 @@ class GitHubWebhookRoutes(
       val storyId = match.groupValues[1].toLongOrNull() ?: return@forEach
       val commitSubject = match.groupValues[2].lineSequence().firstOrNull()?.take(200) ?: message.take(200)
 
-      val story = try { storyRepository.get(Id(storyId)) } catch (_: Exception) {
+      var story = try { storyRepository.get(Id(storyId)) } catch (_: Exception) {
         return@forEach log.warn("Commit $commitSubject references non-existent story #$storyId, skipping")
       }
       if (story.projectId != id) return@forEach log.warn("Story #$storyId is not of the expected project ${id}")
@@ -53,14 +54,14 @@ class GitHubWebhookRoutes(
         $fileStats
       """.trimIndent()
 
-      val createdBy = commit.author?.email?.let { email ->
-        userRepository.by(users.User::email eq Email(email))?.id
+      val createdBy = commit.author?.let {
+        (userRepository.by(User::email eq it.email) ?: userRepository.by(User::name eq it.name))?.id
       } ?: story.createdBy
 
       val comment = Story.Comment(text, createdBy = createdBy)
-      val updatedStory = story.copy(comments = story.comments + comment)
-      storyRepository.save(updatedStory)
-      storyEvents.sendUpdates(id, updatedStory)
+      story = story.copy(comments = story.comments + comment)
+      storyRepository.save(story)
+      storyEvents.sendUpdates(id, story)
     }
   }
 
@@ -82,12 +83,12 @@ class GitHubWebhookRoutes(
     val modified = commit.modified?.size ?: 0
     val totalFiles = added + removed + modified
     if (totalFiles == 0) return ""
-    
+
     val parts = mutableListOf<String>()
     if (added > 0) parts.add("+${added} file${if (added != 1) "s" else ""}")
     if (removed > 0) parts.add("-${removed} file${if (removed != 1) "s" else ""}")
     if (modified > 0) parts.add("~${modified} file${if (modified != 1) "s" else ""}")
-    
+
     return "📄 ${parts.joinToString(" ")}"
   }
 
@@ -117,5 +118,6 @@ data class GitHubCommit(
 )
 
 data class GitHubAuthor(
-  val email: String? = null,
+  val email: Email? = null,
+  val name: String? = null
 )
