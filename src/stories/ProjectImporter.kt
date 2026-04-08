@@ -20,7 +20,7 @@ class ProjectImporter(
   fun import(export: ProjectExport, user: User): Project {
     val existingProject = runCatching { projectRepository.get(export.project.id) }.getOrNull()
 
-    handleRole (user, existingProject)
+    handleRole(user, existingProject)
     importNewProject(export, user, existingProject)
     importIterations(export)
     importEpics(export)

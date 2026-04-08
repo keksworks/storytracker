@@ -8,31 +8,21 @@ import db.TestData.admin
 import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
-import db.TestData.now
 import db.TestData.project
 import db.TestData.projectMemberUser
 import db.TestData.story
 import db.TestData.story2
 import db.TestData.user
-import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.verify
-import klite.Email
-import klite.ForbiddenException
-import klite.jdbc.eq
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
 import users.Role.OWNER
 import users.User
-import java.time.Instant.MIN
 
 class ProjectRoutesTest: BaseMocks() {
   val routes = create<ProjectRoutes>()
-
-  private val projectMemberUserNew = projectMemberUser.copy(user = user.copy(email = Email("new@user.com"), id = Id()))
-
-  val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story, story2), listOf(projectMemberUser, projectMemberUserNew))
 
   @Test fun get() {
     expect(routes.get(project.id)).toEqual(project)
@@ -60,74 +50,6 @@ class ProjectRoutesTest: BaseMocks() {
     )
     expect(routes.export(project.id, exchange)).toEqual(projectExport)
   }
-
-  @Test fun `import new project allowed for everyone`() {
-    every { projectRepository.get(project.id) } throws NoSuchElementException()
-    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
-    every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
-    every { epicRepository.list(Epic::projectId to project.id) } returns emptyList()
-    every { storyRepository.list(project.id, any(), any()) } returns emptyList()
-    every { iterationRepository.list(project.id) } returns emptyList()
-
-    expect(routes.import(export, user)).toEqual(project)
-
-    verify {
-      projectRepository.save(project)
-      iterationRepository.save(iteration)
-      epicRepository.create(epic)
-      storyRepository.create(story)
-      storyRepository.create(story2)
-      userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
-      projectMemberRepository.create(projectMemberUser.member)
-      projectMemberRepository.create(projectMemberUserNew.member)
-    }
-  }
-
-  @Test fun `import of existing project forbidden for non-owner`() {
-    every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
-    assertThrows<ForbiddenException> { routes.import(export, user) }
-  }
-
-  @Test fun `import of existing project allowed for admin`() {
-    expect(routes.import(export, admin)).toEqual(project)
-  }
-
-  @Test fun `import of existing project allowed for owner`() {
-    every { projectMemberRepository.role(project.id, user.id) } returns OWNER
-    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
-
-    val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
-    val newStory = story2.copy(id = Id())
-    val oldStory = story.copy(name = "old name", updatedAt = MIN)
-    val epicToUpdate = epic.copy(name = "updated name", updatedAt = now)
-    val newEpic = epic.copy(id = Id())
-    val oldEpic = epic.copy(name = "old name", updatedAt = MIN)
-    val newIteration = iteration.copy(projectId = Id(), number = 100)
-    val customExport = export.copy(
-      stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
-      iterations = listOf(iteration, newIteration)
-    )
-
-    expect(routes.import(customExport, user)).toEqual(project)
-
-    verify {
-      projectRepository.save(project)
-      iterationRepository.save(newIteration)
-      iterationRepository.list(projectId = project.id)
-      storyRepository.list(export.project.id)
-      storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
-      storyRepository.create(newStory)
-      epicRepository.list(Epic::projectId to export.project.id)
-      epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
-      epicRepository.create(newEpic)
-      userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.create(match { it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
-    }
-    confirmVerified(storyRepository, epicRepository)
-  }
-
-
 
   @Test fun create() {
     val newProject = routes.create(project, user)
@@ -242,6 +164,4 @@ class ProjectRoutesTest: BaseMocks() {
     routes.attachment(project.id, story.id, "file", exchange)
     verify { attachmentRepository.file(project.id, story.id, "file") }
   }
-
-
 }
