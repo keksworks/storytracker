@@ -1,10 +1,9 @@
 package stories
 
 import db.*
-import klite.jdbc.UpdatableEntity
-import klite.jdbc.create
-import klite.jdbc.delete
-import klite.jdbc.nowSec
+import db.CrudRepository
+import db.Entity
+import klite.jdbc.*
 import klite.toValues
 import stories.Story.Comment
 import users.User
@@ -28,4 +27,8 @@ class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
   override fun Epic.persister() = toValues(Epic::comments to jsonb(comments))
   override fun ResultSet.mapper() = create(Epic::comments to getJson<List<Comment>>("comments"))
   fun delete(id: Id<Epic>) = db.delete(table, Epic::id to id)
+
+  fun list(projectId: Id<Project>) : List<Epic> = db.select(table,
+    Epic::projectId to projectId,
+    suffix = defaultOrder) { mapper() }
 }

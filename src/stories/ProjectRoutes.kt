@@ -105,7 +105,7 @@ class ProjectRoutes(
   }
 
   @GET("/:id/epics") fun epics(@PathParam id: Id<Project>): List<Epic> =
-    epicRepository.list(Epic::projectId to id)
+    epicRepository.list(id)
 
   @POST("/:id/epics") @Access(ADMIN, OWNER, MEMBER)
   fun saveEpic(@PathParam id: Id<Project>, epic: Epic): Epic {

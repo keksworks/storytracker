@@ -71,7 +71,7 @@ abstract class BaseMocks {
     }
 
     epicRepository.apply {
-      every { list(Epic::projectId to project.id) } returns listOf(epic)
+      every { list(project.id) } returns listOf(epic)
       every { epicRepository.get(epic.id) } returns epic
     }
 

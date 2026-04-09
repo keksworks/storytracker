@@ -52,7 +52,7 @@ class ProjectImporter(
   }
 
   private fun importEpics(export: ProjectExport) {
-    val existingEpics = epicRepository.list(Epic::projectId to export.project.id).associateBy { it.id }
+    val existingEpics = epicRepository.list(export.project.id).associateBy { it.id }
     export.epics.forEach { epic ->
       val existingEpic = existingEpics[epic.id]
       if (existingEpic == null) epicRepository.create(epic)

@@ -16,9 +16,10 @@ class EpicRepositoryTest: DBTest() {
     ProjectRepository(db).save(project)
     repository.save(epic)
     expect(repository.get(epic.id)).toEqual(epic)
-    expect(repository.list(Epic::projectId to project.id)).toContainExactly(epic)
+    expect(repository.list(project.id)).toContainExactly(epic)
 
     repository.delete(epic.id)
-    expect(repository.list(Epic::projectId to project.id)).toBeEmpty()
+    expect(repository.list(project.id)).toBeEmpty()
   }
+
 }

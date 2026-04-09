@@ -37,7 +37,7 @@ class ProjectImporterTestTest: BaseMocks() {
     every { projectRepository.get(project.id) } throws NoSuchElementException()
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
     every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
-    every { epicRepository.list(Epic::projectId to project.id) } returns emptyList()
+    every { epicRepository.list(project.id) } returns emptyList()
     every { storyRepository.list(project.id, any(), any()) } returns emptyList()
     every { iterationRepository.list(project.id) } returns emptyList()
 
@@ -90,7 +90,7 @@ class ProjectImporterTestTest: BaseMocks() {
       storyRepository.list(export.project.id)
       storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
       storyRepository.create(newStory)
-      epicRepository.list(Epic::projectId to export.project.id) // TODO: introduce list(Id<Project>), like storiesRepository
+      epicRepository.list(export.project.id)
       epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
       epicRepository.create(newEpic)
       userRepository.create(projectMemberUserNew.user)
