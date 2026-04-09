@@ -35,24 +35,30 @@ class ProjectImporterTest: BaseMocks() {
   val export = ProjectExport(project, listOf(iteration), listOf(epic), listOf(story, story2), listOf(projectMemberUser, projectMemberUserNew))
 
   @Test fun `import new project allowed for everyone`() {
+    val existingUserInSystem = user.copy(id = Id())
+    val updatedStory = story.copy(assignedTo = user.id, createdBy = user.id)
+    val updatedStory2 = story.copy(assignedTo = user.id, createdBy = user.id)
+    val updatedEpic = epic.copy(createdBy = user.id)
+    val testExport = export.copy(epics = listOf(updatedEpic), stories = listOf(updatedStory))
+
     every { projectRepository.get(project.id) } throws NoSuchElementException()
-    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
+    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns existingUserInSystem
     every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
     every { epicRepository.list(project.id) } returns emptyList()
     every { storyRepository.list(project.id, any(), any()) } returns emptyList()
     every { iterationRepository.list(project.id) } returns emptyList()
 
-    expect(routes.import(export, user)).toEqual(project)
+    expect(routes.import(testExport, user)).toEqual(project)
 
     verify {
       projectRepository.create(project)
       projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
-      projectMemberRepository.create(projectMemberUser.member)
-      projectMemberRepository.create(projectMemberUserNew.member)
+      projectMemberRepository.create(projectMemberUser.member.copy(userId = existingUserInSystem.id))
+      projectMemberRepository.create(projectMemberUserNew.member.copy(userId = projectMemberUserNew.user.id))
       iterationRepository.save(iteration)
-      epicRepository.create(epic)
-      storyRepository.create(story)
-      storyRepository.create(story2)
+      epicRepository.create(updatedEpic.copy(createdBy = existingUserInSystem.id))
+      storyRepository.create(updatedStory.copy(assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
+      storyRepository.create(updatedStory2.copy(assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
       userRepository.create(projectMemberUserNew.user)
     }
   }
@@ -67,35 +73,38 @@ class ProjectImporterTest: BaseMocks() {
   }
 
   @Test fun `import of existing project allowed for owner`() {
-    every { projectMemberRepository.role(project.id, user.id) } returns OWNER
-    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns projectMemberUser.user
+    val existingUserInSystem = projectMemberUser.user.copy(id = Id())
 
-    val storyToUpdate = story.copy(name = "updated name", updatedAt = now)
-    val newStory = story2.copy(id = Id())
-    val oldStory = story.copy(name = "old name", updatedAt = MIN)
-    val epicToUpdate = epic.copy(name = "updated name", updatedAt = now)
-    val newEpic = epic.copy(id = Id())
-    val oldEpic = epic.copy(name = "old name", updatedAt = MIN)
+    every { projectMemberRepository.role(project.id, user.id) } returns OWNER
+    every { userRepository.by(User::email eq projectMemberUser.user.email) } returns existingUserInSystem
+
+    val storyToUpdate = story.copy(name = "updated name", updatedAt = now, assignedTo = user.id, createdBy = user.id)
+    val newStory = story2.copy(id = Id(), assignedTo = user.id, createdBy = user.id)
+    val oldStory = story.copy(name = "old name", updatedAt = MIN, assignedTo = user.id, createdBy = user.id)
+    val epicToUpdate = epic.copy(name = "updated name", updatedAt = now, createdBy = user.id)
+    val newEpic = epic.copy(id = Id(), createdBy = user.id)
+    val oldEpic = epic.copy(name = "old name", updatedAt = MIN, createdBy = user.id)
     val newIteration = iteration.copy(projectId = Id(), number = 100)
-    val customExport = export.copy(
+    val testExport = export.copy(
       stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
       iterations = listOf(iteration, newIteration)
     )
 
-    expect(routes.import(customExport, user)).toEqual(project)
+    expect(routes.import(testExport, user)).toEqual(project)
 
     verify(exactly = 0) { projectRepository.save(any()) }
     verify {
       userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.create(match { it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
+      projectMemberRepository.create(projectMemberUser.member.copy(userId = existingUserInSystem.id))
+      projectMemberRepository.create(projectMemberUserNew.member.copy(userId = projectMemberUserNew.user.id))
       iterationRepository.save(newIteration)
       iterationRepository.list(projectId = project.id)
       storyRepository.list(export.project.id)
-      storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt))
-      storyRepository.create(newStory)
+      storyRepository.save(storyToUpdate.copy(updatedAt = story.updatedAt,assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
+      storyRepository.create(newStory.copy(assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
       epicRepository.list(export.project.id)
-      epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
-      epicRepository.create(newEpic)
+      epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt, createdBy = existingUserInSystem.id))
+      epicRepository.create(newEpic.copy(createdBy = existingUserInSystem.id))
     }
     confirmVerified(storyRepository, epicRepository)
   }

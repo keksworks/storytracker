@@ -22,7 +22,7 @@ class ProjectImporter(
     saveOrCreateProject(export, user)
     val userIdMap = importMembers(export)
     importIterations(export)
-    importEpics(export)
+    importEpics(export, userIdMap)
     importStories(export, userIdMap)
 
     return export.project
@@ -65,12 +65,13 @@ class ProjectImporter(
     }
   }
 
-  private fun importEpics(export: ProjectExport) {
+  private fun importEpics(export: ProjectExport, userIdMap: Map<Id<User>, Id<User>>) {
     val existingEpics = epicRepository.list(export.project.id).associateBy { it.id }
     export.epics.forEach { epic ->
       val existingEpic = existingEpics[epic.id]
-      if (existingEpic == null) epicRepository.create(epic)
-      else if (epic.isNewer(existingEpic)) epicRepository.save(epic.copy(updatedAt = existingEpics[epic.id]?.updatedAt))
+      val updatedEpic = epic.copy(createdBy = userIdMap[epic.createdBy] ?: epic.createdBy)
+      if (existingEpic == null) epicRepository.create(updatedEpic)
+      else if (epic.isNewer(existingEpic)) epicRepository.save(updatedEpic.copy(updatedAt = existingEpics[epic.id]?.updatedAt))
     }
   }
 
