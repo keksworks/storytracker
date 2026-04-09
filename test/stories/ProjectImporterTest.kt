@@ -27,7 +27,7 @@ import users.Role.OWNER
 import users.User
 import java.time.Instant.MIN
 
-class ProjectImporterTestTest: BaseMocks() {
+class ProjectImporterTest: BaseMocks() {
   val routes = create<ProjectImporter>()
 
   private val projectMemberUserNew = projectMemberUser.copy(user = user.copy(email = Email("new@user.com"), id = Id()))
@@ -46,14 +46,14 @@ class ProjectImporterTestTest: BaseMocks() {
 
     verify {
       projectRepository.create(project)
+      projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
+      projectMemberRepository.create(projectMemberUser.member)
+      projectMemberRepository.create(projectMemberUserNew.member)
       iterationRepository.save(iteration)
       epicRepository.create(epic)
       storyRepository.create(story)
       storyRepository.create(story2)
       userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.save(match { it.userId == user.id && it.role == OWNER })
-      projectMemberRepository.create(projectMemberUser.member)
-      projectMemberRepository.create(projectMemberUserNew.member)
     }
   }
 
@@ -86,6 +86,8 @@ class ProjectImporterTestTest: BaseMocks() {
 
     verify(exactly = 0) { projectRepository.save(any()) }
     verify {
+      userRepository.create(projectMemberUserNew.user)
+      projectMemberRepository.create(match { it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
       iterationRepository.save(newIteration)
       iterationRepository.list(projectId = project.id)
       storyRepository.list(export.project.id)
@@ -94,8 +96,6 @@ class ProjectImporterTestTest: BaseMocks() {
       epicRepository.list(export.project.id)
       epicRepository.save(epicToUpdate.copy(updatedAt = epic.updatedAt))
       epicRepository.create(newEpic)
-      userRepository.create(projectMemberUserNew.user)
-      projectMemberRepository.create(match { it.userId == projectMemberUserNew.user.id && it.projectId == project.id })
     }
     confirmVerified(storyRepository, epicRepository)
   }

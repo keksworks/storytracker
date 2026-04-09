@@ -19,10 +19,10 @@ class ProjectImporter(
 ) {
   fun import(export: ProjectExport, user: User): Project {
     saveOrCreateProject(export, user)
+    importMembers(export)
     importIterations(export)
     importEpics(export)
     importStories(export)
-    importMembers(export)
 
     return export.project
   }
@@ -41,6 +41,17 @@ class ProjectImporter(
   }
 
   private fun UpdatableEntity.isNewer(other: UpdatableEntity) = (updatedAt ?: MIN) > (other.updatedAt ?: MIN)
+
+  private fun importMembers(export: ProjectExport) {
+    val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
+    export.memberUsers.forEach { memberUser ->
+      val user = userRepository.by(User::email eq memberUser.user.email) ?:
+        memberUser.user.copy(isAdmin = false).also { userRepository.create(it) }
+
+      val member = existingMembers.find { it.member.userId == user.id }
+      if (member == null) projectMemberRepository.create(memberUser.member.copy(userId = user.id))
+    }
+  }
 
   // TODO: use batch insert/update for speed
   private fun importIterations(export: ProjectExport) {
@@ -65,17 +76,6 @@ class ProjectImporter(
       val exitingStory = existingStories[story.id]
       if (exitingStory == null) storyRepository.create(story)
       else if (story.isNewer(exitingStory)) storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt))
-    }
-  }
-
-  private fun importMembers(export: ProjectExport) {
-    val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
-    export.memberUsers.forEach { memberUser ->
-      val user = userRepository.by(User::email eq memberUser.user.email) ?: memberUser.user.copy(isAdmin = false)
-        .also { userRepository.create(it) }
-
-      val member = existingMembers.find { it.member.userId == user.id }
-      if (member == null) projectMemberRepository.create(memberUser.member.copy(userId = user.id))
     }
   }
 }
