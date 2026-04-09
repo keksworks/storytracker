@@ -1,5 +1,6 @@
 package stories
 
+import db.Id
 import klite.ForbiddenException
 import klite.jdbc.UpdatableEntity
 import klite.jdbc.eq
@@ -19,10 +20,10 @@ class ProjectImporter(
 ) {
   fun import(export: ProjectExport, user: User): Project {
     saveOrCreateProject(export, user)
-    importMembers(export)
+    val userIdMap = importMembers(export)
     importIterations(export)
     importEpics(export)
-    importStories(export)
+    importStories(export, userIdMap)
 
     return export.project
   }
@@ -42,15 +43,18 @@ class ProjectImporter(
 
   private fun UpdatableEntity.isNewer(other: UpdatableEntity) = (updatedAt ?: MIN) > (other.updatedAt ?: MIN)
 
-  private fun importMembers(export: ProjectExport) {
+  private fun importMembers(export: ProjectExport): Map<Id<User>, Id<User>> {
+    val userIdMap = mutableMapOf<Id<User>, Id<User>>()
+
     val existingMembers = projectMemberRepository.listWithUsers(export.project.id)
-    export.memberUsers.forEach { memberUser ->
-      val user = userRepository.by(User::email eq memberUser.user.email) ?:
-        memberUser.user.copy(isAdmin = false).also { userRepository.create(it) }
+    export.memberUsers.forEach { importedMember ->
+      val user = userRepository.by(User::email eq importedMember.user.email)?.also { userIdMap[importedMember.user.id] = it.id } ?:
+        importedMember.user.copy(isAdmin = false).also { userRepository.create(it) }
 
       val member = existingMembers.find { it.member.userId == user.id }
-      if (member == null) projectMemberRepository.create(memberUser.member.copy(userId = user.id))
+      if (member == null) projectMemberRepository.create(importedMember.member.copy(userId = user.id))
     }
+    return userIdMap
   }
 
   // TODO: use batch insert/update for speed
@@ -70,12 +74,13 @@ class ProjectImporter(
     }
   }
 
- private fun importStories(export: ProjectExport) {
+ private fun importStories(export: ProjectExport, userIdMap: Map<Id<User>, Id<User>>) {
     val existingStories = storyRepository.list(export.project.id).associateBy { it.id }
     export.stories.forEach { story ->
       val exitingStory = existingStories[story.id]
-      if (exitingStory == null) storyRepository.create(story)
-      else if (story.isNewer(exitingStory)) storyRepository.save(story.copy(updatedAt = exitingStory.updatedAt))
+      val updatedStory = story.copy(assignedTo = userIdMap[story.assignedTo] ?: story.assignedTo, createdBy = userIdMap[story.createdBy] ?: story.createdBy)
+      if (exitingStory == null) storyRepository.create(updatedStory)
+      else if (story.isNewer(exitingStory)) storyRepository.save(updatedStory.copy(updatedAt = exitingStory.updatedAt))
     }
   }
 }
