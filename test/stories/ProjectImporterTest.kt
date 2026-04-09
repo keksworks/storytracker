@@ -77,6 +77,9 @@ class ProjectImporterTest: BaseMocks() {
 
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns existingUserInSystem
+    every { storyRepository.list(export.project.id) } returns listOf(story.copy(assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
+    every { epicRepository.list(export.project.id) } returns listOf(epic.copy(createdBy = existingUserInSystem.id))
+
 
     val storyToUpdate = story.copy(name = "updated name", updatedAt = now, assignedTo = user.id, createdBy = user.id)
     val newStory = story2.copy(id = Id(), assignedTo = user.id, createdBy = user.id)
