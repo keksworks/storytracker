@@ -1,7 +1,6 @@
 package stories
 
 import klite.ForbiddenException
-import klite.i18n.Lang
 import klite.jdbc.UpdatableEntity
 import klite.jdbc.eq
 import users.Role.ADMIN
@@ -37,7 +36,7 @@ class ProjectImporter(
     } else {
       if (export.project.isNewer(existingProject)) projectRepository.save(export.project.copy(updatedAt = existingProject.updatedAt))
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
-      if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException(Lang.translate(user.lang, "importForbidden"))
+      if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException("projects.importForbidden")
     }
   }
 

@@ -1,6 +1,8 @@
 package stories
 
+import ch.tutteli.atrium.api.fluent.en_GB.messageToContain
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.toThrow
 import ch.tutteli.atrium.api.verbs.expect
 import db.BaseMocks
 import db.Id
@@ -20,7 +22,6 @@ import klite.Email
 import klite.ForbiddenException
 import klite.jdbc.eq
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
 import users.Role.OWNER
 import users.User
@@ -58,7 +59,7 @@ class ProjectImporterTestTest: BaseMocks() {
 
   @Test fun `import of existing project forbidden for non-owner`() {
     every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
-    assertThrows<ForbiddenException> { routes.import(export, user) }
+    expect { routes.import(export, user) }.toThrow<ForbiddenException>().messageToContain("projects.importForbidden")
   }
 
   @Test fun `import of existing project allowed for admin`() {
