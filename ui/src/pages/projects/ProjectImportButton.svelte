@@ -1,8 +1,11 @@
 <script lang="ts">
   import {t} from 'src/i18n'
   import api from 'src/api/api'
-  import type {Project} from 'src/api/types'
+  import type {Project, ProjectExport} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
+  import {navigate} from '@keksworks/svelte-tiny-router'
+  import {showToast} from 'src/stores/toasts'
+  import {replaceValues} from '@codeborne/i18n-json'
 
   export let projects: Project[]
 
@@ -12,19 +15,20 @@
      const file = (event.target as HTMLInputElement).files?.[0]
      if (!file) return
      const text = await file.text()
-     const data = JSON.parse(text)
+     const data = JSON.parse(text) as ProjectExport
 
      const existing = projects.find(p => p.id == data.project.id)
      if (existing) {
-       const confirmMessage = t.projects.updateConfirmation.replace('{0}', existing.name)
-       if (!confirm(confirmMessage)) return
+       if (!confirm(replaceValues(t.projects.importExistsConfirm, existing))) {
+         fileInput.value = ''
+         return
+       }
      }
 
      await api.post('projects/import', data)
-     location.reload()
+     showToast(replaceValues(t.projects.importSuccess, data.project))
+     navigate('/projects/' + data.project.id)
   }
-
-
 </script>
 
 <input type="file" accept=".json" hidden bind:this={fileInput} onchange={handleFileChange}/>

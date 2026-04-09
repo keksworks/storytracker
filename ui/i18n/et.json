@@ -140,7 +140,8 @@
     "export": "Ekspordi",
     "import": "Impordi projekt",
     "importForbidden": "Sul puuduvad õigused projekti ülekirjutamiseks",
-    "updateConfirmation": "See projekt {0} juba olemas, kas oled kindel, et soovid selle üle kirjutada?"
+    "importSuccess": "Project {name} sai imporditud",
+    "importExistsConfirm": "Projekt {name} on juba olemas, kas soovid selle uuendada?"
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",

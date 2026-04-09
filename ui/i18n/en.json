@@ -118,11 +118,12 @@
     "export": "Export",
     "import": "Import project",
     "importForbidden": "You do not have permission to overwrite this project",
+    "importSuccess": "Project {name} has been imported",
+    "importExistsConfirm": "The project {name} already exists, are you sure you want to update it? ",
     "webhookUrl": "GitHub webhook URL",
     "webhookSecret": "Webhook secret",
     "webhookInstructions": "Set this URL as a webhook in your GitHub repository settings (Settings → Webhooks → Add webhook). Use \"application/json\" content type. Commits with messages starting with \"#storyId\" will be added as comments.",
-    "webhookCopied": "Copied to clipboard",
-    "updateConfirmation": "This project already exists, are you sure you want to overwrite it? "
+    "webhookCopied": "Copied to clipboard"
   },
   "weekDays": {
     "MONDAY": "Monday",
