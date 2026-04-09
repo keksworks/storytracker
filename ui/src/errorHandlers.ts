@@ -24,7 +24,7 @@ export function handleUnhandledRejection(event: PromiseRejectionEvent) {
   if (message) message = _(message)
   else message = t.errors.technical + ': ' + e
   showToast(message, {type: ToastType.ERROR})
-  if (e?.statusCode === 401 || e?.statusCode === 403) setTimeout(() => navigate(''), 1000)
+  if (e?.statusCode === 401 || e?.statusCode === 403) setTimeout(() => navigate('/'), 1000)
 }
 
 export function initErrorHandlers() {
