@@ -10,7 +10,7 @@
   let show = false
 </script>
 
-<Button icon="user" on:click={() => show = true}><span class="max-sm:hidden">{t.projects.members}</span></Button>
+<Button icon="user" label={t.projects.members} hideLabelOnMobile on:click={() => show = true}/>
 
 <Modal bind:show title={t.projects.members} wide>
   <ProjectMembers {project}/>

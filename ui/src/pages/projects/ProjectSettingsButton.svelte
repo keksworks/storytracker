@@ -27,8 +27,7 @@
   }
 </script>
 
-<Button icon="settings-filled" on:click={() => show = true}><span class="max-sm:hidden">{label}</span></Button>
-
+<Button icon="settings-filled" {label} hideLabelOnMobile on:click={() => show = true}/>
 <Modal bind:show title={t.projects.project}>
   <Form {submit}>
     <FormField label={t.projects.name} bind:value={project.name} autofocus={isNew}/>
