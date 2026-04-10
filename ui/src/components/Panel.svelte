@@ -33,6 +33,6 @@
   }
 
   .panel-title {
-    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-stone-100 border-b flex justify-between items-center;
+    @apply py-2 px-3 text-lg font-semibold sticky top-0 bg-stone-100 border-b flex justify-between items-center z-10;
   }
 </style>
