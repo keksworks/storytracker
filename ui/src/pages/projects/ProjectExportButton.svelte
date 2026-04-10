@@ -7,4 +7,4 @@
   export let project: ProjectContext
 </script>
 
-<a href="/api/projects/{project.id}/export" class="btn secondary solid"><Icon name = "link-external"/><span class ="ml-2">{t.projects.export}</span></a>
+<a href="/api/projects/{project.id}/export" class="btn secondary solid"><Icon name = "link-external"/><span class ="ml-2 max-sm:hidden">{t.projects.export}</span></a>
