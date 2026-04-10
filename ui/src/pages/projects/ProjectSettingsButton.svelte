@@ -27,7 +27,7 @@
   }
 </script>
 
-<Button {label} on:click={() => show = true}/>
+<Button {label} icon="settings-filled" on:click={() => show = true}/>
 
 <Modal bind:show title={t.projects.project}>
   <Form {submit}>
