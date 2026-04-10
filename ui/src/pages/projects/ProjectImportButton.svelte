@@ -32,4 +32,4 @@
 </script>
 
 <input type="file" accept=".json" hidden bind:this={fileInput} onchange={handleFileChange}/>
-<Button label={t.projects.import} onclick={() => fileInput.click()}/>
+<Button label={t.projects.import} icon="import" onclick={() => fileInput.click()}/>
