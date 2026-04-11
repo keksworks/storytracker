@@ -166,10 +166,11 @@
   {#if open}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">
-        <div class="flex items-center">
+        <div class="flex items-center gap-3">
           {#if story.id}
             <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
           {/if}
+          <button on:click|stopPropagation={copyToClipboard} data-copy-value="{window.location.origin}/projects/{story.projectId}#{story.id}">{t.general.copyLink}</button>
           <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(story)}/>
         </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">

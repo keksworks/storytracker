@@ -51,6 +51,7 @@
     "files": "Files",
     "copied": "Copied",
     "copy": "Copy",
+    "copyLink" : "Copy link",
     "created": "Created"
   },
   "login": {
