@@ -68,7 +68,7 @@
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    onDrag({id: parseInt(e.dataTransfer?.getData('id')!), status})
+    onDrag({id: parseInt(e.dataTransfer?.getData('text/plain')!), status})
     isDropTarget = false
   }
 </script>
