@@ -13,6 +13,8 @@ import klite.jdbc.gt
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import stories.Story.Status.DELETED
 import users.Role
 import users.Role.*
@@ -108,17 +110,19 @@ class ProjectRoutes(
     epicRepository.list(id)
 
   @POST("/:id/epics") @Access(ADMIN, OWNER, MEMBER)
-  fun saveEpic(@PathParam id: Id<Project>, epic: Epic): Epic {
+  fun saveEpic(@PathParam id: Id<Project>, epic: Epic, @HeaderParam requesterId: String): Epic {
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.save(epic)
+    storyEvents.sendEpicUpdates(id, epic, requesterId)
     return epic
   }
 
   @DELETE("/:id/epics/:epicId") @Access(ADMIN, OWNER, MEMBER)
-  fun deleteEpic(@PathParam id: Id<Project>, @PathParam epicId: Id<Epic>) {
+  fun deleteEpic(@PathParam id: Id<Project>, @PathParam epicId: Id<Epic>, @HeaderParam requesterId: String) {
     val epic = epicRepository.get(epicId)
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.delete(epicId)
+    storyEvents.sendEpicUpdates(id, epic.copy(deleted = true), requesterId)
   }
 
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
@@ -142,15 +146,25 @@ class ProjectRoutes(
 
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val flow = storyEvents.flow(id)
+    val storyFlow = storyEvents.flow(id)
+    val epicFlow = storyEvents.epicFlow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { story -> e.send(Event(story, "story", id = story.updatedAt)) }
+      val epicUpdatedSince = epicRepository.list(Epic::projectId to id, Epic::updatedAt gt after)
+      epicUpdatedSince.forEach { epic -> e.send(Event(epic, "epic", id = epic.updatedAt)) }
     }
-    flow.collect { (story, reqId) ->
-      if (reqId != requesterId) e.send(Event(story, "story", id = story.updatedAt))
+    coroutineScope {
+      launch {
+        epicFlow.collect { (epic, reqId) ->
+          if (reqId != requesterId) e.send(Event(epic, if (epic.deleted) "epic-deleted" else "epic", id = epic.updatedAt))
+        }
+      }
+      storyFlow.collect { (story, reqId) ->
+        if (reqId != requesterId) e.send(Event(story, "story", id = story.updatedAt))
+      }
     }
   }
 

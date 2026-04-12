@@ -113,13 +113,13 @@ class ProjectRoutesTest: BaseMocks() {
   }
 
   @Test fun saveEpic() {
-    val result = routes.saveEpic(project.id, epic)
+    val result = routes.saveEpic(project.id, epic, "user 123")
     expect(result).toEqual(epic)
     verify { epicRepository.save(result) }
   }
 
   @Test fun deleteEpic() {
-    routes.deleteEpic(project.id, epic.id)
+    routes.deleteEpic(project.id, epic.id, "user 123")
     verify { epicRepository.delete(epic.id) }
   }
 

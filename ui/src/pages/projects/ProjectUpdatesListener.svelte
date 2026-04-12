@@ -1,10 +1,11 @@
 <script lang="ts">
-  import {type Project, type Story, StoryStatus} from 'src/api/types'
+  import {type Epic, type Project, type Story, StoryStatus} from 'src/api/types'
   import {onMount} from 'svelte'
   import {requesterId} from 'src/api/api'
 
   export let project: Project
   export let stories: Story[]
+  export let epics: Epic[]
   export let onStoryUpdated: (story: Story) => void = () => {}
 
   let updates: EventSource
@@ -37,6 +38,25 @@
       stories.splice(index, 0, story)
       onStoryUpdated(story)
       stories = stories
+    })
+    updates.addEventListener('epic', e => {
+      const epic = JSON.parse(e.data) as Epic
+      const index = epics.findIndex(ep => ep.id == epic.id)
+      if (index >= 0) {
+        if (epics[index].updatedAt === epic.updatedAt) return
+        epics[index] = epic
+      } else {
+        epics.push(epic)
+      }
+      epics = epics
+    })
+    updates.addEventListener('epic-deleted', e => {
+      const epic = JSON.parse(e.data) as Epic
+      const index = epics.findIndex(ep => ep.id == epic.id)
+      if (index >= 0) {
+        epics.splice(index, 1)
+        epics = epics
+      }
     })
   }
 

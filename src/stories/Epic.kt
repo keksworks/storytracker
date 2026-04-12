@@ -21,10 +21,11 @@ data class Epic(
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
+  val deleted: Boolean = false,
 ): Entity<Epic>, UpdatableEntity
 
 class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
-  override fun Epic.persister() = toValues(Epic::comments to jsonb(comments))
+  override fun Epic.persister() = toValues(Epic::comments to jsonb(comments), skip = listOf(Epic::deleted))
   override fun ResultSet.mapper() = create(Epic::comments to getJson<List<Comment>>("comments"))
   fun delete(id: Id<Epic>) = db.delete(table, Epic::id to id)
 
