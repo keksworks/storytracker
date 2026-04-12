@@ -115,6 +115,14 @@
       "agileFirst": {
         "title": "Agile-Esimene Disain",
         "desc": "Ületamatu nähtavus ja lihtsus päris Agile meeskondadele"
+      },
+      "epics": {
+        "title": "Eepikad",
+        "desc": "Grupeeri seotud lood eepikuteks kõrgetasemeliseks planeerimiseks ja jälgimiseks"
+      },
+      "githubIntegration": {
+        "title": "GitHubi Push-integratsioon",
+        "desc": "Seo commit-id lugudega automaatselt GitHubi veebikonksu kaudu - maini loo ID-d oma commit-sõnumis"
       }
     }
   },

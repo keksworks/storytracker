@@ -58,6 +58,18 @@
           <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.agileFirst.title}</h3>
           <p class="text-sm text-stone-500">{t.home.features.agileFirst.desc}</p>
         </div>
+
+        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
+          <div class="text-3xl mb-3">🗂️</div>
+          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.epics.title}</h3>
+          <p class="text-sm text-stone-500">{t.home.features.epics.desc}</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
+          <div class="text-3xl mb-3">🔗</div>
+          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.githubIntegration.title}</h3>
+          <p class="text-sm text-stone-500">{t.home.features.githubIntegration.desc}</p>
+        </div>
       </div>
     </div>
   </section>
