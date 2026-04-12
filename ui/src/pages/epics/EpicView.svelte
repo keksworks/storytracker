@@ -36,7 +36,7 @@
 
   async function onDrop(e: DragEvent) {
     isDropTarget = false
-    const id = parseInt(e.dataTransfer?.getData('id')!)
+    const id = parseInt(e.dataTransfer?.getData('text/plain')!)
     const story = stories.find(s => s.id === id)
     if (story && !story.tags?.includes(epic.tag)) {
       story.tags = [...(story.tags || []), epic.tag]
@@ -74,7 +74,7 @@
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'}
       flex flex-col border-b" draggable={reallyMovable}
-     on:dragstart={e => e.dataTransfer?.setData('id', epic.id.toString())}
+     on:dragstart={e => e.dataTransfer?.setData('text/plain', epic.id.toString())}
      on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->

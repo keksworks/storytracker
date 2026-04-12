@@ -55,7 +55,7 @@
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    onDrag({id: parseInt(e.dataTransfer?.getData('id')!), beforeId: story.id})
+    onDrag({id: parseInt(e.dataTransfer?.getData('text/plain')!), beforeId: story.id})
     isDropTarget = false
   }
 
@@ -119,7 +119,7 @@
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
       flex flex-col border-b" draggable={reallyMovable}
-     on:dragstart={e => e.dataTransfer?.setData('id', story.id.toString())} on:drop={onDrop}
+     on:dragstart={e => e.dataTransfer?.setData('text/plain', story.id.toString())} on:drop={onDrop}
      on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
