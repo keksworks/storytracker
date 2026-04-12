@@ -41,7 +41,7 @@
     })
     updates.addEventListener('epic', e => {
       const epic = JSON.parse(e.data) as Epic
-      const index = epics.findIndex(ep => ep.id == epic.id)
+      const index = epics.findIndex(ep => ep.id === epic.id)
       if (index >= 0) {
         if (epics[index].updatedAt === epic.updatedAt) return
         epics[index] = epic
@@ -52,7 +52,7 @@
     })
     updates.addEventListener('epic-deleted', e => {
       const epic = JSON.parse(e.data) as Epic
-      const index = epics.findIndex(ep => ep.id == epic.id)
+      const index = epics.findIndex(ep => ep.id === epic.id)
       if (index >= 0) {
         epics.splice(index, 1)
         epics = epics
