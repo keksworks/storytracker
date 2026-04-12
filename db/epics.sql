@@ -24,3 +24,6 @@ alter table epics alter column projectId type bigint using projectId::bigint;
 
 --changeset epics:grant-delete
 grant delete on epics to app;
+
+--changeset epics:ord
+alter table epics add column ord float default 0 not null;
