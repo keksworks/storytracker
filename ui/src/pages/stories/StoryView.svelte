@@ -16,7 +16,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import {onStatusChanged} from './status'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
-  import {autoscroll, stopAutoscroll} from 'src/shared/autoscroll'
+  import {draggable, type Dragged} from 'src/shared/draggable'
 
   export let project: ProjectContext
   export let story: Story
@@ -53,21 +53,8 @@
     flashId = undefined
   }
 
-  let isDropTarget = false
-  function onDrop(e: DragEvent) {
-    onDrag({id: parseInt(e.dataTransfer?.getData('text/plain')!), beforeId: story.id})
-    isDropTarget = false
-  }
-
-  function onDragOver(e: DragEvent) {
-    e.preventDefault()
-    isDropTarget = true
-    autoscroll(e)
-  }
-
-  function onDragLeave() {
-    isDropTarget = false
-    stopAutoscroll()
+  function onDrop(id: number, beforeId: number, type: Dragged['type']) {
+    if (type === 'story') onDrag({id, beforeId})
   }
 
   $: reallyMovable = movable && !open
@@ -118,9 +105,9 @@
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
-      flex flex-col border-b" draggable={reallyMovable}
-     on:dragstart={e => e.dataTransfer?.setData('text/plain', story.id.toString())} on:drop={onDrop}
-     on:dragover={onDragOver} on:dragleave={onDragLeave} class:drop-target={isDropTarget} class:highlight={highlighted}
+  flex flex-col border-b"
+  use:draggable={{id: story.id, type: 'story', onDrop}} draggable={reallyMovable}
+  class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" class:cursor-move={reallyMovable}
