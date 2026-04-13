@@ -15,15 +15,22 @@
     return () => updates?.close()
   })
 
-  function applyListUpdate<T extends {id: number, updatedAt?: string, deleted?: boolean}>(list: T[], item: T): boolean {
-    const index = list.findIndex(i => i.id === item.id)
+  function applyListUpdate<T extends {id: number, updatedAt?: string, order: number}>(
+    list: T[], item: T, isDeleted: (i: T) => boolean, onUpdated?: (i: T) => void
+  ): boolean {
+    let index = list.findIndex(i => i.id === item.id)
     if (index >= 0) {
       if (list[index].updatedAt === item.updatedAt) return false
-      if (item.deleted) list.splice(index, 1)
-      else list[index] = item
-    } else if (!item.deleted) {
-      list.push(item)
+      if (isDeleted(item)) { list.splice(index, 1); return true }
+      if (list[index].order === item.order) { list[index] = item; onUpdated?.(item); return true }
+      list.splice(index, 1)
+    } else if (isDeleted(item)) {
+      return false
     }
+    index = list.findIndex(i => i.order > item.order)
+    if (index < 0) index = list.length
+    list.splice(index, 0, item)
+    onUpdated?.(item)
     return true
   }
 
@@ -32,28 +39,11 @@
     updates = new EventSource(`/api/projects/${project.id}/updates/${requesterId}`)
     updates.addEventListener('story', e => {
       const story = JSON.parse(e.data) as Story
-      let index = stories.findIndex(s => s.id == story.id)
-      if (index >= 0) {
-        if (stories[index].updatedAt === story.updatedAt) return
-        else if (story.status == StoryStatus.DELETED) {
-          stories.splice(index, 1)
-          return stories = stories
-        } else if (stories[index].order === story.order) {
-          stories[index] = story
-          onStoryUpdated(story)
-          return
-        }
-        else stories.splice(index, 1)
-      }
-      index = stories.findIndex(s => s.order > story.order)
-      if (index < 0) index = stories.length
-      stories.splice(index, 0, story)
-      onStoryUpdated(story)
-      stories = stories
+      if (applyListUpdate(stories, story, s => s.status == StoryStatus.DELETED, onStoryUpdated)) stories = stories
     })
     updates.addEventListener('epic', e => {
       const epic = JSON.parse(e.data) as Epic
-      if (applyListUpdate(epics, epic)) epics = epics
+      if (applyListUpdate(epics, epic, ep => !!ep.deleted)) epics = epics
     })
   }
 
