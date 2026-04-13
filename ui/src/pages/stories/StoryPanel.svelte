@@ -6,9 +6,10 @@
   import Panel from 'src/components/Panel.svelte'
   import StoryView from 'src/pages/stories/StoryView.svelte'
   import IterationHeader from 'src/pages/stories/IterationHeader.svelte'
-  import {autoscroll, stopAutoscroll} from 'src/shared/autoscroll'
+  import {stopAutoscroll} from 'src/shared/autoscroll'
   import {replaceValues} from '@codeborne/i18n-json'
   import Icon from 'src/icons/Icon.svelte'
+  import {dragged} from 'src/shared/draggable'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
@@ -67,8 +68,8 @@
   }
 
   let isDropTarget = false
-  function onDrop(e: DragEvent) {
-    onDrag({id: parseInt(e.dataTransfer?.getData('id')!), status})
+  function ondrop() {
+    if (dragged.type === 'story' && dragged.id) onDrag({id: dragged.id, status})
     isDropTarget = false
   }
 </script>
@@ -107,9 +108,9 @@
     {/each}
 
     {#if movable}
-      <div class="min-h-16" draggable={movable} ondrop={onDrop}
-           ondragover={e => {e.preventDefault(); isDropTarget = true; autoscroll(e)}}
-           ondragleave={() => {isDropTarget = false; stopAutoscroll()}} class:drop-target={isDropTarget}
+      <div class="min-h-16 {isDropTarget ? 'drop-order' : ''}" draggable={movable} {ondrop}
+           ondragover={e => {e.preventDefault(); isDropTarget = true}}
+           ondragleave={() => {isDropTarget = false; stopAutoscroll()}}
            role="region" aria-label={t.stories.actions.move}>
       </div>
     {/if}
@@ -123,7 +124,7 @@
     @apply py-1;
   }
 
-  .stories.panel .drop-target {
+  .drop-order {
     box-shadow: inset 0 1px 0 0 black;
   }
 </style>

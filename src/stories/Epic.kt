@@ -18,12 +18,14 @@ data class Epic(
   val description: String? = null,
   val tag: String,
   val comments: List<Comment> = emptyList(),
+  @Column("ord") val order: Double = 0.0,
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
 ): Entity<Epic>, UpdatableEntity
 
 class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
+  override val defaultOrder get() = "order by ord"
   override fun Epic.persister() = toValues(Epic::comments to jsonb(comments))
   override fun ResultSet.mapper() = create(Epic::comments to getJson<List<Comment>>("comments"))
   fun delete(id: Id<Epic>) = db.delete(table, Epic::id to id)

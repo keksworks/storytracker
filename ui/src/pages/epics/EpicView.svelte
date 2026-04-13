@@ -1,6 +1,6 @@
 <script lang="ts">
   import {slide} from 'svelte/transition'
-  import {type Epic, type Story, StoryStatus} from 'src/api/types'
+  import {type Epic, type Id, type Story, StoryStatus} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
   import {onMount} from 'svelte'
@@ -11,6 +11,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
   import StoryComments from 'src/pages/stories/StoryComments.svelte'
+  import {draggable, type Dragged} from 'src/shared/draggable'
 
   export let project: ProjectContext
   export let epic: Epic
@@ -20,6 +21,7 @@
   export let onDelete: (epic: Epic) => void = () => {}
   export let onSearch: (tag: string) => void = () => {}
   export let onStorySaved: (story: Story) => void = () => {}
+  export let onDrag: (detail: {id: number, beforeId?: number}) => void = () => {}
 
   let view: HTMLElement
   let open = !epic.id
@@ -27,21 +29,20 @@
   $: reallyMovable = movable && !open
   $: taggedStories = stories.filter(s => s.tags?.includes(epic.tag))
   $: acceptedCount = taggedStories.filter(s => s.status === StoryStatus.ACCEPTED).length
-  $: finishedCount = taggedStories.filter(s => [StoryStatus.FINISHED, StoryStatus.DELIVERED].includes(s.status)).length
+  $: finishedCount = taggedStories.filter(s => s.status === StoryStatus.FINISHED || s.status === StoryStatus.DELIVERED).length
   $: total = taggedStories.length || 1
   $: acceptedPercent = Math.round(acceptedCount / total * 100)
   $: finishedPercent = Math.round(finishedCount / total * 100)
 
-  let isDropTarget = false
-
-  async function onDrop(e: DragEvent) {
-    isDropTarget = false
-    const id = parseInt(e.dataTransfer?.getData('id')!)
-    const story = stories.find(s => s.id === id)
-    if (story && !story.tags?.includes(epic.tag)) {
-      story.tags = [...(story.tags || []), epic.tag]
-      const saved = await api.post<Story>(`projects/${story.projectId}/stories`, story)
-      onStorySaved(saved)
+  function onDrop(id: Id<Epic>, beforeId: Id<Epic>, type: Dragged['type']) {
+    if (type === 'epic' && id !== epic.id) {
+      onDrag({id, beforeId: epic.id})
+    } else if (type === 'story') {
+      const story = stories.find(s => s.id === id)
+      if (story && !story.tags?.includes(epic.tag)) {
+        story.tags = [...(story.tags || []), epic.tag]
+        api.post<Story>(`projects/${story.projectId}/stories`, story).then(onStorySaved)
+      }
     }
   }
 
@@ -72,13 +73,12 @@
 </script>
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
-<div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'}
-      flex flex-col border-b" draggable={reallyMovable}
-     on:dragstart={e => e.dataTransfer?.setData('id', epic.id.toString())}
-     on:drop={onDrop} on:dragover|preventDefault={() => isDropTarget = true} on:dragleave={() => isDropTarget = false} class:drop-target={isDropTarget}
+<div bind:this={view}
+  class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'} transition-all flex flex-col border-b"
+  use:draggable={{id: epic.id, type: 'epic', onDrop}} draggable={reallyMovable}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
-  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2 cursor-pointer" class:cursor-move={reallyMovable}
+  <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" class:cursor-move={reallyMovable}
        on:click={() => open = !open} role="button" tabindex="0">
     <span title={t.panels.epics} class="max-sm:float-left mr-1">
       <Icon name="epics" class="text-purple-600"/>
@@ -144,8 +144,8 @@
   {/if}
 </div>
 
-<style lang="postcss">
-  .drop-target {
-    @apply bg-purple-200;
+<style lang="postcss" global>
+  .drop-accept {
+    @apply !bg-purple-200;
   }
 </style>

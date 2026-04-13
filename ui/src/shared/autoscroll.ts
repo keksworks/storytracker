@@ -4,7 +4,7 @@ const SCROLL_SPEED = 8
 let scrollRaf = 0
 
 export function autoscroll(e: DragEvent) {
-  cancelAnimationFrame(scrollRaf)
+  stopAutoscroll()
   const panel = (e.target as Element).closest('.panel')
   if (!panel) return
   const {top, bottom} = panel.getBoundingClientRect()
