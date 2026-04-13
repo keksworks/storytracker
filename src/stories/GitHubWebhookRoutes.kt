@@ -18,7 +18,7 @@ import kotlin.reflect.typeOf
 class GitHubWebhookRoutes(
   private val projectRepository: ProjectRepository,
   private val storyRepository: StoryRepository,
-  private val storyEvents: StoryEvents,
+  private val projectEvents: ProjectEvents,
   private val userRepository: UserRepository,
 ) {
   val log = logger()
@@ -61,7 +61,7 @@ class GitHubWebhookRoutes(
       val comment = Story.Comment(text, createdBy = createdBy)
       story = story.copy(comments = story.comments + comment)
       storyRepository.save(story)
-      storyEvents.sendUpdates(id, story)
+      projectEvents.sendUpdates(id, story)
     }
   }
 

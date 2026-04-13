@@ -33,7 +33,7 @@ class ProjectRoutes(
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
   private val changeHistoryRepository: ChangeHistoryRepository,
-  private val storyEvents: StoryEvents,
+  private val projectEvents: ProjectEvents,
   private val projectImporter: ProjectImporter
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
@@ -113,7 +113,7 @@ class ProjectRoutes(
   fun saveEpic(@PathParam id: Id<Project>, epic: Epic, @HeaderParam requesterId: String): Epic {
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.save(epic)
-    storyEvents.sendEpicUpdates(id, epic, requesterId)
+    projectEvents.sendEpicUpdates(id, epic, requesterId)
     return epic
   }
 
@@ -122,7 +122,7 @@ class ProjectRoutes(
     val epic = epicRepository.get(epicId)
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.delete(epicId)
-    storyEvents.sendEpicUpdates(id, epic.copy(deleted = true), requesterId)
+    projectEvents.sendEpicUpdates(id, epic.copy(deleted = true), requesterId)
   }
 
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
@@ -140,14 +140,14 @@ class ProjectRoutes(
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.also {
       storyRepository.save(it)
-      storyEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val storyFlow = storyEvents.flow(id)
-    val epicFlow = storyEvents.epicFlow(id)
+    val storyFlow = projectEvents.storyFlow(id)
+    val epicFlow = projectEvents.epicFlow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
@@ -174,7 +174,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED).also {
       storyRepository.save(it)
-      storyEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.sendUpdates(it.projectId, it, requesterId)
     }
   }
 
