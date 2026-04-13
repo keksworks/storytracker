@@ -186,7 +186,7 @@
     {#if !project || !project.members || !stories}
       <Spinner/>
     {:else}
-      <ProjectUpdatesListener {project} bind:stories onStoryUpdated={s => flashStoryId = s.id}/>
+      <ProjectUpdatesListener {project} bind:stories bind:epics onStoryUpdated={s => flashStoryId = s.id}/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}

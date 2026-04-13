@@ -31,7 +31,7 @@ class ProjectRoutes(
   private val iterationRepository: IterationRepository,
   private val attachmentRepository: AttachmentRepository,
   private val changeHistoryRepository: ChangeHistoryRepository,
-  private val storyEvents: StoryEvents,
+  private val projectEvents: ProjectEvents,
   private val projectImporter: ProjectImporter
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
@@ -108,17 +108,19 @@ class ProjectRoutes(
     epicRepository.list(id)
 
   @POST("/:id/epics") @Access(ADMIN, OWNER, MEMBER)
-  fun saveEpic(@PathParam id: Id<Project>, epic: Epic): Epic {
+  fun saveEpic(@PathParam id: Id<Project>, epic: Epic, @HeaderParam requesterId: String): Epic {
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.save(epic)
+    projectEvents.send(id, epic, "epic", requesterId)
     return epic
   }
 
   @DELETE("/:id/epics/:epicId") @Access(ADMIN, OWNER, MEMBER)
-  fun deleteEpic(@PathParam id: Id<Project>, @PathParam epicId: Id<Epic>) {
+  fun deleteEpic(@PathParam id: Id<Project>, @PathParam epicId: Id<Epic>, @HeaderParam requesterId: String) {
     val epic = epicRepository.get(epicId)
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.delete(epicId)
+    projectEvents.send(id, epic.copy(deleted = true), "epic", requesterId)
   }
 
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
@@ -136,21 +138,23 @@ class ProjectRoutes(
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.also {
       storyRepository.save(it)
-      storyEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.send(it.projectId, it, "story", requesterId)
     }
   }
 
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val flow = storyEvents.flow(id)
+    val flow = projectEvents.flow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { story -> e.send(Event(story, "story", id = story.updatedAt)) }
+      val epicUpdatedSince = epicRepository.list(Epic::projectId to id, Epic::updatedAt gt after)
+      epicUpdatedSince.forEach { epic -> e.send(Event(epic, "epic", id = epic.updatedAt)) }
     }
-    flow.collect { (story, reqId) ->
-      if (reqId != requesterId) e.send(Event(story, "story", id = story.updatedAt))
+    flow.collect { (entity, eventType, reqId) ->
+      if (reqId != requesterId) e.send(Event(entity, eventType, id = entity.updatedAt))
     }
   }
 
@@ -160,7 +164,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED).also {
       storyRepository.save(it)
-      storyEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.send(it.projectId, it, "story", requesterId)
     }
   }
 

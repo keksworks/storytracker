@@ -11,7 +11,7 @@ export type Id<T> = number
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class stories.Epic
-export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; description?: string; id: Id<Epic>; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted?: boolean; description?: string; id: Id<Epic>; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.GitHubAuthor
 export interface GitHubAuthor {email?: Email; name?: string}
 // class stories.GitHubCommit
