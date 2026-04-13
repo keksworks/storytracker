@@ -1,21 +1,18 @@
 package stories
 
 import db.Id
+import klite.jdbc.UpdatableEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.concurrent.ConcurrentHashMap
 
 class ProjectEvents {
-  private val storyFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Story, String>>>()
-  private val epicFlows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Pair<Epic, String>>>()
+  data class Update(val entity: UpdatableEntity, val eventType: String, val requesterId: String = "")
 
-  fun storyFlow(projectId: Id<Project>) = storyFlows.getOrPut(projectId) { MutableSharedFlow(extraBufferCapacity = 10) }
-  fun epicFlow(projectId: Id<Project>) = epicFlows.getOrPut(projectId) { MutableSharedFlow(extraBufferCapacity = 10) }
+  private val flows = ConcurrentHashMap<Id<Project>, MutableSharedFlow<Update>>()
 
-  fun sendUpdates(projectId: Id<Project>, story: Story, requesterId: String = "") {
-    storyFlows[projectId]?.tryEmit(story to requesterId)
-  }
+  fun flow(projectId: Id<Project>) = flows.getOrPut(projectId) { MutableSharedFlow(extraBufferCapacity = 10) }
 
-  fun sendEpicUpdates(projectId: Id<Project>, epic: Epic, requesterId: String = "") {
-    epicFlows[projectId]?.tryEmit(epic to requesterId)
+  fun send(projectId: Id<Project>, entity: UpdatableEntity, eventType: String, requesterId: String = "") {
+    flows[projectId]?.tryEmit(Update(entity, eventType, requesterId))
   }
 }

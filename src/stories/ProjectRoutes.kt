@@ -13,8 +13,6 @@ import klite.jdbc.gt
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import stories.Story.Status.DELETED
 import users.Role
 import users.Role.*
@@ -113,7 +111,7 @@ class ProjectRoutes(
   fun saveEpic(@PathParam id: Id<Project>, epic: Epic, @HeaderParam requesterId: String): Epic {
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.save(epic)
-    projectEvents.sendEpicUpdates(id, epic, requesterId)
+    projectEvents.send(id, epic, "epic", requesterId)
     return epic
   }
 
@@ -122,7 +120,7 @@ class ProjectRoutes(
     val epic = epicRepository.get(epicId)
     require(epic.projectId == id) { "Invalid epic project" }
     epicRepository.delete(epicId)
-    projectEvents.sendEpicUpdates(id, epic.copy(deleted = true), requesterId)
+    projectEvents.send(id, epic.copy(deleted = true), "epic", requesterId)
   }
 
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
@@ -140,14 +138,13 @@ class ProjectRoutes(
     // TODO update only changed fields (send only changed fields from UI, receive as a Map)
     return story.also {
       storyRepository.save(it)
-      projectEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.send(it.projectId, it, "story", requesterId)
     }
   }
 
   @GET("/:id/updates/:requesterId") @NoTransaction
   suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
-    val storyFlow = projectEvents.storyFlow(id)
-    val epicFlow = projectEvents.epicFlow(id)
+    val flow = projectEvents.flow(id)
     e.startEventStream()
     val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
@@ -156,15 +153,8 @@ class ProjectRoutes(
       val epicUpdatedSince = epicRepository.list(Epic::projectId to id, Epic::updatedAt gt after)
       epicUpdatedSince.forEach { epic -> e.send(Event(epic, "epic", id = epic.updatedAt)) }
     }
-    coroutineScope {
-      launch {
-        epicFlow.collect { (epic, reqId) ->
-          if (reqId != requesterId) e.send(Event(epic, if (epic.deleted) "epic-deleted" else "epic", id = epic.updatedAt))
-        }
-      }
-      storyFlow.collect { (story, reqId) ->
-        if (reqId != requesterId) e.send(Event(story, "story", id = story.updatedAt))
-      }
+    flow.collect { (entity, eventType, reqId) ->
+      if (reqId != requesterId) e.send(Event(entity, eventType, id = entity.updatedAt))
     }
   }
 
@@ -174,7 +164,7 @@ class ProjectRoutes(
     require(story.projectId == id) { "Invalid story project" }
     story.copy(status = DELETED).also {
       storyRepository.save(it)
-      projectEvents.sendUpdates(it.projectId, it, requesterId)
+      projectEvents.send(it.projectId, it, "story", requesterId)
     }
   }
 

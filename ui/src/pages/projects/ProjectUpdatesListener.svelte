@@ -15,6 +15,18 @@
     return () => updates?.close()
   })
 
+  function applyListUpdate<T extends {id: number, updatedAt?: string, deleted?: boolean}>(list: T[], item: T): boolean {
+    const index = list.findIndex(i => i.id === item.id)
+    if (index >= 0) {
+      if (list[index].updatedAt === item.updatedAt) return false
+      if (item.deleted) list.splice(index, 1)
+      else list[index] = item
+    } else if (!item.deleted) {
+      list.push(item)
+    }
+    return true
+  }
+
   function listen() {
     updates?.close()
     updates = new EventSource(`/api/projects/${project.id}/updates/${requesterId}`)
@@ -41,22 +53,7 @@
     })
     updates.addEventListener('epic', e => {
       const epic = JSON.parse(e.data) as Epic
-      const index = epics.findIndex(ep => ep.id === epic.id)
-      if (index >= 0) {
-        if (epics[index].updatedAt === epic.updatedAt) return
-        epics[index] = epic
-      } else {
-        epics.push(epic)
-      }
-      epics = epics
-    })
-    updates.addEventListener('epic-deleted', e => {
-      const epic = JSON.parse(e.data) as Epic
-      const index = epics.findIndex(ep => ep.id === epic.id)
-      if (index >= 0) {
-        epics.splice(index, 1)
-        epics = epics
-      }
+      if (applyListUpdate(epics, epic)) epics = epics
     })
   }
 
