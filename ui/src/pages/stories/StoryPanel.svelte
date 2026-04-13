@@ -9,6 +9,7 @@
   import {autoscroll, stopAutoscroll} from 'src/shared/autoscroll'
   import {replaceValues} from '@codeborne/i18n-json'
   import Icon from 'src/icons/Icon.svelte'
+  import {getDraggedId} from 'src/shared/draggable'
 
   export let name: keyof typeof t.panels
   export let show: boolean | string | undefined
@@ -68,10 +69,8 @@
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    const data = e.dataTransfer?.getData('text/plain')
-    if (!data?.startsWith('story:')) return
-    const id = parseInt(data.split(':')[1]!)
-    onDrag({id, status})
+    const id = getDraggedId(e, 'story')
+    if (id) onDrag({id, status})
     isDropTarget = false
   }
 </script>
