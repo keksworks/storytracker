@@ -15,6 +15,7 @@
 
   export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3, isOwner: true} as ProjectContext
   export let label = t.projects.settings
+  export let icon = "settings-filled"
 
   const isNew = !project.id
   export let show = false
@@ -27,7 +28,7 @@
   }
 </script>
 
-<Button icon="settings-filled" {label} hideLabelOnMobile on:click={() => show = true}/>
+<Button {icon} {label} on:click={() => show = true}/>
 <Modal bind:show title={t.projects.project}>
   <Form {submit}>
     <FormField label={t.projects.name} bind:value={project.name} autofocus={isNew}/>

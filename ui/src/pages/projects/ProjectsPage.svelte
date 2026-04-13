@@ -29,7 +29,7 @@
 <MainPageLayout title={t.projects.title}>
   <span slot="header" class="flex gap-4">
     <ProjectImportButton {projects}/>
-    <ProjectSettingsButton label={t.projects.new}/>
+    <ProjectSettingsButton icon="plus-hexagon" label={t.projects.new}/>
     <FormField type="search" placeholder={t.projects.search} bind:value={search} autofocus on:keydown={onKeyDown}/>
   </span>
 

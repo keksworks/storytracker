@@ -7,7 +7,6 @@
   export let color: 'primary'|'secondary'|'warning'|'success'|'danger' = 'secondary'
   export let label = ''
   export let type: 'button'|'submit' = 'button'
-  export let hideLabelOnMobile = false
 
   $: hasLabel = label || $$slots.default
 </script>
@@ -17,7 +16,7 @@
     <Icon name={icon} {size} strokeWidth={size === 'xs' ? '2.5' : '2'}/>
   {/if}
   {#if hasLabel}
-    <span class:ml-2={icon} class={hideLabelOnMobile ? 'max-sm:hidden': ''}><slot>{label}</slot></span>
+    <span class={icon ? 'ml-2 max-sm:hidden' : ''}><slot>{label}</slot></span>
   {/if}
 </button>
 
