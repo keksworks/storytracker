@@ -153,8 +153,8 @@ class ProjectRoutes(
       val epicUpdatedSince = epicRepository.list(Epic::projectId to id, Epic::updatedAt gt after)
       epicUpdatedSince.forEach { epic -> e.send(Event(epic, "epic", id = epic.updatedAt)) }
     }
-    flow.collect { (entity, eventType, reqId) ->
-      if (reqId != requesterId) e.send(Event(entity, eventType, id = entity.updatedAt))
+    flow.collect { (entity, eventName, reqId) ->
+      if (reqId != requesterId) e.send(Event(entity, eventName, id = entity.updatedAt))
     }
   }
 
