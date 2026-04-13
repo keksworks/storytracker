@@ -31,7 +31,7 @@
   export let flashId: number | undefined = undefined
 
   let view: HTMLElement
-  let open = !story.id
+  let open = !story.id || location.hash.substring(1) === story.id?.toString()
   let highlighted = false
 
   export async function highlight(scroll = false) {
