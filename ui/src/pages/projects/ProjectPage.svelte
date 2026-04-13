@@ -81,6 +81,7 @@
   }
 
   let pastLoaded = false
+  const initialOpenStoryId = parseInt(location.hash.substring(1))
 
   onMount(async () => {
     project = await api.get('projects/' + id)
@@ -93,6 +94,7 @@
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
     await loadStories(show.done ? 0 : project!.currentIterationNum)
+    if (initialOpenStoryId && !stories.find(s => s.id === initialOpenStoryId)) await onSearch(location.hash)
   })
 
   $: if (project) project.epicTags = new Set(epics.map(e => e.tag))
@@ -191,7 +193,7 @@
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
                     {onSearch} {onSaved} {onDelete} bind:flashStoryId
-                    collapseStory={s => s.iteration! < project!.currentIterationNum - 3}/>
+                    collapseStory={s => s.iteration! < project!.currentIterationNum - 3 && s.id !== initialOpenStoryId}/>
 
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
@@ -214,7 +216,7 @@
 
         <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
                     {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
-                    collapseStory={s => s.iteration! < project!.currentIterationNum}>
+                    collapseStory={s => s.iteration! < project!.currentIterationNum && s.id !== initialOpenStoryId}>
           <span slot="right">{searchQuery}</span>
         </StoryPanel>
 
