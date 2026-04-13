@@ -170,7 +170,7 @@
           {#if story.id}
             <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
           {/if}
-          <button on:click|stopPropagation={copyToClipboard} data-copy-value="{window.location.origin}/projects/{story.projectId}#{story.id}">{t.general.copyLink}</button>
+          <Button icon="copy" variant="ghost" size="sm" title={t.general.copyLink} on:click={copyToClipboard} data-copy="{location.origin}/projects/{story.projectId}#{story.id}"/>
           <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(story)}/>
         </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">

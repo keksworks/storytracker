@@ -2,10 +2,10 @@ import {t} from 'src/i18n'
 
 export async function copyToClipboard(e: Event) {
   const el = e.currentTarget as HTMLElement
-  const v = el.textContent!
-  const textToCopy = el.getAttribute('data-copy-value') || el.textContent!
-  if(el.textContent === t.general.copied) return;
-  await navigator.clipboard.writeText(textToCopy)
+  const text = el.textContent
+  const v = el.dataset.copy || text
+  if (!v || v === t.general.copied) return
+  await navigator.clipboard.writeText(v)
   el.textContent = t.general.copied
-  setTimeout(() => el.textContent = v, 1000)
+  setTimeout(() => el.textContent = text, 1000)
 }
