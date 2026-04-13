@@ -16,7 +16,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import {onStatusChanged} from './status'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
-  import {draggable} from 'src/shared/draggable'
+  import {draggable, type Dragged} from 'src/shared/draggable'
 
   export let project: ProjectContext
   export let story: Story
@@ -53,8 +53,8 @@
     flashId = undefined
   }
 
-  function onDrop(id: number, beforeId: number) {
-    onDrag({id, beforeId})
+  function onDrop(id: number, beforeId: number, type: Dragged['type']) {
+    if (type === 'story') onDrag({id, beforeId})
   }
 
   $: reallyMovable = movable && !open
