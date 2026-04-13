@@ -193,11 +193,13 @@
       "restart": "Restart",
       "move": "Move"
     },
+    "rejectionReason": "Reason for rejection",
     "createdAt": "Created",
     "updatedAt": "Updated",
     "assignedTo": "Assigned to",
     "locate": "Locate in backlog/icebox",
     "collapsed": "{count} more done stories"
+
   },
   "history": {
     "added": "added",

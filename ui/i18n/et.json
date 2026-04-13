@@ -192,6 +192,7 @@
       "UNSTARTED": "Alustamata",
       "UNSCHEDULED": "Ajastamata"
     },
+    "rejectionReason": "Tagasilükkamise põhjus",
     "type": "Tüüp",
     "types": {
       "CHORE": "Ülesanne",

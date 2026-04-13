@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Story, StoryStatus, StoryType} from 'src/api/types'
+  import {type Story, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import Button from 'src/components/Button.svelte'
   import {t} from 'src/i18n'
   import {user} from 'src/stores/auth'
@@ -35,6 +35,9 @@
   }
 
   function reject(e: Event) {
+    const reason = prompt(t.stories.rejectionReason)?.trim()
+    if (!reason) return
+    story.comments.push({text: reason, createdBy: $user.id, createdAt: new Date().toISOString()} as StoryComment)
     story.status = StoryStatus.REJECTED
     justSave(e)
   }
