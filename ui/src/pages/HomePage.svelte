@@ -5,7 +5,6 @@
 
 <MainPageLayout title={t.title}>
   <section>
-    <!-- Hero Section -->
     <div class="border-b border-stone-200 bg-white px-4 py-8 sm:px-6 sm:py-12">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-3xl font-bold text-stone-900 mb-2">
@@ -17,7 +16,6 @@
       </div>
     </div>
 
-    <!-- Features Grid -->
     <div class="max-w-4xl mx-auto px-4 py-8 sm:px-6 sm:py-10">
       <h2 class="text-xl font-semibold text-stone-900 text-center mb-6">
         {t.home.features.title}
