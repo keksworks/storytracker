@@ -29,7 +29,7 @@ class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
   override val defaultOrder get() = "order by ord"
   override fun Epic.persister() = toValues(Epic::comments to jsonb(comments), skip = listOf(Epic::deleted))
   override fun ResultSet.mapper() = create(Epic::comments to getJson<List<Comment>>("comments"))
-  
+
   fun delete(id: Id<Epic>) = db.delete(table, Epic::id to id)
 
   fun list(projectId: Id<Project>) : List<Epic> = db.select(table,

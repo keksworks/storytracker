@@ -61,7 +61,7 @@ class GitHubWebhookRoutes(
       val comment = Story.Comment(text, createdBy = createdBy)
       story = story.copy(comments = story.comments + comment)
       storyRepository.save(story)
-      projectEvents.sendUpdates(id, story)
+      projectEvents.send(id, story, "story")
     }
   }
 
