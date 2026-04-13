@@ -68,7 +68,10 @@
 
   let isDropTarget = false
   function onDrop(e: DragEvent) {
-    onDrag({id: parseInt(e.dataTransfer?.getData('text/plain')!), status})
+    const data = e.dataTransfer?.getData('text/plain')
+    if (!data?.startsWith('story:')) return
+    const id = parseInt(data.split(':')[1]!)
+    onDrag({id, status})
     isDropTarget = false
   }
 </script>
@@ -107,9 +110,9 @@
     {/each}
 
     {#if movable}
-      <div class="min-h-16" draggable={movable} ondrop={onDrop}
+      <div class="min-h-16 {isDropTarget ? 'drop-line' : ''}" draggable={movable} ondrop={onDrop}
            ondragover={e => {e.preventDefault(); isDropTarget = true; autoscroll(e)}}
-           ondragleave={() => {isDropTarget = false; stopAutoscroll()}} class:drop-target={isDropTarget}
+           ondragleave={() => {isDropTarget = false; stopAutoscroll()}}
            role="region" aria-label={t.stories.actions.move}>
       </div>
     {/if}
@@ -123,7 +126,7 @@
     @apply py-1;
   }
 
-  .stories.panel .drop-target {
+  .drop-line {
     box-shadow: inset 0 1px 0 0 black;
   }
 </style>
