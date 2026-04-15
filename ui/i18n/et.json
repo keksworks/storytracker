@@ -154,7 +154,6 @@
     "delete": "Kustuta projekt",
     "deleteConfirm": "Kas oled kindel, et soovid projekti {name} kustutada",
     "deleteMessage": "Projekt kustutatud"
-
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",

@@ -53,7 +53,9 @@
     {/if}
     <div class="flex justify-between items-center pb-2 -mt-2">
       <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
-      <Button type="button" icon="trash" title={t.projects.delete} variant="ghost" size="sm" color="danger" disabled={!project.isOwner} on:click={deleteProject}/>
+      {#if project.id}
+        <Button type="button" icon="trash" title={t.projects.delete} color="danger" disabled={!project.isOwner} on:click={deleteProject}/>
+      {/if}
     </div>
   </Form>
 </Modal>
