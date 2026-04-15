@@ -12,10 +12,11 @@
   import {showToast} from 'src/stores/toasts'
   import type {ProjectContext} from 'src/pages/projects/context'
   import {navigate} from '@keksworks/svelte-tiny-router'
+  import type {ProjectMemberUser} from 'src/api/types'
 
   export let project = {iterationWeeks: 1, defaultStoryPoints: 1, velocityAveragedOver: 3, isOwner: true} as ProjectContext
   export let label = t.projects.settings
-  export let icon = "settings-filled"
+  export let icon = 'settings-filled'
 
   const isNew = !project.id
   export let show = false
@@ -25,6 +26,15 @@
     showToast(t.general.saved)
     show = false
     if (isNew) setTimeout(() => navigate(`/projects/${project.id}`), 500)
+  }
+
+  async function deleteProject() {
+    if (confirm(t.projects.deleteConfirm.replace('{name}', project.name))) {
+      await api.delete('projects/' + project.id)
+      showToast(t.projects.deleteMessage)
+      show = false
+      navigate('/projects')
+    }
   }
 </script>
 
@@ -41,7 +51,9 @@
     {#if project.id}
       <GitHubWebhookDetails {project}/>
     {/if}
-
-    <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
+      <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
+    {#if project.isOwner}
+      <Button icon="trash" title={t.projects.delete} variant="ghost" size="sm" color="danger" on:click={deleteProject}/>
+    {/if}
   </Form>
 </Modal>
