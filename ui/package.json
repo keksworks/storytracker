@@ -21,25 +21,25 @@
     "svelte": "^5.55.1"
   },
   "devDependencies": {
-    "@keksworks/svelte-tiny-router": "^0.1.0",
+    "@keksworks/svelte-tiny-router": "^0.2.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tailwindcss/forms": "^0.5.5",
     "@testing-library/svelte": "^5.2.8",
     "@tsconfig/svelte": "^3.0.0",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^10.0.0",
-    "@vitest/ui": "^0.34.3",
+    "@vitest/ui": "^4.1.4",
     "autoprefixer": "^10.4.15",
     "chai": "^4.3.6",
-    "jsdom": "^24.0.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.4.28",
     "postcss-load-config": "^4.0.1",
     "svelte-check": "^4.3.0",
     "svelte-preprocess": "^5.1.4",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vite-plugin-run": "^0.5.1",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.4"
   }
 }
