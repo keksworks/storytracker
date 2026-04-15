@@ -51,9 +51,9 @@
     {#if project.id}
       <GitHubWebhookDetails {project}/>
     {/if}
+    <div class="flex justify-between items-center pb-2 -mt-2">
       <Button type="submit" label={t.general.save} disabled={!project.isOwner}/>
-    {#if project.isOwner}
-      <Button icon="trash" title={t.projects.delete} variant="ghost" size="sm" color="danger" on:click={deleteProject}/>
-    {/if}
+      <Button type="button" icon="trash" title={t.projects.delete} variant="ghost" size="sm" color="danger" disabled={!project.isOwner} on:click={deleteProject}/>
+    </div>
   </Form>
 </Modal>
