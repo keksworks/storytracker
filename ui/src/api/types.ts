@@ -23,8 +23,10 @@ export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: stri
 export interface GitHubRepository {fullName: string}
 // class stories.Iteration
 export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
+// class stories.Project$Status
+export enum ProjectStatus {ACTIVE = 'ACTIVE', DELETED = 'DELETED'}
 // class stories.Project
-export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number; webhookSecret: string}
+export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; status: ProjectStatus; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number; webhookSecret: string}
 // class stories.ProjectEvents$Update
 export interface ProjectEventsUpdate {entity: UpdatableEntity; eventType: string; requesterId: string}
 // class stories.ProjectExport
@@ -78,7 +80,7 @@ export const date = "2025-03-03" as LocalDate
 export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","deleted":false,"id":200000003,"name":"Epic 1","order":0.0,"projectId":1,"tag":"epic1"} as Epic
 export const iteration = {"endDate":"2025-03-10","length":1,"number":1,"projectId":1,"startDate":"2025-03-03","teamStrength":100} as Iteration
 export const now = "2025-03-03T00:00:00Z" as Instant
-export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3,"webhookSecret":"73bfc75b-d0f4-43f8-9bd2-378a56291476"} as Project
+export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","status":"ACTIVE","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3,"webhookSecret":"73bfc75b-d0f4-43f8-9bd2-378a56291476"} as Project
 export const projectMember = {"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":200000006,"mentionNotifications":false,"projectId":1,"role":"MEMBER","userId":200000002} as ProjectMember
 export const projectMemberUser = {"id":200000006,"member":{"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":200000006,"mentionNotifications":false,"projectId":1,"role":"MEMBER","userId":200000002},"user":{"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":200000002,"isAdmin":false,"lang":"en","lastName":"User","name":"Test User"}} as ProjectMemberUser
 export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story

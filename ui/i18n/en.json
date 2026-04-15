@@ -132,7 +132,11 @@
     "webhookUrl": "GitHub webhook URL",
     "webhookSecret": "Webhook secret",
     "webhookInstructions": "Set this URL as a webhook in your GitHub repository settings (Settings → Webhooks → Add webhook). Use \"application/json\" content type. Commits with messages starting with \"#storyId\" will be added as comments.",
-    "webhookCopied": "Copied to clipboard"
+    "webhookCopied": "Copied to clipboard",
+    "delete": "Delete project",
+    "deleteConfirm": "Are you sure you want to delete project {name}?",
+    "deleteMessage": "Project deleted"
+
   },
   "weekDays": {
     "MONDAY": "Monday",
@@ -152,7 +156,8 @@
     "icebox": "Icebox",
     "epics": "Epics",
     "search": "Search",
-    "history": "History"
+    "history": "History",
+    "myWork": "My work"
   },
   "stories": {
     "story": "Story",

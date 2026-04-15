@@ -41,6 +41,7 @@
 
   let show: Record<string, boolean> = {
     done: false,
+    myWork: false,
     backlog: true,
     icebox: !isMobile,
     epics: false,
@@ -105,6 +106,7 @@
   $: done = stories.filter(s => s.iteration! < project?.currentIterationNum!)
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
+  $: myWork = stories.filter(s => s.assignedTo === $user.id && s.status !== StoryStatus.ACCEPTED)
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (!e.id || e.id == e.beforeId) return
@@ -194,6 +196,10 @@
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
                     {onSearch} {onSaved} {onDelete} bind:flashStoryId
                     collapseStory={s => s.iteration! < project!.currentIterationNum - 3 && s.id !== initialOpenStoryId}/>
+
+        <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId>
+          <span slot="right"></span>
+        </StoryPanel>
 
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
           <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>

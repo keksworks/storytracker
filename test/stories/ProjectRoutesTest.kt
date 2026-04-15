@@ -77,6 +77,11 @@ class ProjectRoutesTest: BaseMocks() {
     }
   }
 
+  @Test fun `delete project`() {
+    routes.deleteProject(project.id)
+    verify { projectRepository.delete(project.id) }
+  }
+
   @Test fun members() {
     every { projectMemberRepository.listWithUsers(project.id) } returns listOf(projectMemberUser)
     val result = routes.members(project.id)

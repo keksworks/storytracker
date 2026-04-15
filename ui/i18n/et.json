@@ -150,7 +150,10 @@
     "import": "Impordi projekt",
     "importForbidden": "Sul puuduvad õigused projekti ülekirjutamiseks",
     "importSuccess": "Project {name} sai imporditud",
-    "importExistsConfirm": "Projekt {name} on juba olemas, kas soovid selle uuendada?"
+    "importExistsConfirm": "Projekt {name} on juba olemas, kas soovid selle uuendada?",
+    "delete": "Kustuta projekt",
+    "deleteConfirm": "Kas oled kindel, et soovid projekti {name} kustutada",
+    "deleteMessage": "Projekt kustutatud"
   },
   "weekDays": {
     "MONDAY": "Esmaspäev",
@@ -170,7 +173,8 @@
     "icebox": "Jääkast",
     "epics": "Eepikud",
     "search": "Otsi",
-    "history": "Ajalugu"
+    "history": "Ajalugu",
+    "myWork": "Minu töö"
   },
   "stories": {
     "story": "Lugu",

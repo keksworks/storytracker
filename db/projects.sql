@@ -45,3 +45,6 @@ update projects set currentIterationNum = currentIterationNum + 1;
 
 --changeset projects.webhookSecret
 alter table projects add column webhookSecret uuid not null default gen_random_uuid();
+
+--changeset projects.status
+alter table projects add column status text not null default 'ACTIVE';

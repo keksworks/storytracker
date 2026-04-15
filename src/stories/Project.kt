@@ -24,6 +24,11 @@ data class Project(
   val tags: Set<String> = emptySet(), // TODO: persist to db
   val defaultStoryPoints: Int? = 1,
   val webhookSecret: UUID = UUID.randomUUID(),
+  val status: Status = Status.ACTIVE,
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
-): Entity<Project>, UpdatableEntity
+): Entity<Project>, UpdatableEntity {
+  enum class Status {
+    ACTIVE, DELETED
+  }
+}
