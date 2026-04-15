@@ -45,7 +45,7 @@ class ProjectImporterTest: BaseMocks() {
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns existingUserInSystem
     every { projectMemberRepository.listWithUsers(project.id) } returns emptyList()
     every { epicRepository.list(project.id) } returns emptyList()
-    every { storyRepository.list(project.id, any(), any()) } returns emptyList()
+    every { storyRepository.list(project.id) } returns emptyList()
     every { iterationRepository.list(project.id) } returns emptyList()
 
     expect(routes.import(testExport, user)).toEqual(project)
@@ -74,7 +74,10 @@ class ProjectImporterTest: BaseMocks() {
 
   @Test fun `import of existing project allowed for owner`() {
     val existingUserInSystem = projectMemberUser.user.copy(id = Id())
+    val existingProject = project.copy(currentIterationNum = 1, updatedAt = now)
+    val newerProject = project.copy(currentIterationNum = 2, updatedAt = now)
 
+    every { projectRepository.get(project.id) } returns existingProject
     every { projectMemberRepository.role(project.id, user.id) } returns OWNER
     every { userRepository.by(User::email eq projectMemberUser.user.email) } returns existingUserInSystem
     every { storyRepository.list(export.project.id) } returns listOf(story.copy(assignedTo = existingUserInSystem.id, createdBy = existingUserInSystem.id))
@@ -89,14 +92,15 @@ class ProjectImporterTest: BaseMocks() {
     val oldEpic = epic.copy(name = "old name", updatedAt = MIN, createdBy = user.id)
     val newIteration = iteration.copy(projectId = Id(), number = 100)
     val testExport = export.copy(
+      project = newerProject,
       stories = listOf(storyToUpdate, newStory, oldStory), epics = listOf(epicToUpdate, newEpic, oldEpic),
       iterations = listOf(iteration, newIteration)
     )
 
-    expect(routes.import(testExport, user)).toEqual(project)
+    expect(routes.import(testExport, user)).toEqual(newerProject)
 
-    verify(exactly = 0) { projectRepository.save(any()) }
     verify {
+      projectRepository.save(newerProject.copy(updatedAt = existingProject.updatedAt))
       userRepository.create(projectMemberUserNew.user)
       projectMemberRepository.create(projectMemberUser.member.copy(userId = existingUserInSystem.id))
       projectMemberRepository.create(projectMemberUserNew.member.copy(userId = projectMemberUserNew.user.id))

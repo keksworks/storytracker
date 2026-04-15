@@ -42,6 +42,8 @@ class ProjectImporter(
   }
 
   private fun UpdatableEntity.isNewer(other: UpdatableEntity) = (updatedAt ?: MIN) > (other.updatedAt ?: MIN)
+  private fun Project.isNewer(other: Project) = (this as UpdatableEntity).isNewer(other as UpdatableEntity) ||
+                                                currentIterationNum > other.currentIterationNum
 
   private fun importMembers(export: ProjectExport): Map<Id<User>, Id<User>> {
     val userIdMap = mutableMapOf<Id<User>, Id<User>>()
