@@ -63,6 +63,8 @@
     show[key] = !show[key]
   }
 
+
+
   async function onSearch(q?: string) {
     searchQuery = q
     searchResults = undefined
@@ -107,6 +109,8 @@
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
   $: myWork = stories.filter(s => s.assignedTo === $user.id && s.status !== StoryStatus.ACCEPTED)
+
+  $: syncedSearchResults = searchResults?.map(sr => stories.find(s => s.id === sr.id) ?? sr)
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (!e.id || e.id == e.beforeId) return
@@ -220,7 +224,7 @@
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={syncedSearchResults} movable={false}
                     {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
                     collapseStory={s => s.iteration! < project!.currentIterationNum && s.id !== initialOpenStoryId}>
           <span slot="right">{searchQuery}</span>
