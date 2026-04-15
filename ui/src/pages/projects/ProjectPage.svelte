@@ -25,6 +25,7 @@
   let epics: Epic[] = []
   let searchQuery: string | undefined
   let searchResults: Story[] | undefined
+  let loadedSearchResults: Story[] | undefined
   let velocity = 10
   let highlightStoryId: number | undefined
   let flashStoryId: number | undefined
@@ -63,18 +64,24 @@
     show[key] = !show[key]
   }
 
-
-
   async function onSearch(q?: string) {
     searchQuery = q
-    searchResults = undefined
+    loadedSearchResults = undefined
     if (q) {
       if (isMobile) hideAll()
-      searchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
+      if (!show.done) {
+        loadedSearchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
+        // TODO: let server know that we need only stories older than project.currentIterationNum
+        loadedSearchResults = loadedSearchResults.filter(s => s.iteration! < project?.currentIterationNum!)
+      }
     } else {
       searchQuery = undefined
       if (isMobile) show.backlog = true
     }
+  }
+
+  function storyMatchesSearch(story: Story, q: string) {
+    return story.name.toLowerCase().includes(q) // TODO: same logic as in StoryRepository
   }
 
   function onLocate(story: Story) {
@@ -110,7 +117,10 @@
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
   $: myWork = stories.filter(s => s.assignedTo === $user.id && s.status !== StoryStatus.ACCEPTED)
 
-  $: syncedSearchResults = searchResults?.map(sr => stories.find(s => s.id === sr.id) ?? sr)
+  $: if (searchQuery?.length! > 2) {
+    const q = searchQuery!.toLowerCase()
+    searchResults = (loadedSearchResults ?? []).concat(stories.filter(s => storyMatchesSearch(s, q)))
+  }
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (!e.id || e.id == e.beforeId) return
@@ -224,7 +234,7 @@
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={syncedSearchResults} movable={false}
+        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
                     {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
                     collapseStory={s => s.iteration! < project!.currentIterationNum && s.id !== initialOpenStoryId}>
           <span slot="right">{searchQuery}</span>
