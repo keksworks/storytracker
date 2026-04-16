@@ -18,6 +18,10 @@
     history = await api.get<Change[]>(`projects/${project.id}/history`)
   }
 
+  function stripTags(s: string) {
+    return s.replace(/<\/?.+?>/g, '')
+  }
+
   function formatValue(val: string | undefined, column: string) {
     if (val === undefined || val === null) return '—'
     if (val === '') return '""'
@@ -25,6 +29,7 @@
     if (column === 'type') return t.stories.types[val] ?? val
     if (column === 'role') return t.users.roles[val] ?? val
     if (column === 'assignedto') return getUserName(Number(val))
+    if (column === 'description') return stripTags(val)
     return val
   }
 
@@ -123,11 +128,11 @@
               {@const diff = getCommentDiff(oldValue, newValue)}
               <span class="ml-1 text-stone-600 italic">
                 {#if diff.type === 'added'}
-                  {t.history.added}: "{diff.comment?.text || '...'}"
+                  {t.history.added}: "{stripTags(diff.comment?.text || '...')}"
                 {:else if diff.type === 'deleted'}
                   {t.history.deleted}
                 {:else if diff.type === 'changed'}
-                  {t.history.changed}: "{diff.comment?.text || '...'}"
+                  {t.history.changed}: "{stripTags(diff.comment?.text || '...')}"
                 {:else}
                   ...
                 {/if}
