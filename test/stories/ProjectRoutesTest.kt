@@ -137,10 +137,11 @@ class ProjectRoutesTest: BaseMocks() {
   }
 
   @Test fun stories() {
-    val fromIteration = 1
+    val fromIteration = 2
+    val beforeIteration = 1
     val q = "story"
-    every { storyRepository.list(project.id, fromIteration, q) } returns listOf(story2)
-    val result = routes.stories(project.id, fromIteration, q)
+    every { storyRepository.list(project.id, fromIteration, beforeIteration, q) } returns listOf(story2)
+    val result = routes.stories(project.id, fromIteration, beforeIteration, q)
     expect(result).toEqual(listOf(story2))
   }
 

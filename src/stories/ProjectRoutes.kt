@@ -134,8 +134,8 @@ class ProjectRoutes(
   @GET("/:id/history") fun history(@PathParam id: Id<Project>): List<Change> =
     changeHistoryRepository.list(id)
 
-  @GET("/:id/stories") fun stories(@PathParam id: Id<Project>, @QueryParam fromIteration: Int? = null, @QueryParam q: String? = null) =
-    storyRepository.list(id, fromIteration, q)
+  @GET("/:id/stories") fun stories(@PathParam id: Id<Project>,  @QueryParam fromIteration: Int? = null, @QueryParam beforeIteration: Int? = null, @QueryParam q: String? = null) =
+    storyRepository.list(id, fromIteration, beforeIteration, q)
 
   @POST("/:id/stories") @Access(ADMIN, OWNER, MEMBER)
   fun save(@PathParam id: Id<Project>, story: Story, @HeaderParam requesterId: String): Story {

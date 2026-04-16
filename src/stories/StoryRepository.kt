@@ -45,10 +45,11 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     db.exec("with ordered as (select id, row_number() over (order by ord) as new_ord from $table where projectId = ? and iteration is null) " +
       "update $table set ord = ordered.new_ord from ordered where $table.id = ordered.id", projectId)
 
-  fun list(projectId: Id<Project>, fromIteration: Int? = null, q: String? = null): List<Story> = db.select(table,
+  fun list(projectId: Id<Project>, fromIteration: Int? = null, beforeIteration: Int? = null, q: String? = null): List<Story> = db.select(table,
     Story::projectId to projectId,
     Story::status to NotIn(DELETED),
     fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
+    beforeIteration?.let { sql("iteration < ?", it) },
     q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
     suffix = defaultOrder) { mapper() }
 

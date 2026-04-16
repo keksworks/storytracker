@@ -70,9 +70,7 @@
     if (q) {
       if (isMobile) hideAll()
       if (!show.done) {
-        loadedSearchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
-        // TODO: let server know that we need only stories older than project.currentIterationNum
-        loadedSearchResults = loadedSearchResults.filter(s => s.iteration! < project?.currentIterationNum!)
+        loadedSearchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}&beforeIteration=${project?.currentIterationNum!}`)
       }
     } else {
       searchQuery = undefined
