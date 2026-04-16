@@ -81,7 +81,11 @@
   }
 
   function storyMatchesSearch(story: Story, q: string) {
-    return story.name.toLowerCase().includes(q) // TODO: same logic as in StoryRepository
+    return story.id.toString() === q.replace(/^#/, '') ||
+           story.name.toLowerCase().includes(q) ||
+           story.description?.toLowerCase().includes(q) ||
+           story.tags.some(t => t.toLowerCase().includes(q)) ||
+           story.comments.some(c => c.text?.toLowerCase().includes(q))
   }
 
   function onLocate(story: Story) {
