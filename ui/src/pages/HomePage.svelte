@@ -28,6 +28,12 @@
         </div>
 
         <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
+          <div class="text-3xl mb-3">🏎️</div>
+          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.fast.title}</h3>
+          <p class="text-sm text-stone-500">{t.home.features.fast.desc}</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
           <div class="text-3xl mb-3">🎯</div>
           <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.dragAndDrop.title}</h3>
           <p class="text-sm text-stone-500">{t.home.features.dragAndDrop.desc}</p>

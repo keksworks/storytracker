@@ -124,6 +124,10 @@
       "githubIntegration": {
         "title": "GitHubi Push-integratsioon",
         "desc": "Seo commit-id lugudega automaatselt GitHubi veebikonksu kaudu - maini loo ID-d oma commit-sõnumis"
+      },
+      "fast": {
+        "title": "Kiire ja Reageeriv",
+        "desc": "Sujuv ja viivituseta kasutuskogemus, ei vaja lehekülje värskendamist - näed ka teiste kasutajate muudatusi kohe"
       }
     }
   },
