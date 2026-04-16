@@ -10,7 +10,7 @@
         <h1 class="text-3xl font-bold text-stone-900 mb-2">
           {t.home.hero.tagline}
         </h1>
-        <p class="text-base text-stone-500">
+        <p class="text-xl text-stone-500">
           {t.home.hero.subtitle}
         </p>
       </div>
