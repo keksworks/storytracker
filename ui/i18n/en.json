@@ -89,7 +89,7 @@
       "fast": {
         "icon": "\uD83D\uDCA8",
         "title": "Fast and Responsive",
-        "desc": "Optimized for speed and efficiency, no need to reload pages - changes by other users are reflected instantly"
+        "desc": "Optimized for speed and efficiency, no need to reload - changes by other users are reflected instantly"
       },
       "kanbanFlow": {
         "icon": "🌊",
