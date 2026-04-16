@@ -71,41 +71,50 @@
     },
     "features": {
       "title": "Why StoryTracker?",
+      "agileFirst": {
+        "icon": "⚡",
+        "title": "Agile-First Design",
+        "desc": "Unmatched visibility and simplicity for real Agile teams"
+      },
       "transparency": {
+        "icon": "🔍",
         "title": "Full Transparency",
         "desc": "No stories lost or hidden - everyone sees the same backlog"
       },
       "dragAndDrop": {
+        "icon": "🎯",
         "title": "Drag & Drop",
         "desc": "Easy drag-based prioritization that just works"
       },
+      "fast": {
+        "icon": "\uD83D\uDCA8",
+        "title": "Fast and Responsive",
+        "desc": "Optimized for speed and efficiency, no need to reload pages - changes by other users are reflected instantly"
+      },
       "kanbanFlow": {
+        "icon": "🌊",
         "title": "Flow-Based Workflow",
         "desc": "Kanban-style - just work on the next item in your backlog"
       },
-      "tagViews": {
-        "title": "Smart Tag Views",
-        "desc": "Simple tag-based views for flexible filtering"
-      },
       "autoVelocity": {
+        "icon": "📊",
         "title": "Auto Velocity Tracking",
         "desc": "Velocity and estimation dates tracked automatically"
       },
-      "agileFirst": {
-        "title": "Agile-First Design",
-        "desc": "Unmatched visibility and simplicity for real Agile teams"
+      "tagViews": {
+        "icon": "🏷️",
+        "title": "Smart Tag Views",
+        "desc": "Simple tag-based views for flexible filtering"
       },
       "epics": {
+        "icon": "🗂️",
         "title": "Epics",
         "desc": "Group related stories into epics for high-level planning and tracking"
       },
       "githubIntegration": {
+        "icon": "🔗",
         "title": "GitHub Push Integration",
         "desc": "Link commits to stories automatically via GitHub webhook - just mention the story ID in your commit message"
-      },
-      "fast": {
-        "title": "Fast and Responsive",
-        "desc": "Optimized for speed and efficiency, no need to reload pages - changes by other users are reflected instantly"
       }
     }
   },

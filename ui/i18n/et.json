@@ -93,41 +93,50 @@
     },
     "features": {
       "title": "Miks StoryTracker?",
+      "agileFirst": {
+        "icon": "⚡",
+        "title": "Agile-Esimene Disain",
+        "desc": "Ületamatu nähtavus ja lihtsus päris Agile meeskondadele"
+      },
       "transparency": {
+        "icon": "🔍",
         "title": "Täielik Läbipaistvus",
         "desc": "Ükski lugu ei lähe kaotsi - kõik näevad sama backlogut"
       },
       "dragAndDrop": {
+        "icon": "🎯",
         "title": "Lohista & Aseta",
         "desc": "Lihtne lohista-põhine prioriseerimine, mis lihtsalt töötab"
       },
+      "fast": {
+        "icon": "\uD83D\uDCA8",
+        "title": "Kiire ja Reageeriv",
+        "desc": "Sujuv ja viivituseta kasutuskogemus, ei vaja lehekülje värskendamist - näed ka teiste kasutajate muudatusi kohe"
+      },
       "kanbanFlow": {
+        "icon": "🌊",
         "title": "Kanban-Põhine Töövoog",
         "desc": "Kanban-stiilis - tööta lihtsalt järgmise üksuse kallal oma backlogus"
       },
-      "tagViews": {
-        "title": "Targad Sildi Vaated",
-        "desc": "Lihtsad sildi-põhised vaated paindlikuks filtreerimiseks"
-      },
       "autoVelocity": {
+        "icon": "📊",
         "title": "Automaatne Kiiruse Jälgimine",
         "desc": "Kiirus ja hinnangu kuupäevad jälgitakse automaatselt"
       },
-      "agileFirst": {
-        "title": "Agile-Esimene Disain",
-        "desc": "Ületamatu nähtavus ja lihtsus päris Agile meeskondadele"
+      "tagViews": {
+        "icon": "🏷️",
+        "title": "Targad Sildi Vaated",
+        "desc": "Lihtsad sildi-põhised vaated paindlikuks filtreerimiseks"
       },
       "epics": {
+        "icon": "🗂️",
         "title": "Eepikad",
         "desc": "Grupeeri seotud lood eepikuteks kõrgetasemeliseks planeerimiseks ja jälgimiseks"
       },
       "githubIntegration": {
+        "icon": "🔗",
         "title": "GitHubi Push-integratsioon",
         "desc": "Seo commit-id lugudega automaatselt GitHubi veebikonksu kaudu - maini loo ID-d oma commit-sõnumis"
-      },
-      "fast": {
-        "title": "Kiire ja Reageeriv",
-        "desc": "Sujuv ja viivituseta kasutuskogemus, ei vaja lehekülje värskendamist - näed ka teiste kasutajate muudatusi kohe"
       }
     }
   },

@@ -21,59 +21,15 @@
         {t.home.features.title}
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🔍</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.transparency.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.transparency.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🏎️</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.fast.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.fast.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🎯</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.dragAndDrop.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.dragAndDrop.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🌊</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.kanbanFlow.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.kanbanFlow.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🏷️</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.tagViews.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.tagViews.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">📊</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.autoVelocity.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.autoVelocity.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">⚡</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.agileFirst.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.agileFirst.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🗂️</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.epics.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.epics.desc}</p>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
-          <div class="text-3xl mb-3">🔗</div>
-          <h3 class="text-base font-semibold text-stone-900 mb-1">{t.home.features.githubIntegration.title}</h3>
-          <p class="text-sm text-stone-500">{t.home.features.githubIntegration.desc}</p>
-        </div>
+        {#each Object.entries(t.home.features) as [featureKey, feature] (featureKey)}
+          {#if typeof feature == 'object'}
+            <div class="bg-white rounded-lg p-5 shadow border border-stone-200 hover:bg-stone-50">
+              <div class="text-3xl mb-3">{feature.icon}</div>
+              <h3 class="text-base font-semibold text-stone-900 mb-1">{feature.title}</h3>
+              <p class="text-sm text-stone-500">{feature.desc}</p>
+            </div>
+          {/if}
+        {/each}
       </div>
     </div>
   </section>
