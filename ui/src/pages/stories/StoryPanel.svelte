@@ -12,7 +12,7 @@
   import {dragged} from 'src/shared/draggable'
 
   export let name: keyof typeof t.panels
-  export let show: boolean | string | undefined
+  export let show: boolean
   export let project: ProjectContext
   export let stories: Story[] | undefined
   export let movable = project.canEdit

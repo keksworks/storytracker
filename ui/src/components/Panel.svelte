@@ -4,10 +4,10 @@
   import Button from 'src/components/Button.svelte'
 
   export let name: keyof typeof t.panels
-  export let show: boolean | string | undefined
+  export let show: boolean
 
   function close() {
-    show = undefined
+    show = false
   }
 </script>
 
