@@ -5,8 +5,7 @@
   import Spinner from 'src/components/Spinner.svelte'
   import Button from 'src/components/Button.svelte'
   import Header from 'src/layout/Header.svelte'
-  import {onMount} from 'svelte'
-  import FormField from 'src/forms/FormField.svelte'
+  import {onMount, tick} from 'svelte'
   import {replaceValues} from '@codeborne/i18n-json'
   import ProjectMembersButton from 'src/pages/projects/ProjectMembersButton.svelte'
   import ProjectUpdatesListener from 'src/pages/projects/ProjectUpdatesListener.svelte'
@@ -17,18 +16,17 @@
   import {isMobile, type ProjectContext} from 'src/pages/projects/context'
   import {user} from 'src/stores/auth'
   import ProjectExportButton from 'src/pages/projects/ProjectExportButton.svelte'
+  import SearchPanel from './SearchPanel.svelte'
 
   export let id: Id<Project>
 
   let project: ProjectContext | undefined
   let stories: Story[] = []
   let epics: Epic[] = []
-  let searchQuery: string | undefined
-  let searchResults: Story[] | undefined
-  let loadedSearchResults: Story[] | undefined
   let velocity = 10
   let highlightStoryId: number | undefined
   let flashStoryId: number | undefined
+  let searchPanel: SearchPanel | undefined
 
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
@@ -49,11 +47,12 @@
     history: false
   }
 
-  Object.entries(JSON.parse(localStorage['projectPanels:' + id] || '{}')).forEach(e => {
-    if (typeof e[1] === 'boolean') show[e[0]] = e[1]
-  })
+  if (!isMobile)
+    Object.entries(JSON.parse(localStorage['projectPanels:' + id] || '{}')).forEach(e => {
+      if (typeof e[1] === 'boolean') show[e[0]] = e[1]
+    })
 
-  $: localStorage['projectPanels:' + id] = JSON.stringify(show)
+  $: if (!isMobile) localStorage['projectPanels:' + id] = JSON.stringify(show)
 
   function hideAll(key?: keyof typeof show) {
     Object.keys(show).forEach(k => k != key && (show[k] = false))
@@ -65,27 +64,12 @@
   }
 
   async function onSearch(q?: string) {
-    searchQuery = q
-    loadedSearchResults = undefined
     if (q) {
       if (isMobile) hideAll()
-      if (!show.done) {
-        loadedSearchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
-        // TODO: let server know that we need only stories older than project.currentIterationNum
-        loadedSearchResults = loadedSearchResults.filter(s => s.iteration! < project?.currentIterationNum!)
-      }
-    } else {
-      searchQuery = undefined
-      if (isMobile) show.backlog = true
+    } else if (isMobile) {
+      show.backlog = true
     }
-  }
-
-  function storyMatchesSearch(story: Story, q: string) {
-    return story.id.toString() === q.replace(/^#/, '') ||
-           story.name.toLowerCase().includes(q) ||
-           story.description?.toLowerCase().includes(q) ||
-           story.tags.some(t => t.toLowerCase().includes(q)) ||
-           story.comments.some(c => c.text?.toLowerCase().includes(q))
+    await searchPanel?.search(q)
   }
 
   function onLocate(story: Story) {
@@ -108,7 +92,10 @@
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
     await loadStories(show.done ? 0 : project!.currentIterationNum)
-    if (initialOpenStoryId && !stories.find(s => s.id === initialOpenStoryId)) await onSearch(location.hash)
+    if (initialOpenStoryId && !stories.find(s => s.id === initialOpenStoryId)) {
+      await tick()
+      await onSearch(location.hash)
+    }
   })
 
   $: if (project) project.epicTags = new Set(epics.map(e => e.tag))
@@ -120,11 +107,6 @@
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
   $: myWork = stories.filter(s => s.assignedTo === $user.id && s.status !== StoryStatus.ACCEPTED)
-
-  $: if (searchQuery?.length! > 2) {
-    const q = searchQuery!.toLowerCase()
-    searchResults = (loadedSearchResults ?? []).concat(stories.filter(s => storyMatchesSearch(s, q)))
-  }
 
   async function onDrag(e: {id: Id<Story>, beforeId?: Id<Story>, status?: StoryStatus}) {
     if (!e.id || e.id == e.beforeId) return
@@ -193,7 +175,9 @@
       <ProjectSettingsButton {project}/>
       <ProjectExportButton {project}/>
     {/if}
-    {#if !isMobile}{@render search()}{/if}
+    {#if !isMobile}
+      <SearchPanel mode="input" {isMobile} {onSearch}/>
+    {/if}
   </Header>
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
     <aside class="w-14 max-sm:w-full sm:h-full pt-3 sm:-ml-3">
@@ -202,7 +186,9 @@
           <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
-        {#if isMobile}{@render search()}{/if}
+        {#if isMobile}
+          <SearchPanel mode="input" {isMobile} {onSearch}/>
+        {/if}
       </div>
     </aside>
     {#if !project || !project.members || !stories}
@@ -238,11 +224,10 @@
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <StoryPanel name="search" bind:show={searchQuery} {project} stories={searchResults} movable={false}
-                    {onSearch} {onSaved} {onDelete} {onLocate} bind:flashStoryId
-                    collapseStory={s => s.iteration! < project!.currentIterationNum && s.id !== initialOpenStoryId}>
-          <span slot="right">{searchQuery}</span>
-        </StoryPanel>
+        <SearchPanel mode="panel" bind:this={searchPanel}
+                     {id} {project} {stories} showDone={show.done}
+                     {initialOpenStoryId} {onSaved} {onDelete} {onLocate}
+                     bind:flashStoryId/>
 
         <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
       </div>
@@ -250,9 +235,3 @@
   </div>
 </div>
 
-{#snippet search()}
-  <FormField type="search" placeholder={t.stories.search.placeholder}
-             on:keydown={e => e.key == 'Enter' && onSearch(e.currentTarget?.['value'])}
-             on:input={e => isMobile && !e['value'] && onSearch()}
-  />
-{/snippet}

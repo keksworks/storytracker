@@ -12,7 +12,7 @@
   import {stopAutoscroll} from 'src/shared/autoscroll'
   import {dragged} from 'src/shared/draggable'
 
-  export let show: boolean | string | undefined
+  export let show: boolean
   export let project: ProjectContext
   export let epics: Epic[] | undefined
   export let stories: Story[]
