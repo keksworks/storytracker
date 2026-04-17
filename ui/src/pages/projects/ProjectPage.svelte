@@ -225,7 +225,7 @@
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
         <SearchPanel mode="panel" bind:this={searchPanel}
-                     {project} {stories} {initialOpenStoryId} showDone={show.done}
+                     {project} {stories} {initialOpenStoryId} {pastLoaded}
                      {onSaved} {onDelete} {onLocate}
                      bind:flashStoryId/>
 

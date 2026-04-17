@@ -9,7 +9,7 @@
   export let mode: 'input' | 'panel' = 'panel'
   export let project: ProjectContext
   export let stories: Story[] = []
-  export let showDone = false
+  export let pastLoaded: boolean
   export let initialOpenStoryId: number | undefined = undefined
   export let isMobile = false
   export let onSearch: ((q?: string) => void | Promise<void>) | undefined = undefined
@@ -28,7 +28,7 @@
     showSearch = !!q
     loadedSearchResults = undefined
     if (q) {
-      if (!showDone)
+      if (!pastLoaded)
         loadedSearchResults = await api.get<Story[]>(`projects/${project.id}/stories?q=${encodeURIComponent(q)}&beforeIteration=${project.currentIterationNum}`)
     } else {
       searchQuery = undefined
