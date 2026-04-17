@@ -4,6 +4,7 @@ import db.Id
 import klite.ForbiddenException
 import klite.jdbc.UpdatableEntity
 import klite.jdbc.eq
+import stories.Project.Status.ACTIVE
 import users.Role.ADMIN
 import users.Role.OWNER
 import users.User
@@ -32,10 +33,10 @@ class ProjectImporter(
     val existingProject = runCatching { projectRepository.get(export.project.id) }.getOrNull()
 
     if (existingProject == null) {
-      projectRepository.create(export.project)
+      projectRepository.create(export.project.copy(status = ACTIVE))
       projectMemberRepository.save(ProjectMember(export.project.id, user.id, OWNER))
     } else {
-      if (export.project.isNewer(existingProject)) projectRepository.save(export.project.copy(updatedAt = existingProject.updatedAt))
+      if (export.project.isNewer(existingProject)) projectRepository.save(export.project.copy(status = ACTIVE, updatedAt = existingProject.updatedAt))
       val userRole = if (user.isAdmin) ADMIN else projectMemberRepository.role(existingProject.id, user.id)
       if (userRole !in setOf(ADMIN, OWNER)) throw ForbiddenException("projects.importForbidden")
     }

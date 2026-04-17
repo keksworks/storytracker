@@ -4,6 +4,7 @@ import ch.tutteli.atrium.api.fluent.en_GB.notToContain
 import ch.tutteli.atrium.api.fluent.en_GB.toBeEmpty
 import ch.tutteli.atrium.api.fluent.en_GB.toContain
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.toThrow
 import ch.tutteli.atrium.api.verbs.expect
 import db.DBTest
 import db.TestData.admin
@@ -26,6 +27,7 @@ class ProjectRepositoryTest: DBTest() {
     expect(repository.listForMember(admin.id)).toContain(project)
 
     expect(repository.delete(project.id)).toEqual(1)
+    expect { repository.get(project.id) }.toThrow<NoSuchElementException>()
     expect(repository.list()).notToContain(project)
     expect(repository.listForMember(admin.id)).toBeEmpty()
   }

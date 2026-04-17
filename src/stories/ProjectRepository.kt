@@ -17,6 +17,9 @@ class ProjectRepository(db: DataSource): CrudRepository<Project>(db, "projects")
 
   private val notDeleted = Project::status neq DELETED
 
+  override fun get(id: Id<Project>, forUpdate: Boolean): Project =
+    db.select(selectFrom, Project::id to id, notDeleted) { mapper() }.firstOrNull() ?: throw NoSuchElementException()
+
   override fun list(vararg where: PropValue<Project, *>?, suffix: String): List<Project> =
     db.select(selectFrom, where.filterNotNull() + notDeleted, suffix) { mapper() }
 
