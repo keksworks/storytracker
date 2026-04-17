@@ -7,8 +7,7 @@
   import type {ProjectContext} from 'src/pages/projects/context'
 
   export let mode: 'input' | 'panel' = 'panel'
-  export let id: Id<Project> | undefined = undefined
-  export let project: ProjectContext | undefined = undefined
+  export let project: ProjectContext
   export let stories: Story[] = []
   export let showDone = false
   export let initialOpenStoryId: number | undefined = undefined
@@ -29,11 +28,8 @@
     showSearch = !!q
     loadedSearchResults = undefined
     if (q) {
-      if (!showDone && id) {
-        loadedSearchResults = await api.get<Story[]>(`projects/${id}/stories?q=${encodeURIComponent(q)}`)
-        // Keep old behavior: only include older stories from server-side search.
-        loadedSearchResults = loadedSearchResults.filter(s => s.iteration! < project?.currentIterationNum!)
-      }
+      if (!showDone)
+        loadedSearchResults = await api.get<Story[]>(`projects/${project.id}/stories?q=${encodeURIComponent(q)}&beforeIteration=${project.currentIterationNum}`)
     } else {
       searchQuery = undefined
     }
