@@ -175,8 +175,8 @@
       <ProjectSettingsButton {project}/>
       <ProjectExportButton {project}/>
     {/if}
-    {#if !isMobile}
-      <SearchPanel mode="input" {isMobile} {onSearch}/>
+    {#if !isMobile && project}
+      <SearchPanel mode="input" {isMobile} {onSearch} {project} {pastLoaded}/>
     {/if}
   </Header>
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
@@ -186,8 +186,8 @@
           <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
-        {#if isMobile}
-          <SearchPanel mode="input" {isMobile} {onSearch}/>
+        {#if isMobile && project}
+          <SearchPanel mode="input" {isMobile} {onSearch} {project} {pastLoaded}/>
         {/if}
       </div>
     </aside>
@@ -234,4 +234,3 @@
     {/if}
   </div>
 </div>
-
