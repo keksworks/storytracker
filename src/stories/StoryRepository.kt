@@ -49,7 +49,7 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     Story::projectId to projectId,
     Story::status to NotIn(DELETED),
     fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
-    beforeIteration?.let { sql("iteration < ?", it) },
+    beforeIteration?.let { Story::iteration lt it },
     q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
     suffix = defaultOrder) { mapper() }
 
