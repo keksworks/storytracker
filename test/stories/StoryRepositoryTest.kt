@@ -1,5 +1,6 @@
 package stories
 
+import ch.tutteli.atrium.api.fluent.en_GB.toBeEmpty
 import ch.tutteli.atrium.api.fluent.en_GB.toContainExactly
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
@@ -16,10 +17,16 @@ class StoryRepositoryTest: DBTest() {
 
   @Test fun `save & load`() {
     ProjectRepository(db).save(project)
+    IterationRepository(db).save(iteration)
     repository.save(story)
     repository.save(story2)
+    val oldStory = story.copy(id = Id(), iteration = iteration.number, updatedAt = null)
+    repository.save(oldStory)
     expect(repository.get(story.id)).toEqual(story)
-    expect(repository.list(project.id)).toContainExactly(story, story2)
+    expect(repository.list(project.id)).toContainExactly(oldStory, story, story2)
+    expect(repository.list(project.id, fromIteration = iteration.number)).toContainExactly(oldStory, story, story2)
+    expect(repository.list(project.id, beforeIteration = iteration.number)).toBeEmpty()
+    expect(repository.list(project.id, beforeIteration = iteration.number + 1)).toContainExactly(oldStory)
   }
 
   @Test fun reindexStoryOrder() {
