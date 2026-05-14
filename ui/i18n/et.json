@@ -267,6 +267,7 @@
     "paymentGatewayTimeout": "Kaardimakse teenus ei vasta. Palun proovi uuesti mõne minuti pärast",
     "notFound": "Lehte ei leitud",
     "notFoundInstructions": "Palun kontrolli URL'i korrektsust aadressiribal ja proovi uuesti",
+    "notFoundLogin": "Proovi logida sisse, et näha oma projekte",
     "alreadyExists": "Juba eksisteerib",
     "networkUnavailable": "Serveriga ei saa ühendust, proovige hiljem uuesti",
     "notJson": "Side serveriga on blokeeritud, kontrollige oma võrguühendust",

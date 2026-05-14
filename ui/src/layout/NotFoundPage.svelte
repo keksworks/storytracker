@@ -2,6 +2,7 @@
   import {t} from 'src/i18n'
   import MainPageLayout from './MainPageLayout.svelte'
   import {onMount} from 'svelte'
+  import {user} from 'src/stores/auth'
 
   let show = false
   onMount(() => setTimeout(() => show = true, 500))
@@ -19,6 +20,9 @@
         <div class="sm:border-l sm:border-gray-200 sm:pl-6">
           <h1 class="tracking-tight sm:text-5xl">{t.errors.notFound}</h1>
           <p class="mt-1 text-base text-gray-500">{t.errors.notFoundInstructions}</p>
+          {#if !$user}
+            <p class="mt-4 text-base">{t.errors.notFoundLogin}</p>
+          {/if}
         </div>
       </div>
     </div>
