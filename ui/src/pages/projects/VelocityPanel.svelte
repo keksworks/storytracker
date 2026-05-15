@@ -3,25 +3,28 @@
   import type {ProjectContext} from 'src/pages/projects/context'
   import Panel from 'src/components/Panel.svelte'
   import api from 'src/api/api'
-  import {t} from 'src/i18n'
-  import {formatDate} from '@codeborne/i18n-json'
+  import {formatDate, t} from 'src/i18n'
+  import Spinner from 'src/components/Spinner.svelte'
 
   export let show: boolean
   export let project: ProjectContext
 
-  let iterations: Iteration[] = []
+  let iterations: Iteration[] | undefined
 
-  $: if (show && !iterations.length) loadIterations()
+  $: if (show && !iterations) loadIterations()
 
   async function loadIterations() {
     iterations = await api.get<Iteration[]>(`projects/${project.id}/iterations`)
   }
 
-  $: maxPoints = Math.max(...iterations.map(it => it.acceptedPoints ?? 0), 1)
+  $: maxPoints = Math.max(...iterations?.map(it => it.acceptedPoints ?? 0) ?? [0], 1)
 </script>
+
 <Panel name="velocity" bind:show>
   <div class="p-4 overflow-x-auto">
-    {#if iterations.length === 0}
+    {#if !iterations}
+      <Spinner/>
+    {:else if iterations?.length === 0}
       <div class="text-stone-500 text-center py-8">{t.general.noItems}</div>
     {:else}
       <div class="flex items-end gap-1 min-h-48 h-48">
