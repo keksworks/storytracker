@@ -17,6 +17,7 @@
   import {user} from 'src/stores/auth'
   import ProjectExportButton from 'src/pages/projects/ProjectExportButton.svelte'
   import SearchPanel from './SearchPanel.svelte'
+  import VelocityPanel from './VelocityPanel.svelte'
 
   export let id: Id<Project>
 
@@ -44,6 +45,7 @@
     backlog: true,
     icebox: !isMobile,
     epics: false,
+    velocity: false,
     history: false
   }
 
@@ -223,6 +225,8 @@
         </StoryPanel>
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
+
+        <VelocityPanel bind:show={show.velocity} {project}/>
 
         <SearchPanel mode="panel" bind:this={searchPanel}
                      {project} {stories} {initialOpenStoryId} {pastLoaded}

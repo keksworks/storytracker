@@ -187,7 +187,8 @@
     "epics": "Eepikud",
     "search": "Otsi",
     "history": "Ajalugu",
-    "myWork": "Minu töö"
+    "myWork": "Minu töö",
+    "velocity": "Kiirus"
   },
   "stories": {
     "story": "Lugu",
