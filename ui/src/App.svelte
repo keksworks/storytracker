@@ -30,6 +30,8 @@
     {#if $user}
       <Route path="/projects" component={ProjectsPage}/>
       <Route path="/projects/:id" component={ProjectPage}/>
+    {:else}
+      <Route path="/projects/*path" component={LoginPage}/>
     {/if}
     <Route path="/samples/*path">
       {#snippet children(params)}
