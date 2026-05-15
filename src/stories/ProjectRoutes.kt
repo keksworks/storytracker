@@ -3,13 +3,16 @@ package stories
 import auth.Access
 import auth.user
 import db.Id
+import email.EmailContent
 import history.Change
 import history.ChangeHistoryRepository
 import klite.*
 import klite.annotations.*
+import klite.i18n.lang
 import klite.jdbc.NoTransaction
 import klite.jdbc.eq
 import klite.jdbc.gt
+import klite.smtp.EmailSender
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
@@ -32,7 +35,8 @@ class ProjectRoutes(
   private val attachmentRepository: AttachmentRepository,
   private val changeHistoryRepository: ChangeHistoryRepository,
   private val projectEvents: ProjectEvents,
-  private val projectImporter: ProjectImporter
+  private val projectImporter: ProjectImporter,
+  private val emailSender: EmailSender,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
     e.path("id")?.let {
@@ -90,7 +94,7 @@ class ProjectRoutes(
     projectMemberRepository.listWithUsers(id)
 
   @POST("/:id/members") @Access(ADMIN, OWNER)
-  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest): ProjectMemberUser {
+  fun saveMember(@PathParam id: Id<Project>, req: ProjectMemberRequest, e: HttpExchange): ProjectMemberUser {
     val existingMember = req.id?.let { projectMemberRepository.get(it) }
     require(existingMember == null || existingMember.projectId == id)
     val existingUser = existingMember?.userId?.let { userRepository.get(it) }
@@ -100,6 +104,13 @@ class ProjectRoutes(
     userRepository.save(user)
     val member = existingMember?.copy(role = req.role) ?: ProjectMember(projectId = id, user.id, req.role)
     projectMemberRepository.save(member)
+    if (existingMember == null) {
+      val project = projectRepository.get(id)
+      emailSender.send(user.email, EmailContent(e.lang, "projectInvitation", mapOf(
+        "projectName" to project.name,
+        "inviterName" to e.user.name
+      ), e.fullUrl("/projects/$id")))
+    }
     return ProjectMemberUser(member, user)
   }
 

@@ -18,6 +18,7 @@ import klite.DependencyInjectingRegistry
 import klite.HttpExchange
 import klite.StatusCode.Companion.Found
 import klite.StatusCodeException
+import klite.smtp.EmailSender
 import stories.*
 import users.UserRepository
 import java.net.URI
@@ -40,6 +41,7 @@ abstract class BaseMocks {
     val attachmentRepository = mock<AttachmentRepository>(relaxed = true)
     val changeHistoryRepository = mock<ChangeHistoryRepository>(relaxed = true)
     val projectEvents = mock<ProjectEvents>(relaxed = true)
+    val emailSender = mock<EmailSender>(relaxed = true)
 
     inline fun <reified T: Any> create() = registry.create(T::class)
 
@@ -53,6 +55,7 @@ abstract class BaseMocks {
       every { redirect(any<String>(), any()) } throws StatusCodeException(Found)
       every { redirect(any<URI>(), any()) } throws StatusCodeException(Found)
       every { fullUrl(any()) } answers { URI("https://host" + firstArg<String>()) }
+      every { attr<Any>("user") } returns user
     }
 
     userRepository.apply {

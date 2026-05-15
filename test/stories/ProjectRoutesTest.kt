@@ -13,6 +13,7 @@ import db.TestData.projectMemberUser
 import db.TestData.story
 import db.TestData.story2
 import db.TestData.user
+import email.EmailContent
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -91,7 +92,7 @@ class ProjectRoutesTest: BaseMocks() {
   @Test fun saveMember() {
     val request = ProjectMemberRequest(user.email, MEMBER, "nimi", "TU")
     every { userRepository.by(User::email to request.email) } returns user
-    val result = routes.saveMember(project.id, request)
+    val result = routes.saveMember(project.id, request, exchange)
     expect(result.user.email).toEqual(user.email)
     expect(result.user.name).toEqual("nimi")
     expect(result.member.role).toEqual(MEMBER)
@@ -99,7 +100,19 @@ class ProjectRoutesTest: BaseMocks() {
     verify {
       userRepository.save(result.user)
       projectMemberRepository.save(result.member)
+      emailSender.send(user.email, any<EmailContent>())
     }
+  }
+
+  @Test fun `saveMember does not send invitation for existing member`() {
+    val existingMember = projectMemberUser.member
+    val request = ProjectMemberRequest(user.email, OWNER, user.name, user.initials ?: "", existingMember.id)
+    every { projectMemberRepository.get(existingMember.id) } returns existingMember
+    every { userRepository.get(user.id) } returns user
+    val result = routes.saveMember(project.id, request, exchange)
+    expect(result.member.role).toEqual(OWNER)
+
+    verify(exactly = 0) { emailSender.send(any(), any()) }
   }
 
   @Test fun addMeAsMember() {

@@ -243,6 +243,11 @@
     "loginCode": {
       "subject": "StoryTracker login code",
       "bodyHtml": "Welcome!\n\nYour one-time StoryTracker login code is <b>{code}</b>.\n\nIf you didn't request this code, please ignore this message."
+    },
+    "projectInvitation": {
+      "subject": "You have been invited to project {projectName}",
+      "bodyHtml": "Hello!\n\n{inviterName} has invited you to the <b>{projectName}</b> project on StoryTracker.\n\nClick the button below to open the project.",
+      "actionLabel": "Open project"
     }
   },
   "errors": {

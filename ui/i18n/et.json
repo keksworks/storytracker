@@ -259,6 +259,11 @@
     "loginCode": {
       "subject": "StoryTracker sisselogimiskood",
       "bodyHtml": "Tere tulemast!\n\nSinu ühekordne StoryTracker sisselogimiskood on <b>{code}</b>.\n\nKui sa ei taotlenud seda koodi, siis ignoreeri seda teadet."
+    },
+    "projectInvitation": {
+      "subject": "Sind on kutsutud projekti {projectName}",
+      "bodyHtml": "Tere!\n\n{inviterName} on kutsunud sind StoryTrackeri projekti <b>{projectName}</b>.\n\nKlõpsa alloleval nupul projekti avamiseks.",
+      "actionLabel": "Ava projekt"
     }
   },
   "errors": {
