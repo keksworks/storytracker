@@ -20,7 +20,7 @@
   ): boolean {
     let index = list.findIndex(i => i.id === item.id)
     if (index >= 0) {
-      if (list[index].updatedAt === item.updatedAt) return false
+      if (list[index].updatedAt === item.updatedAt && list[index].order === item.order) return false
       if (isDeleted(item)) { list.splice(index, 1); return true }
       if (list[index].order === item.order) { list[index] = item; onUpdated?.(item); return true }
       list.splice(index, 1)
