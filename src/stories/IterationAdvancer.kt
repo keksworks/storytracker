@@ -47,7 +47,7 @@ class IterationAdvancer(
     val startDate = existingCurrentIteration?.startDate ?: prevIteration?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
     val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
     val iteration = Iteration(
-      p.id, num, length = 1,
+      p.id, num, length = p.iterationWeeks,
       teamStrength = existingCurrentIteration?.teamStrength ?: 100,
       startDate = startDate, endDate = endDate,
       acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
