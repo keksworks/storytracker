@@ -238,7 +238,8 @@
   "iterations": {
     "number": "Iteration number",
     "startDate": "Start date",
-    "points": "Total points"
+    "points": "Total points",
+    "teamStrength": "Team strength"
   },
   "emails": {
     "loginCode": {

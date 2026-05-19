@@ -17,18 +17,19 @@
     iterations = await api.get<Iteration[]>(`projects/${project.id}/iterations`)
   }
 
-  $: maxPoints = Math.max(...iterations?.map(it => it.acceptedPoints ?? 0) ?? [0], 1)
+  $: past = (iterations ?? []).filter(it => it.number < project.currentIterationNum)
+  $: maxPoints = Math.max(...past.map(it => it.acceptedPoints ?? 0), 1)
 </script>
 
 <Panel name="velocity" bind:show>
   <div class="p-4 overflow-x-auto">
     {#if !iterations}
       <Spinner/>
-    {:else if iterations?.length === 0}
+    {:else if past.length === 0}
       <div class="text-stone-500 text-center py-8">{t.general.noItems}</div>
     {:else}
       <div class="flex items-end gap-1 min-h-48 h-48">
-        {#each iterations as it}
+        {#each past as it}
           {@const pts = it.acceptedPoints ?? 0}
           {@const heightPct = (pts / maxPoints) * 100}
           <div class="flex flex-col items-center flex-1 min-w-4 max-w-8 h-full justify-end" title="#{it.number} {formatDate(it.endDate)}: {pts} pts">

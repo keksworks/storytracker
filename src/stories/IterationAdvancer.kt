@@ -37,16 +37,18 @@ class IterationAdvancer(
     log.info("$num $dayOfWeek projects processed")
   }
 
-  private fun advanceFor(p: Project, endDate: LocalDate) {
+  internal fun advanceFor(p: Project, endDate: LocalDate) {
     // TODO: check for iteration length, if it is longer than 1 week
     log.info("Advancing iteration of project ${p.id} ${p.name}")
-    val lastIterations = iterationRepository.list(p.id, fromNumber = p.currentIterationNum - p.velocityAveragedOver + 1)
-    val startDate = lastIterations.find { it.number == p.currentIterationNum }?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
-    val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
-    // TODO: see if iteration already exists with overridden teamStrength
     val num = p.currentIterationNum
+    val lastIterations = iterationRepository.list(p.id, fromNumber = num - p.velocityAveragedOver + 1)
+    val existingCurrentIteration = lastIterations.find { it.number == num }
+    val prevIteration = lastIterations.find { it.number == num - 1 }
+    val startDate = existingCurrentIteration?.startDate ?: prevIteration?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
+    val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
     val iteration = Iteration(
       p.id, num, length = 1,
+      teamStrength = existingCurrentIteration?.teamStrength ?: 100,
       startDate = startDate, endDate = endDate,
       acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
     )
@@ -54,8 +56,8 @@ class IterationAdvancer(
       return log.warn("Skipping non-active iteration")
 
     iterationRepository.save(iteration)
-    // TODO: take into account teamStrength
-    val velocity = (lastIterations + iteration).sumOf { it.acceptedPoints ?: 0 } / (lastIterations.size + 1)
+    val allIterations = lastIterations.filter { it.number < num } + iteration
+    val velocity = allIterations.sumOf { (it.acceptedPoints ?: 0) * 100 / maxOf(it.teamStrength, 1) } / allIterations.size
     projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity))
     storyRepository.setIteration(iteration, acceptedStories.map { it.id })
     log.info("Saved $iteration")

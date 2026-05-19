@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type {Iteration} from 'src/api/types'
   import {type Epic, type Id, type Project, type ProjectMemberUser, Role, type Story, type StoryBlocker, type StoryComment, StoryStatus, StoryType} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
@@ -18,6 +19,7 @@
   import ProjectExportButton from 'src/pages/projects/ProjectExportButton.svelte'
   import SearchPanel from './SearchPanel.svelte'
   import VelocityPanel from './VelocityPanel.svelte'
+  import TeamStrengthButton from './TeamStrengthButton.svelte'
 
   export let id: Id<Project>
 
@@ -25,6 +27,7 @@
   let stories: Story[] = []
   let epics: Epic[] = []
   let velocity = 10
+  let currentTeamStrength = 100
   let highlightStoryId: number | undefined
   let flashStoryId: number | undefined
   let searchPanel: SearchPanel | undefined
@@ -93,6 +96,10 @@
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
+    api.get<Iteration[]>(`projects/${id}/iterations`).then(its => {
+      const cur = its.find(it => it.number === project!.currentIterationNum)
+      if (cur) currentTeamStrength = cur.teamStrength
+    })
     await loadStories(show.done ? 0 : project!.currentIterationNum)
     if (initialOpenStoryId && !stories.find(s => s.id === initialOpenStoryId)) {
       await tick()
@@ -208,7 +215,11 @@
         </StoryPanel>
 
         <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
-          <button slot="left" title={t.projects.velocity} class="px-2 hover:bg-stone-200" on:click={changeVelocity}>⚡{velocity}</button>
+          <svelte:fragment slot="left">
+            <button title={t.projects.velocity} class="flex items-center px-2 hover:bg-stone-200 rounded" on:click={changeVelocity}>⚡{velocity}</button>
+            <TeamStrengthButton bind:teamStrength={currentTeamStrength} canEdit={project.canEdit}
+              onSave={async ts => api.patch(`projects/${id}/iterations/current`, {teamStrength: ts})}/>
+          </svelte:fragment>
           <span slot="right">
             {#if project.canEdit}
               <Button label="＋ {t.stories.add}" on:click={() => addStory(backlog, StoryStatus.UNSTARTED)} variant="outlined"/>

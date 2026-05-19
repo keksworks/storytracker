@@ -254,7 +254,8 @@
   "iterations": {
     "number": "Iteratsiooni number",
     "startDate": "Alguskuupäev",
-    "points": "Punktid kokku"
+    "points": "Punktid kokku",
+    "teamStrength": "Meeskonna tugevus"
   },
   "emails": {
     "loginCode": {

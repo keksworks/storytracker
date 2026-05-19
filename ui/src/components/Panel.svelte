@@ -14,8 +14,8 @@
 {#if show}
   <div class="panel {$$props.class}">
     <h5 class="panel-title">
-      <span>
-        <Icon {name} size="lg"/> {t.panels[name]}
+      <span class="flex items-center gap-1 flex-wrap">
+        <span class="flex items-center gap-1 shrink-0"><Icon {name} size="lg"/> {t.panels[name]}</span>
         <slot name="left"/>
       </span>
       <span>

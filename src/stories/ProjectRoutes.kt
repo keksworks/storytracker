@@ -3,6 +3,7 @@ package stories
 import auth.Access
 import auth.user
 import db.Id
+import db.today
 import email.EmailContent
 import history.Change
 import history.ChangeHistoryRepository
@@ -142,6 +143,18 @@ class ProjectRoutes(
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
     iterationRepository.list(projectId = id)
 
+  @PATCH("/:id/iterations/current") @Access(ADMIN, OWNER, MEMBER)
+  fun updateCurrentIteration(@PathParam id: Id<Project>, req: TeamStrengthRequest): Iteration {
+    val project = projectRepository.get(id)
+    val num = project.currentIterationNum
+    val existing = iterationRepository.get(id, num)
+    val startDate = existing?.startDate ?: iterationRepository.get(id, num - 1)?.endDate ?: today.minusWeeks(project.iterationWeeks.toLong())
+    val endDate = startDate.plusWeeks(project.iterationWeeks.toLong())
+    val iteration = (existing ?: Iteration(id, num, startDate = startDate, endDate = endDate)).copy(teamStrength = req.teamStrength)
+    iterationRepository.save(iteration)
+    return iteration
+  }
+
   @GET("/:id/history") fun history(@PathParam id: Id<Project>): List<Change> =
     changeHistoryRepository.list(id)
 
@@ -193,3 +206,5 @@ class ProjectRoutes(
 data class ProjectMemberRequest(val email: Email, val role: Role, val name: String, val initials: String, val id: Id<ProjectMember>? = null)
 
 data class ProjectExport(val project: Project, val iterations: List<Iteration> = emptyList(), val epics: List<Epic> = emptyList(), val stories: List<Story> = emptyList(), val memberUsers: List<ProjectMemberUser> = emptyList())
+
+data class TeamStrengthRequest(val teamStrength: Int)

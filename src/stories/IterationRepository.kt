@@ -10,6 +10,8 @@ import javax.sql.DataSource
 
 class IterationRepository(db: DataSource): BaseRepository(db, "iterations") {
   fun save(iteration: Iteration) = db.upsert(table, iteration.toValues(), "projectId,number")
+  fun get(projectId: Id<Project>, number: Int): Iteration? =
+    db.select<Iteration>(table, Iteration::projectId to projectId, Iteration::number to number).firstOrNull()
   fun list(projectId: Id<Project>, fromNumber: Int? = null, suffix: String = "order by number") =
     db.select<Iteration>(table, Iteration::projectId to projectId, fromNumber?.let { Iteration::number gte it }, suffix = suffix)
 }
