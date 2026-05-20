@@ -9,6 +9,7 @@ import klite.jobs.Job
 import klite.logger
 import klite.warn
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.WEEKS
 
 class IterationAdvancer(
   private val projectRepository: ProjectRepository,
@@ -38,24 +39,25 @@ class IterationAdvancer(
   }
 
   internal fun advanceFor(p: Project, endDate: LocalDate) {
-    // TODO: check for iteration length, if it is longer than 1 week
     log.info("Advancing iteration of project ${p.id} ${p.name}")
     val num = p.currentIterationNum
     val lastIterations = iterationRepository.list(p.id, fromNumber = num - p.velocityAveragedOver + 1)
     val existingCurrentIteration = lastIterations.find { it.number == num }
     val prevIteration = lastIterations.find { it.number == num - 1 }
     val startDate = existingCurrentIteration?.startDate ?: prevIteration?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
+    if (startDate.plusWeeks(p.iterationWeeks.toLong()) != endDate)
+      return log.warn("Skipping: iteration length mismatch for project ${p.id}, expected ${p.iterationWeeks} weeks but got ${WEEKS.between(startDate, endDate)}")
     val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
+    if (acceptedStories.isEmpty()) return log.warn("Skipping non-active iteration")
+
     val iteration = Iteration(
       p.id, num, length = p.iterationWeeks,
       teamStrength = existingCurrentIteration?.teamStrength ?: 100,
       startDate = startDate, endDate = endDate,
       acceptedPoints = acceptedStories.sumOf { it.points ?: 0 },
     )
-    if (acceptedStories.isEmpty())
-      return log.warn("Skipping non-active iteration")
-
     iterationRepository.save(iteration)
+
     val allIterations = lastIterations.filter { it.number < num } + iteration
     val velocity = allIterations.sumOf { (it.acceptedPoints ?: 0) * 100 / maxOf(it.teamStrength, 1) } / allIterations.size
     projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity))

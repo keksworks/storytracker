@@ -14,7 +14,7 @@ class IterationAdvancerTest: BaseMocks() {
   val advancer = create<IterationAdvancer>()
   val project = TestData.project.copy(currentIterationNum = 2, velocityAveragedOver = 2)
   val endDate: LocalDate = date
-  val iteration1 = Iteration(project.id, 1, teamStrength = 100, startDate = endDate.minusWeeks(1), endDate = endDate, acceptedPoints = 6)
+  val iteration1 = Iteration(project.id, 1, teamStrength = 100, startDate = endDate.minusWeeks(2), endDate = endDate.minusWeeks(1), acceptedPoints = 6)
   val acceptedStory: Story = story.copy(acceptedAt = now, points = 4)
 
   private fun mockIterations(vararg its: Iteration) =
@@ -38,7 +38,7 @@ class IterationAdvancerTest: BaseMocks() {
   }
 
   @Test fun `uses teamStrength from existing iteration record`() {
-    val existingCurrent = Iteration(project.id, 2, teamStrength = 75, startDate = endDate.minusDays(5), endDate = endDate)
+    val existingCurrent = Iteration(project.id, 2, teamStrength = 75, startDate = endDate.minusWeeks(1), endDate = endDate)
     mockIterations(existingCurrent)
     mockAcceptedStories(acceptedStory)
     advancer.advanceFor(this@IterationAdvancerTest.project, endDate)
@@ -46,7 +46,7 @@ class IterationAdvancerTest: BaseMocks() {
   }
 
   @Test fun `uses startDate from existing iteration record`() {
-    val customStart = endDate.minusDays(5)
+    val customStart = endDate.minusWeeks(1)
     val existingCurrent = Iteration(project.id, 2, teamStrength = 100, startDate = customStart, endDate = endDate)
     mockIterations(existingCurrent)
     mockAcceptedStories(acceptedStory)
@@ -83,5 +83,45 @@ class IterationAdvancerTest: BaseMocks() {
     mockAcceptedStories(acceptedStory)
     advancer.advanceFor(this@IterationAdvancerTest.project, endDate)
     verify { projectRepository.save(match { it.currentIterationNum == project.currentIterationNum + 1 }) }
+  }
+
+  @Test fun `skips 2-week project when only 1 week has elapsed`() {
+    val twoWeekProject = project.copy(iterationWeeks = 2)
+    // prevIteration ended just 1 week before endDate → only 1 week elapsed, should skip
+    val prevIteration = iteration1.copy(endDate = endDate.minusWeeks(1))
+    mockIterations(prevIteration)
+    mockAcceptedStories(acceptedStory)
+    advancer.advanceFor(twoWeekProject, endDate)
+    verify(exactly = 0) { iterationRepository.save(any()) }
+  }
+
+  @Test fun `advances 2-week project when full 2 weeks have elapsed`() {
+    val twoWeekProject = project.copy(iterationWeeks = 2)
+    // prevIteration ended 2 weeks before endDate → exactly 2 weeks elapsed, should advance
+    val prevIteration = iteration1.copy(endDate = endDate.minusWeeks(2))
+    mockIterations(prevIteration)
+    mockAcceptedStories(acceptedStory)
+    advancer.advanceFor(twoWeekProject, endDate)
+    verify { iterationRepository.save(match { it.number == 2 && it.length == 2 }) }
+  }
+
+  @Test fun `2-week project with no prior iteration uses iterationWeeks for startDate`() {
+    val twoWeekProject = project.copy(iterationWeeks = 2)
+    // no prior iterations → startDate = endDate - 2 weeks → length check passes
+    mockIterations()
+    mockAcceptedStories(acceptedStory)
+    advancer.advanceFor(twoWeekProject, endDate)
+    verify { iterationRepository.save(match { it.startDate == endDate.minusWeeks(2) }) }
+  }
+
+  @Test fun `velocity averages correctly across 2-week iterations`() {
+    val twoWeekProject = project.copy(iterationWeeks = 2, velocityAveragedOver = 2)
+    val prev = Iteration(twoWeekProject.id, 1, length = 2, teamStrength = 100,
+      startDate = endDate.minusWeeks(4), endDate = endDate.minusWeeks(2), acceptedPoints = 8)
+    mockIterations(prev)
+    mockAcceptedStories(acceptedStory.copy(points = 4))
+    advancer.advanceFor(twoWeekProject, endDate)
+    // prev: 8*100/100=8 normalized; new: 4*100/100=4; avg=(8+4)/2=6
+    verify { projectRepository.save(match { it.velocity == 6 }) }
   }
 }
