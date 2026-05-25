@@ -1,7 +1,10 @@
 <script lang="ts">
   import {formatDate, t} from 'src/i18n'
+  import TeamStrengthButton from 'src/pages/projects/TeamStrengthButton.svelte'
 
-  export let iteration: {number?: number, points: number, startDate: string} | null
+  export let iteration: {number?: number, points: number, startDate: string, teamStrength?: number} | null
+  export let canEdit = false
+  export let onTeamStrengthSave: (ts: number) => Promise<void> = async () => {}
 </script>
 
 {#if iteration}
@@ -12,6 +15,11 @@
       {/if}
       <span title={t.iterations.startDate}>{formatDate(iteration.startDate)}</span>
     </div>
-    <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
+    <div class="flex items-center gap-1">
+      {#if iteration.teamStrength !== undefined}
+        <TeamStrengthButton teamStrength={iteration.teamStrength} {canEdit} onSave={onTeamStrengthSave}/>
+      {/if}
+      <div class="font-bold" title={t.iterations.points}>{iteration.points}</div>
+    </div>
   </div>
 {/if}

@@ -145,36 +145,42 @@ class ProjectRoutesTest: BaseMocks() {
     expect(routes.iterations(project.id)).toEqual(listOf(iteration))
   }
 
-  @Test fun `updateCurrentIteration creates new when no existing`() {
+  @Test fun `updateIteration creates new when no existing`() {
     every { iterationRepository.get(project.id, project.currentIterationNum) } returns null
     every { iterationRepository.get(project.id, project.currentIterationNum - 1) } returns null
 
-    val result = routes.updateCurrentIteration(project.id, TeamStrengthRequest(80))
+    routes.updateIteration(project.id, project.currentIterationNum, TeamStrengthRequest(80))
 
-    expect(result.teamStrength).toEqual(80)
-    expect(result.number).toEqual(project.currentIterationNum)
     verify { iterationRepository.save(match { it.teamStrength == 80 && it.number == project.currentIterationNum }) }
   }
 
-  @Test fun `updateCurrentIteration uses previous iteration endDate as startDate`() {
+  @Test fun `updateIteration uses previous iteration endDate as startDate`() {
     val prevIteration = iteration.copy(number = project.currentIterationNum - 1)
     every { iterationRepository.get(project.id, project.currentIterationNum) } returns null
     every { iterationRepository.get(project.id, project.currentIterationNum - 1) } returns prevIteration
 
-    val result = routes.updateCurrentIteration(project.id, TeamStrengthRequest(60))
+    routes.updateIteration(project.id, project.currentIterationNum, TeamStrengthRequest(60))
 
-    expect(result.startDate).toEqual(prevIteration.endDate)
-    expect(result.endDate).toEqual(prevIteration.endDate.plusWeeks(project.iterationWeeks.toLong()))
+    verify { iterationRepository.save(match { it.startDate == prevIteration.endDate && it.endDate == prevIteration.endDate.plusWeeks(project.iterationWeeks.toLong()) }) }
   }
 
-  @Test fun `updateCurrentIteration updates teamStrength of existing record`() {
+  @Test fun `updateIteration updates teamStrength of existing record`() {
     every { iterationRepository.get(project.id, project.currentIterationNum) } returns iteration
 
-    val result = routes.updateCurrentIteration(project.id, TeamStrengthRequest(50))
+    routes.updateIteration(project.id, project.currentIterationNum, TeamStrengthRequest(50))
 
-    expect(result.teamStrength).toEqual(50)
-    expect(result.startDate).toEqual(iteration.startDate)
     verify { iterationRepository.save(match { it.teamStrength == 50 && it.startDate == iteration.startDate }) }
+  }
+
+  @Test fun `updateIteration recalculates velocity from past iterations`() {
+    val pastIteration = iteration.copy(number = 0, teamStrength = 80, acceptedPoints = 8)
+    every { iterationRepository.get(project.id, 0) } returns pastIteration
+    val savedIteration = pastIteration.copy(teamStrength = 50)
+    every { iterationRepository.list(project.id, fromNumber = any()) } returns listOf(savedIteration)
+
+    routes.updateIteration(project.id, 0, TeamStrengthRequest(50))
+
+    verify { projectRepository.save(match { it.velocity == calculateVelocity(listOf(savedIteration)) }) }
   }
 
   @Test fun history() {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {type Story, StoryStatus} from 'src/api/types'
+  import {type Iteration, type Story, StoryStatus} from 'src/api/types'
   import {t} from 'src/i18n'
   import Spinner from 'src/components/Spinner.svelte'
   import type {ProjectContext} from 'src/pages/projects/context'
@@ -26,6 +26,8 @@
   export let highlightStoryId: number | undefined = undefined
   export let flashStoryId: number | undefined = undefined
   export let collapseStory: ((story: Story) => boolean) | undefined = undefined
+  export let iterationsData: Iteration[] = []
+  export let onTeamStrengthSave: (iterationNum: number, ts: number) => Promise<void> = async () => {}
 
   let showCollapsed = false
 
@@ -41,7 +43,7 @@
     }
   }
 
-  let iterations: ({number?: number, points: number, startDate: string}|null)[] = []
+  let iterations: ({number?: number, points: number, startDate: string, teamStrength?: number}|null)[] = []
   $: {
     iterations = []
     if (velocity && stories) {
@@ -58,10 +60,13 @@
       }
     } else if (stories) {
       // TODO: load real iterations from the server
+      const itMap = new Map(iterationsData.map(it => [it.number, it]))
       let iteration: typeof iterations[number] | undefined
       for (const s of stories) {
-        if (s.iteration! > (iteration?.number ?? 0))
-          iterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!}
+        if (s.iteration! > (iteration?.number ?? 0)) {
+          const itData = itMap.get(s.iteration!)
+          iterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!, teamStrength: itData?.teamStrength}
+        }
         if (iteration) iteration.points += s.points ?? 0
       }
     }
@@ -92,7 +97,9 @@
         {#if showCollapsed}
           {#each collapsedStories as story (story.id)}
             {@const iteration = iterations[story.id]}
-            <IterationHeader {iteration}/>
+            <IterationHeader {iteration}
+              canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
+              onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
             <StoryView {project} {story} {stories} movable={false} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
                        bind:highlightId={highlightStoryId} bind:flashId={flashStoryId}/>
           {/each}
@@ -102,7 +109,9 @@
 
     {#each activeStories as story, i (story.id ?? i)}
       {@const iteration = iterations[story.id]}
-      <IterationHeader {iteration}/>
+      <IterationHeader {iteration}
+        canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
+        onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
       <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
                   bind:highlightId={highlightStoryId} bind:flashId={flashStoryId}/>
     {/each}

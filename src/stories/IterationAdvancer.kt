@@ -59,7 +59,7 @@ class IterationAdvancer(
     iterationRepository.save(iteration)
 
     val allIterations = lastIterations.filter { it.number < num } + iteration
-    val velocity = allIterations.sumOf { (it.acceptedPoints ?: 0) * 100 / maxOf(it.teamStrength, 1) } / allIterations.size
+    val velocity = calculateVelocity(allIterations)
     projectRepository.save(p.copy(currentIterationNum = num + 1, velocity = velocity))
     storyRepository.setIteration(iteration, acceptedStories.map { it.id })
     log.info("Saved $iteration")

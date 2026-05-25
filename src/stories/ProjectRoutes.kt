@@ -143,16 +143,18 @@ class ProjectRoutes(
   @GET("/:id/iterations") fun iterations(@PathParam id: Id<Project>): List<Iteration> =
     iterationRepository.list(projectId = id)
 
-  @PATCH("/:id/iterations/current") @Access(ADMIN, OWNER, MEMBER)
-  fun updateCurrentIteration(@PathParam id: Id<Project>, req: TeamStrengthRequest): Iteration {
+  @PATCH("/:id/iterations/:number") @Access(ADMIN, OWNER, MEMBER)
+  fun updateIteration(@PathParam id: Id<Project>, @PathParam number: Int, req: TeamStrengthRequest): Project {
     val project = projectRepository.get(id)
-    val num = project.currentIterationNum
-    val existing = iterationRepository.get(id, num)
-    val startDate = existing?.startDate ?: iterationRepository.get(id, num - 1)?.endDate ?: today.minusWeeks(project.iterationWeeks.toLong())
+    val existing = iterationRepository.get(id, number)
+    val startDate = existing?.startDate ?: iterationRepository.get(id, number - 1)?.endDate ?: today.minusWeeks(project.iterationWeeks.toLong())
     val endDate = startDate.plusWeeks(project.iterationWeeks.toLong())
-    val iteration = (existing ?: Iteration(id, num, startDate = startDate, endDate = endDate)).copy(teamStrength = req.teamStrength)
-    iterationRepository.save(iteration)
-    return iteration
+    iterationRepository.save((existing ?: Iteration(id, number, startDate = startDate, endDate = endDate)).copy(teamStrength = req.teamStrength))
+    val pastIterations = iterationRepository.list(id, fromNumber = project.currentIterationNum - project.velocityAveragedOver)
+      .filter { it.number < project.currentIterationNum }
+    val updated = project.copy(velocity = calculateVelocity(pastIterations))
+    projectRepository.save(updated)
+    return updated
   }
 
   @GET("/:id/history") fun history(@PathParam id: Id<Project>): List<Change> =

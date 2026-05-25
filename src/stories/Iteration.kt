@@ -12,3 +12,7 @@ data class Iteration(
   val endDate: LocalDate,
   val acceptedPoints: Int? = null,
 )
+
+fun calculateVelocity(iterations: List<Iteration>) =
+  if (iterations.isEmpty()) 0
+  else iterations.sumOf { (it.acceptedPoints ?: 0) * 100 / maxOf(it.teamStrength, 1) } / iterations.size

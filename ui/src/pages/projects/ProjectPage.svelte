@@ -28,6 +28,7 @@
   let epics: Epic[] = []
   let velocity = 10
   let currentTeamStrength = 100
+  let allIterations: Iteration[] = []
   let highlightStoryId: number | undefined
   let flashStoryId: number | undefined
   let searchPanel: SearchPanel | undefined
@@ -97,6 +98,7 @@
     })
     api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
     api.get<Iteration[]>(`projects/${id}/iterations`).then(its => {
+      allIterations = its
       const cur = its.find(it => it.number === project!.currentIterationNum)
       if (cur) currentTeamStrength = cur.teamStrength
     })
@@ -169,6 +171,13 @@
     stories.splice(index, 1)
     stories = stories
   }
+
+  async function onDoneIterationTeamStrengthSave(iterationNum: number, teamStrength: number) {
+    const updated = await api.patch(`projects/${id}/iterations/${iterationNum}`, {teamStrength}) as Project
+    velocity = updated.velocity
+    project = {...project!, velocity: updated.velocity}
+    allIterations = allIterations.map(it => it.number === iterationNum ? {...it, teamStrength} : it)
+  }
 </script>
 
 <svelte:head>
@@ -208,7 +217,8 @@
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
                     {onSearch} {onSaved} {onDelete} bind:flashStoryId
-                    collapseStory={s => s.iteration! < project!.currentIterationNum - 3 && s.id !== initialOpenStoryId}/>
+                    iterationsData={allIterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
+                    collapseStory={s => s.iteration! < project!.currentIterationNum - project!.velocityAveragedOver && s.id !== initialOpenStoryId}/>
 
         <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId>
           <span slot="right"></span>
@@ -218,7 +228,7 @@
           <svelte:fragment slot="left">
             <button title={t.projects.velocity} class="flex items-center px-2 hover:bg-stone-200 rounded" on:click={changeVelocity}>⚡{velocity}</button>
             <TeamStrengthButton bind:teamStrength={currentTeamStrength} canEdit={project.canEdit}
-              onSave={async ts => api.patch(`projects/${id}/iterations/current`, {teamStrength: ts})}/>
+              onSave={async ts => api.patch(`projects/${id}/iterations/${project!.currentIterationNum}`, {teamStrength: ts})}/>
           </svelte:fragment>
           <span slot="right">
             {#if project.canEdit}
