@@ -28,7 +28,7 @@
   let epics: Epic[] = []
   let velocity = 10
   let currentTeamStrength = 100
-  let allIterations: Iteration[] = []
+  let iterations: Iteration[] = []
   let highlightStoryId: number | undefined
   let flashStoryId: number | undefined
   let searchPanel: SearchPanel | undefined
@@ -96,12 +96,12 @@
       project!.isOwner = $user.isAdmin || role == Role.OWNER
       project!.canEdit = project!.isOwner || role == Role.MEMBER
     })
-    api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
-    api.get<Iteration[]>(`projects/${id}/iterations`).then(its => {
-      allIterations = its
-      const cur = its.find(it => it.number === project!.currentIterationNum)
+    api.get<Iteration[]>(`projects/${id}/iterations`).then(r => {
+      iterations = r
+      const cur = r.find(it => it.number === project!.currentIterationNum)
       if (cur) currentTeamStrength = cur.teamStrength
     })
+    api.get<Epic[]>(`projects/${id}/epics`).then(r => epics = r)
     await loadStories(show.done ? 0 : project!.currentIterationNum)
     if (initialOpenStoryId && !stories.find(s => s.id === initialOpenStoryId)) {
       await tick()
@@ -176,7 +176,7 @@
     const updated = await api.patch(`projects/${id}/iterations/${iterationNum}`, {teamStrength}) as Project
     velocity = updated.velocity
     project = {...project!, velocity: updated.velocity}
-    allIterations = allIterations.map(it => it.number === iterationNum ? {...it, teamStrength} : it)
+    iterations = iterations.map(it => it.number === iterationNum ? {...it, teamStrength} : it)
   }
 </script>
 
@@ -217,7 +217,7 @@
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
                     {onSearch} {onSaved} {onDelete} bind:flashStoryId
-                    iterationsData={allIterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
+                    iterationsData={iterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
                     collapseStory={s => s.iteration! < project!.currentIterationNum - project!.velocityAveragedOver && s.id !== initialOpenStoryId}/>
 
         <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId>
@@ -247,7 +247,7 @@
 
         <EpicsPanel bind:show={show.epics} {project} bind:epics {stories} {onSearch} onStorySaved={onSaved}/>
 
-        <VelocityPanel bind:show={show.velocity} {project}/>
+        <VelocityPanel bind:show={show.velocity} {project} {iterations}/>
 
         <SearchPanel mode="panel" bind:this={searchPanel}
                      {project} {stories} {initialOpenStoryId} {pastLoaded}

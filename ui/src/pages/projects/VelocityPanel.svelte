@@ -2,20 +2,12 @@
   import type {Iteration} from 'src/api/types'
   import type {ProjectContext} from 'src/pages/projects/context'
   import Panel from 'src/components/Panel.svelte'
-  import api from 'src/api/api'
   import {formatDate, t} from 'src/i18n'
   import Spinner from 'src/components/Spinner.svelte'
 
   export let show: boolean
   export let project: ProjectContext
-
-  let iterations: Iteration[] | undefined
-
-  $: if (show && !iterations) loadIterations()
-
-  async function loadIterations() {
-    iterations = await api.get<Iteration[]>(`projects/${project.id}/iterations`)
-  }
+  export let iterations: Iteration[] | undefined
 
   $: past = (iterations ?? []).filter(it => it.number < project.currentIterationNum)
   $: maxPoints = Math.max(...past.map(it => it.acceptedPoints ?? 0), 1)
