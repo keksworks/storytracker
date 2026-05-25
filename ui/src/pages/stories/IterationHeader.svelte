@@ -4,7 +4,7 @@
 
   export let iteration: {number?: number, points: number, startDate: string, teamStrength?: number} | null
   export let canEdit = false
-  export let onTeamStrengthSave: (ts: number) => Promise<void> = async () => {}
+  export let onTeamStrengthSave: (n: number) => void
 </script>
 
 {#if iteration}

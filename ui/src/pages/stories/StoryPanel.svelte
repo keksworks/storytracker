@@ -26,8 +26,8 @@
   export let highlightStoryId: number | undefined = undefined
   export let flashStoryId: number | undefined = undefined
   export let collapseStory: ((story: Story) => boolean) | undefined = undefined
-  export let iterationsData: Iteration[] = []
-  export let onTeamStrengthSave: (iterationNum: number, ts: number) => Promise<void> = async () => {}
+  export let iterations: Iteration[] = []
+  export let onTeamStrengthSave: (iterationNum: number, ts: number) => void = () => {}
 
   let showCollapsed = false
 
@@ -43,29 +43,28 @@
     }
   }
 
-  let iterations: ({number?: number, points: number, startDate: string, teamStrength?: number}|null)[] = []
+  let storyIterations: ({number?: number, points: number, startDate: string, teamStrength?: number}|null)[] = []
   $: {
-    iterations = []
+    storyIterations = []
     if (velocity && stories) {
       let points = 0
       let date = new Date()
       for (const s of stories) {
         if (points + s.points! > velocity && s.status == StoryStatus.UNSTARTED) {
           date.setDate(date.getDate() + project.iterationWeeks * 7)
-          iterations[s.id] = {points, startDate: date.toISOString()}
+          storyIterations[s.id] = {points, startDate: date.toISOString()}
           points = 0
         } else {
           points += s.points ?? 0
         }
       }
     } else if (stories) {
-      // TODO: load real iterations from the server
-      const itMap = new Map(iterationsData.map(it => [it.number, it]))
-      let iteration: typeof iterations[number] | undefined
+      const itMap = new Map(iterations.map(it => [it.number, it]))
+      let iteration: typeof storyIterations[number] | undefined
       for (const s of stories) {
         if (s.iteration! > (iteration?.number ?? 0)) {
-          const itData = itMap.get(s.iteration!)
-          iterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!, teamStrength: itData?.teamStrength}
+          const it = itMap.get(s.iteration!)
+          storyIterations[s.id] = iteration = {number: s.iteration, points: 0, startDate: s.acceptedAt!, teamStrength: it?.teamStrength}
         }
         if (iteration) iteration.points += s.points ?? 0
       }
@@ -96,7 +95,7 @@
         </button>
         {#if showCollapsed}
           {#each collapsedStories as story (story.id)}
-            {@const iteration = iterations[story.id]}
+            {@const iteration = storyIterations[story.id]}
             <IterationHeader {iteration}
               canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
               onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
@@ -108,7 +107,7 @@
     {/if}
 
     {#each activeStories as story, i (story.id ?? i)}
-      {@const iteration = iterations[story.id]}
+      {@const iteration = storyIterations[story.id]}
       <IterationHeader {iteration}
         canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
         onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>

@@ -217,7 +217,7 @@
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
                     {onSearch} {onSaved} {onDelete} bind:flashStoryId
-                    iterationsData={iterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
+                    {iterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
                     collapseStory={s => s.iteration! < project!.currentIterationNum - project!.velocityAveragedOver && s.id !== initialOpenStoryId}/>
 
         <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId>
