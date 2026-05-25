@@ -38,7 +38,7 @@
   }
 
   async function loadStories(fromIteration: number) {
-    stories = await api.get<Story[]>(`projects/${id}/stories?fromIteration=${fromIteration}`)
+    stories = await api.get(`projects/${id}/stories?fromIteration=${fromIteration}`)
     if (!fromIteration) pastLoaded = true
   }
 
@@ -112,7 +112,7 @@
 
   $: if (show.done && !pastLoaded) loadStories(0)
 
-  $: done = stories.filter(s => s.iteration! < project?.currentIterationNum!)
+  $: done = pastLoaded ? stories.filter(s => s.iteration! < project?.currentIterationNum!) : undefined
   $: icebox = stories.filter(s => s.status === StoryStatus.UNSCHEDULED)
   $: backlog = stories.filter(s => s.status !== StoryStatus.UNSCHEDULED && (!s.iteration || s.iteration >= project?.currentIterationNum!))
   $: myWork = stories.filter(s => s.assignedTo === $user.id && s.status !== StoryStatus.ACCEPTED)
