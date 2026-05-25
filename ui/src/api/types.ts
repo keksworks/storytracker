@@ -76,15 +76,15 @@ export type Email = `${string}@${string}`
 export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDNESDAY', THURSDAY = 'THURSDAY', FRIDAY = 'FRIDAY', SATURDAY = 'SATURDAY', SUNDAY = 'SUNDAY'}
 
 // db.TestData
-export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":"200000001","isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
-export const change = {"changedAt":"2025-03-03T00:00:00Z","changedBy":"200000002","new":{"status":"DONE"},"old":{"status":"TODO"},"rowId":"200000004","table":"stories"} as Change
+export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
+export const change = {"changedAt":"2025-03-03T00:00:00Z","changedBy":200000002,"new":{"status":"DONE"},"old":{"status":"TODO"},"rowId":200000004,"table":"stories"} as Change
 export const date = "2025-03-03" as LocalDate
-export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","deleted":false,"id":"200000003","name":"Epic 1","order":0.0,"projectId":"1","tag":"epic1"} as Epic
-export const iteration = {"endDate":"2025-03-10","length":1,"number":1,"projectId":"1","startDate":"2025-03-03","teamStrength":100} as Iteration
+export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","deleted":false,"id":200000003,"name":"Epic 1","order":0.0,"projectId":1,"tag":"epic1"} as Epic
+export const iteration = {"endDate":"2025-03-10","length":1,"number":1,"projectId":1,"startDate":"2025-03-03","teamStrength":100} as Iteration
 export const now = "2025-03-03T00:00:00Z" as Instant
-export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":"1","iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","status":"ACTIVE","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3,"webhookSecret":"73bfc75b-d0f4-43f8-9bd2-378a56291476"} as Project
-export const projectMember = {"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":"200000006","mentionNotifications":false,"projectId":"1","role":"MEMBER","userId":"200000002"} as ProjectMember
-export const projectMemberUser = {"id":"200000006","member":{"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":"200000006","mentionNotifications":false,"projectId":"1","role":"MEMBER","userId":"200000002"},"user":{"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":"200000002","isAdmin":false,"lang":"en","lastName":"User","name":"Test User"}} as ProjectMemberUser
-export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":"200000004","name":"Story 1","order":0.0,"projectId":"1","reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
-export const story2 = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":"200000005","name":"Story 2","order":2.0,"projectId":"1","reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
-export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":"200000002","isAdmin":false,"lang":"en","lastName":"User","name":"Test User"} as User
+export const project = {"bugsEstimatable":false,"createdAt":"2025-03-03T00:00:00Z","currentIterationNum":1,"defaultStoryPoints":1,"description":"Description","id":1,"iterationWeeks":1,"name":"Project 1","reviewTypes":["Test (QA)","Design","Code","Security"],"startDay":"MONDAY","status":"ACTIVE","tags":[],"timezone":"UTC","velocity":10,"velocityAveragedOver":3,"webhookSecret":"73bfc75b-d0f4-43f8-9bd2-378a56291476"} as Project
+export const projectMember = {"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":200000006,"mentionNotifications":false,"projectId":1,"role":"MEMBER","userId":200000002} as ProjectMember
+export const projectMemberUser = {"id":200000006,"member":{"commentNotifications":false,"createdAt":"2025-03-03T00:00:00Z","id":200000006,"mentionNotifications":false,"projectId":1,"role":"MEMBER","userId":200000002},"user":{"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":200000002,"isAdmin":false,"lang":"en","lastName":"User","name":"Test User"}} as ProjectMemberUser
+export const story = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000004,"name":"Story 1","order":0.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
+export const story2 = {"blockers":[],"comments":[],"createdAt":"2025-03-03T00:00:00Z","id":200000005,"name":"Story 2","order":2.0,"projectId":1,"reviews":[],"status":"UNSTARTED","tags":[],"tasks":[],"type":"FEATURE"} as Story
+export const user = {"createdAt":"2025-03-03T00:00:00Z","email":"user@azib.net","firstName":"Test","id":200000002,"isAdmin":false,"lang":"en","lastName":"User","name":"Test User"} as User
