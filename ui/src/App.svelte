@@ -33,14 +33,12 @@
     {:else}
       <Route path="/projects/*path" component={LoginPage}/>
     {/if}
-    <Route path="/samples/*path">
-      {#snippet children(params)}
-        {#await import('src/samples/SamplesPage.svelte')}
-          <Spinner/>
-        {:then samples}
-          <svelte:component this={samples.default} path={params.path}/>
-        {/await}
-      {/snippet}
+    <Route path="/samples/*path" let:path>
+      {#await import('src/samples/SamplesPage.svelte')}
+        <Spinner/>
+      {:then samples}
+        <svelte:component this={samples.default} {path}/>
+      {/await}
     </Route>
     <Route component={NotFoundPage}/>
   </div>
