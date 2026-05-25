@@ -1,10 +1,9 @@
 package stories
 
-import db.today
 import klite.error
 import klite.info
 import klite.jdbc.Transaction
-import klite.jdbc.gte
+import klite.jdbc.notNull
 import klite.jobs.Job
 import klite.logger
 import klite.warn
@@ -19,7 +18,7 @@ class IterationAdvancer(
   private val log = logger()
 
   override suspend fun run() {
-    advance(today)
+    advance(LocalDate.of(2026, 5, 26))
   }
 
   private fun advance(endDate: LocalDate) {
@@ -45,9 +44,9 @@ class IterationAdvancer(
     val existingCurrentIteration = lastIterations.find { it.number == num }
     val prevIteration = lastIterations.find { it.number == num - 1 }
     val startDate = existingCurrentIteration?.startDate ?: prevIteration?.endDate ?: endDate.minusWeeks(p.iterationWeeks.toLong())
-    if (startDate.plusWeeks(p.iterationWeeks.toLong()) != endDate)
+    if (startDate.plusWeeks(p.iterationWeeks.toLong()) > endDate)
       return log.warn("Skipping: iteration length mismatch for project ${p.id}, expected ${p.iterationWeeks} weeks but got ${WEEKS.between(startDate, endDate)}")
-    val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt gte startDate, Story::iteration to null)
+    val acceptedStories = storyRepository.list(Story::projectId to p.id, Story::acceptedAt to notNull, Story::iteration to null)
     if (acceptedStories.isEmpty()) return log.warn("Skipping non-active iteration")
 
     val iteration = Iteration(
