@@ -22,7 +22,7 @@ import kotlin.reflect.full.hasAnnotation
 class AccessChecker(private val userRepository: UserRepository): Before {
   override suspend fun before(exchange: HttpExchange) {
     if (exchange.method == OPTIONS) return
-    val user = exchange.session["userId"]?.let { userRepository.get(Id(it)) }
+    val user = exchange.session["userId"]?.let { userRepository.get(Id(it.toLong())) }
     exchange.attr("user", user)
     val access = exchange.route.findAnnotation<Access>()
     val isPublic = access == null && exchange.route.hasAnnotation<Public>() || exchange.route is NotFoundRoute

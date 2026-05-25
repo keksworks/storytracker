@@ -1,5 +1,6 @@
 package db
 
+import klite.Converter
 import klite.i18n.Lang
 import klite.jdbc.*
 import klite.json.parse
@@ -12,8 +13,8 @@ import javax.sql.DataSource
   companion object {
     val sequence = AtomicLong(200_000_000 + Random().nextLong(100_000) * 10)
     fun generate(): Id<Any> = Id(sequence.incrementAndGet())
+    init { Converter.use<Id<Any>> { Id(it.toLong()) } }
   }
-  constructor(value: String): this(value.toLong())
   constructor(): this(generate().value)
   override fun toString() = value.toString()
 }

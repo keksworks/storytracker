@@ -40,8 +40,8 @@ class ProjectRoutes(
   private val emailSender: EmailSender,
 ): AssetsHandler(attachmentRepository.path), Before {
   override suspend fun before(e: HttpExchange) {
-    e.path("id")?.let {
-      val role = if (e.user.isAdmin) ADMIN else projectMemberRepository.role(Id(it), e.user.id)
+    e.path<Id<Project>>("id")?.let { id ->
+      val role = if (e.user.isAdmin) ADMIN else projectMemberRepository.role(id, e.user.id)
       val allowedRoles = e.route.findAnnotation<Access>()?.roles?.toList() ?: emptyList()
       if (role !in allowedRoles) throw ForbiddenException()
       e.attr("role", role)
