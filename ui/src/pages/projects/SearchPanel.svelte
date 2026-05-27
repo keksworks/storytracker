@@ -64,7 +64,7 @@
   />
 {:else if mode === 'panel' && project}
   <StoryPanel name="search" bind:show={showSearch} {project} stories={searchResults} movable={false}
-              handlers={{...handlers, onSearch: search}} bind:highlight
+              handlers={{...handlers, onSearch: search}} {highlight}
               collapseStory={s => s.iteration! < project.currentIterationNum && s.id !== initialOpenStoryId}>
     <span slot="right">{searchQuery}</span>
   </StoryPanel>

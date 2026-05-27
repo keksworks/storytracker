@@ -96,7 +96,7 @@
             <IterationHeader {iteration}
               canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
               onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
-            <StoryView {project} {story} {stories} movable={false} {handlers} {onDrag} bind:highlight/>
+            <StoryView {project} {story} {stories} movable={false} {handlers} {highlight} {onDrag}/>
           {/each}
         {/if}
       </div>
@@ -107,7 +107,7 @@
       <IterationHeader {iteration}
         canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
         onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
-      <StoryView {project} {story} {stories} {movable} {handlers} {onDrag} bind:highlight/>
+      <StoryView {project} {story} {stories} {movable} {handlers} {highlight} {onDrag}/>
     {/each}
 
     {#if movable}
