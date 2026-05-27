@@ -1,22 +1,21 @@
 <script lang="ts">
-  import type {Id, Project, Story} from 'src/api/types'
+  import type {Story} from 'src/api/types'
   import {t} from 'src/i18n'
   import api from 'src/api/api'
   import FormField from 'src/forms/FormField.svelte'
   import StoryPanel from 'src/pages/stories/StoryPanel.svelte'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import type {StoryHandlers, StoryHighlight} from 'src/pages/stories/types'
 
-  export let mode: 'input' | 'panel' = 'panel'
+  export let mode: 'input' | 'panel' = 'panel' // TODO: use separate components for these
   export let project: ProjectContext
   export let stories: Story[] = []
   export let pastLoaded: boolean
   export let initialOpenStoryId: number | undefined = undefined
   export let isMobile = false
   export let onSearch: ((q?: string) => void | Promise<void>) | undefined = undefined
-  export let onSaved: (story: Story) => void = () => {}
-  export let onDelete: (story: Story) => void = () => {}
-  export let onLocate: (story: Story) => void = () => {}
-  export let flashStoryId: number | undefined = undefined
+  export let handlers: StoryHandlers
+  export let highlight: StoryHighlight = {}
 
   let searchQuery: string | undefined
   let showSearch = false
@@ -65,7 +64,7 @@
   />
 {:else if mode === 'panel' && project}
   <StoryPanel name="search" bind:show={showSearch} {project} stories={searchResults} movable={false}
-              onSearch={search} {onSaved} {onDelete} {onLocate} bind:flashStoryId
+              handlers={{...handlers, onSearch: search}} bind:highlight
               collapseStory={s => s.iteration! < project.currentIterationNum && s.id !== initialOpenStoryId}>
     <span slot="right">{searchQuery}</span>
   </StoryPanel>

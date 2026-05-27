@@ -10,6 +10,7 @@
   import {replaceValues} from '@codeborne/i18n-json'
   import Icon from 'src/icons/Icon.svelte'
   import {dragged} from 'src/shared/draggable'
+  import type {StoryHandlers, StoryHighlight} from 'src/pages/stories/types'
 
   export let name: keyof typeof t.panels
   export let show: boolean
@@ -19,12 +20,8 @@
   export let velocity = 0
   export let status: StoryStatus | undefined = undefined
   export let onDrag: (detail: {id: number, status?: StoryStatus, beforeId?: number}) => void = () => {}
-  export let onSearch: (tag: string) => void = () => {}
-  export let onSaved: (story: Story) => void = () => {}
-  export let onDelete: (story: Story) => void = () => {}
-  export let onLocate: ((story: Story) => void) | undefined = undefined
-  export let highlightStoryId: number | undefined = undefined
-  export let flashStoryId: number | undefined = undefined
+  export let handlers: StoryHandlers
+  export let highlight: StoryHighlight = {}
   export let collapseStory: ((story: Story) => boolean) | undefined = undefined
   export let iterations: Iteration[] = []
   export let onTeamStrengthSave: (iterationNum: number, ts: number) => void = () => {}
@@ -99,8 +96,7 @@
             <IterationHeader {iteration}
               canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
               onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
-            <StoryView {project} {story} {stories} movable={false} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
-                       bind:highlightId={highlightStoryId} bind:flashId={flashStoryId}/>
+            <StoryView {project} {story} {stories} movable={false} {handlers} {onDrag} bind:highlight/>
           {/each}
         {/if}
       </div>
@@ -111,8 +107,7 @@
       <IterationHeader {iteration}
         canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}
         onTeamStrengthSave={iteration?.number !== undefined ? async (ts) => onTeamStrengthSave(iteration.number!, ts) : async () => {}}/>
-      <StoryView {project} {story} {stories} {movable} {onSearch} {onDrag} {onSaved} {onDelete} {onLocate}
-                  bind:highlightId={highlightStoryId} bind:flashId={flashStoryId}/>
+      <StoryView {project} {story} {stories} {movable} {handlers} {onDrag} bind:highlight/>
     {/each}
 
     {#if movable}

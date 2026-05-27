@@ -14,6 +14,7 @@
   import SelectField from 'src/forms/SelectField.svelte'
   import api from 'src/api/api'
   import type {ProjectContext} from 'src/pages/projects/context'
+  import type {StoryHandlers, StoryHighlight} from 'src/pages/stories/types'
   import {onStatusChanged} from './status'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
   import {draggable, type Dragged} from 'src/shared/draggable'
@@ -23,18 +24,14 @@
   export let stories: Story[]
   export let movable = true
   export let onDrag: (detail: {id: Id<Story>, beforeId: Id<Story>}) => void = () => {}
-  export let onSearch: (tag: string) => void = () => {}
-  export let onSaved: (story: Story) => void = () => {}
-  export let onDelete: (story: Story) => void = () => {}
-  export let onLocate: ((story: Story) => void) | undefined = undefined
-  export let highlightId: number | undefined = undefined
-  export let flashId: number | undefined = undefined
+  export let handlers: StoryHandlers
+  export let highlight: StoryHighlight = {}
 
   let view: HTMLElement
   let open = !story.id || location.hash.substring(1) === story.id?.toString()
   let highlighted = false
 
-  export async function highlight(scroll = false) {
+  export async function triggerHighlight(scroll = false) {
     highlighted = true
     if (scroll) {
       await tick()
@@ -43,14 +40,14 @@
     setTimeout(() => highlighted = false, 2000)
   }
 
-  $: if (highlightId && highlightId === story.id) {
-    highlight(true)
-    highlightId = undefined
+  $: if (highlight.storyId && highlight.storyId === story.id) {
+    triggerHighlight(true)
+    highlight.storyId = undefined
   }
 
-  $: if (flashId && flashId === story.id) {
-    highlight()
-    flashId = undefined
+  $: if (highlight.flashId && highlight.flashId === story.id) {
+    triggerHighlight()
+    highlight.flashId = undefined
   }
 
   function onDrop(id: number, beforeId: number, type: Dragged['type']) {
@@ -65,7 +62,7 @@
     if (story.assignedTo && !project.members[story.assignedTo]) {
       api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members[m.user.id] = m)
     }
-    onSaved(story)
+    handlers.onSaved(story)
     if (move) setTimeout(() => {
       const sOrd = statusOrd(story.status)
       const before = stories.find(s => statusOrd(s.status) > sOrd)
@@ -138,14 +135,14 @@
         <div class="w-full flex flex-wrap gap-x-2.5 text-sm font-bold">
           {#each story.tags as tag}
             <button class="whitespace-nowrap cursor-pointer {project.epicTags?.has(tag) ? 'text-purple-700 border border-purple-300 rounded px-1' : 'text-green-700 hover:text-green-600'}"
-                on:click|stopPropagation={() => onSearch(tag)}>{tag}</button>
+                on:click|stopPropagation={() => handlers.onSearch(tag)}>{tag}</button>
           {/each}
         </div>
       {/if}
     </div>
 
     <div class="flex items-center gap-3 max-sm:float-right">
-      <StoryActions {story} {save} {open} onLocate={story.iteration ? undefined : onLocate} disabled={!project.canEdit}/>
+      <StoryActions {story} {save} {open} onLocate={story.iteration ? undefined : handlers.onLocate} disabled={!project.canEdit}/>
       <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={project.currentIterationNum > story.iteration!}/>
       <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
@@ -158,7 +155,7 @@
             <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
           {/if}
           <Button icon="copy" variant="ghost" size="sm" title={t.general.copyLink} on:click={copyToClipboard} data-copy="{location.origin}/projects/{story.projectId}#{story.id}"/>
-          <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => onDelete(story)}/>
+          <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => handlers.onDelete(story)}/>
         </div>
         <div title="{t.stories.updatedAt} {formatDateTime(story.updatedAt)}">
           {project.members[story.createdBy!]?.user.name} {formatDateTime(story.createdAt)}

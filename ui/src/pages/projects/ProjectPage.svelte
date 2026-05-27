@@ -20,6 +20,7 @@
   import SearchPanel from './SearchPanel.svelte'
   import VelocityPanel from './VelocityPanel.svelte'
   import TeamStrengthButton from './TeamStrengthButton.svelte'
+  import type {StoryHandlers, StoryHighlight} from 'src/pages/stories/types'
 
   export let id: Id<Project>
 
@@ -29,8 +30,7 @@
   let velocity = 10
   let currentTeamStrength = 100
   let iterations: Iteration[] = []
-  let highlightStoryId: number | undefined
-  let flashStoryId: number | undefined
+  let highlight: StoryHighlight = {}
   let searchPanel: SearchPanel | undefined
 
   function changeVelocity() {
@@ -81,8 +81,10 @@
   function onLocate(story: Story) {
     if (story.status === StoryStatus.UNSCHEDULED) show.icebox = true
     else show.backlog = true
-    highlightStoryId = story.id
+    highlight.storyId = story.id
   }
+
+  const handlers: StoryHandlers = {onSearch, onSaved, onDelete}
 
   let pastLoaded = false
   const initialOpenStoryId = parseInt(location.hash.substring(1))
@@ -194,7 +196,7 @@
       <ProjectExportButton {project}/>
     {/if}
     {#if !isMobile && project}
-      <SearchPanel mode="input" {isMobile} {onSearch} {project} {pastLoaded}/>
+      <SearchPanel mode="input" {isMobile} {handlers} {onSearch} {project} {pastLoaded}/>
     {/if}
   </Header>
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
@@ -205,26 +207,26 @@
                   variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
         {/each}
         {#if isMobile && project}
-          <SearchPanel mode="input" {isMobile} {onSearch} {project} {pastLoaded}/>
+          <SearchPanel mode="input" {isMobile} {handlers} {onSearch} {project} {pastLoaded}/>
         {/if}
       </div>
     </aside>
     {#if !project || !project.members || !stories}
       <Spinner/>
     {:else}
-      <ProjectUpdatesListener {project} bind:stories bind:epics onStoryUpdated={s => flashStoryId = s.id}/>
+      <ProjectUpdatesListener {project} bind:stories bind:epics onStoryUpdated={s => highlight.flashId = s.id}/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
         <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
-                    {onSearch} {onSaved} {onDelete} bind:flashStoryId
+                    {handlers} bind:highlight
                     {iterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
                     collapseStory={s => s.iteration! < project!.currentIterationNum - project!.velocityAveragedOver && s.id !== initialOpenStoryId}/>
 
-        <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {onSearch} {onSaved} {onDelete} bind:flashStoryId>
+        <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {handlers} bind:highlight>
           <span slot="right"></span>
         </StoryPanel>
 
-        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
+        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {handlers} bind:highlight>
           <svelte:fragment slot="left">
             <button title={t.projects.velocity} class="flex items-center px-2 hover:bg-stone-200 rounded" on:click={changeVelocity}>⚡{velocity}</button>
             <TeamStrengthButton bind:teamStrength={currentTeamStrength} canEdit={project.canEdit}
@@ -237,7 +239,7 @@
           </span>
        </StoryPanel>
 
-        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {onSearch} {onSaved} {onDelete} bind:highlightStoryId bind:flashStoryId>
+        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {handlers} bind:highlight>
           <span slot="right">
             {#if project.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
@@ -251,8 +253,7 @@
 
         <SearchPanel mode="panel" bind:this={searchPanel}
                      {project} {stories} {initialOpenStoryId} {pastLoaded}
-                     {onSaved} {onDelete} {onLocate}
-                     bind:flashStoryId/>
+                     handlers={{...handlers, onLocate}} bind:highlight/>
 
         <ProjectHistoryPanel bind:show={show.history} {project} {stories} {epics}/>
       </div>
