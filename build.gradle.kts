@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
-  kotlin("jvm") version "2.3.20"
+  kotlin("jvm") version "2.4.0"
 }
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1.8.3"
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:1.9.0"
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -22,14 +22,14 @@ dependencies {
   implementation(klite("jobs"))
   implementation(klite("smtp"))
   implementation(klite("csv"))
-  implementation("org.postgresql:postgresql:42.7.10")
+  implementation("org.postgresql:postgresql:42.7.11")
 
   testImplementation(klite("jdbc-test"))
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.3")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
   testImplementation("ch.tutteli.atrium:atrium-fluent:1.3.0-alpha-2")
-  testImplementation("io.mockk:mockk:1.14.9")
+  testImplementation("io.mockk:mockk:1.14.11")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }
 
