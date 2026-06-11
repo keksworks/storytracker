@@ -17,9 +17,8 @@
       const names = member.email.substring(0, member.email.indexOf('@')).split('.').map(n => n[0].toUpperCase() + n.substring(1))
       member.name = names.join(' ')
     }
-    if (!member.initials) {
+    if (!member.initials)
       member.initials = member.name.split(' ').map(n => n[0].toUpperCase()).join('')
-    }
   }
 
   async function submit() {
@@ -31,7 +30,7 @@
 <Form {submit}>
   <FormField label={t.users.email} bind:value={member.email} type="email" autofocus on:change={prefill}/>
   <FormField label={t.users.name} bind:value={member.name} on:change={prefill}/>
-  <FormField label={t.users.initials} bind:value={member.initials}/>
+  <FormField label={t.users.initials} bind:value={member.initials} maxlength={3}/>
   <SelectField label={t.users.role} bind:value={member.role} options={t.users.roles}/>
   <Button type="submit" label={t.general.save}/>
 </Form>
