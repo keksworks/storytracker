@@ -6,23 +6,23 @@
   import FormField from 'src/forms/FormField.svelte'
   import Button from 'src/components/Button.svelte'
   import {navigate} from '@keksworks/svelte-tiny-router'
+  import type {User} from 'src/api/types'
 
   export let waitingForCode = false
-  export let path = 'auth/email'
-  export let codeSubmitted = (res: any) => {
-    initSession(res)
-    navigate(location.hash.substring(2) || 'projects')
-  }
 
   let email = '', code = ''
 
   async function submit() {
     if (waitingForCode) {
-      const res = await api.post(path + '/code', {email, code})
-      codeSubmitted(res)
+      const u = await api.post<User>('auth/email/code', {email, code})
+      initSession(u)
+      let to = location.hash.substring(1)
+      if (to == '/') to = '/projects'
+      navigate(to)
     } else {
-      await api.post(path, {email})
+      await api.post('auth/email', {email})
       waitingForCode = true
+      code = ''
     }
   }
 </script>

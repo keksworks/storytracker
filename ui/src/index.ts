@@ -11,8 +11,8 @@ import {mount} from 'svelte'
 (async function() {
   initErrorHandlers()
 
-  const [auth] = await Promise.all([api.get('user').catch(() => null), initTranslations()])
-  if (auth) initSession(auth as User)
+  const [auth] = await Promise.all([api.get<User>('user').catch(() => null), initTranslations()])
+  if (auth) initSession(auth)
 
   document.body.innerHTML = ''
   mount(App, {target: document.body})
