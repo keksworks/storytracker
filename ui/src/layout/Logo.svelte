@@ -4,5 +4,5 @@
 </script>
 
 <Link to="/">
-  <img class="h-7" src="/img/logo.png" title={t.title} alt="Logo">
+  <img class="h-7 w-7" src="/img/logo.png" title={t.title} alt="Logo">
 </Link>
