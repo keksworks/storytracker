@@ -159,9 +159,14 @@
   }
 
   function onSaved(story: Story) {
+    const placeholderIndex = stories.findIndex(s => !s.id)
     let index = stories.findIndex(s => s.id == story.id)
-    if (index < 0) index = stories.findIndex(s => !s.id)
+    if (index < 0) index = placeholderIndex
     if (index >= 0) stories[index] = story
+    if (placeholderIndex >= 0 && placeholderIndex !== index) {
+      stories.splice(placeholderIndex, 1)
+      stories = stories
+    }
   }
 
   async function onDelete(story: Story) {
