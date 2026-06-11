@@ -31,11 +31,11 @@
   {#if waitingForCode}
     <p>{replaceValues(t.login.codeSent, {email})}</p>
     <FormField type="tel" class="lg" label={t.login.code} bind:value={code} autofocus/>
-    <Button type="submit" class="primary lg w-full" label={t.general.confirm}/>
-    <Button class="default lg w-full" label={t.general.cancel} onclick={() => waitingForCode = false}/>
+    <Button type="submit" class="lg w-full" label={t.general.confirm}/>
+    <Button variant="outlined" class="default lg w-full" label={t.general.cancel} onclick={() => waitingForCode = false}/>
   {:else}
     <FormField type="email" class="lg" label={t.contacts.email} bind:value={email} autofocus/>
-    <Button type="submit" class="primary lg w-full" label={t.login.email}/>
+    <Button type="submit" class="lg w-full" label={t.login.email}/>
   {/if}
 
   <slot/>
