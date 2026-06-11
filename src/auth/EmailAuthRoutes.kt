@@ -31,8 +31,8 @@ class EmailAuthRoutes(
 
   @POST("/email/code") fun loginWithCode(req: EmailCodeRequest, e: HttpExchange): User {
     checkCode(e, req)
-    val user = userRepository.by(User::email to req.email)
-    if (user == null) throw NotFoundException("login.noUser")
+    var user = userRepository.by(User::email to req.email) ?: throw NotFoundException("login.noUser")
+    user = user.copy(lastLoginAt = nowSec()).also { userRepository.save(it) }
     e.initSession(user)
     return user
   }
