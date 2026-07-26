@@ -3,7 +3,7 @@
   import {type Epic, type Id, type Story, StoryStatus} from 'src/api/types'
   import Icon from 'src/icons/Icon.svelte'
   import {formatDateTime} from '@codeborne/i18n-json'
-  import {onMount} from 'svelte'
+  import {onMount, tick} from 'svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
   import {copyToClipboard} from 'src/pages/stories/clipboard'
@@ -24,9 +24,10 @@
   export let onDrag: (detail: {id: number, beforeId?: number}) => void = () => {}
 
   let view: HTMLElement
-  let open = epic.isNew
+  let isOpen = epic.isNew
+  let initialJson = ''
 
-  $: reallyMovable = movable && !open
+  $: reallyMovable = movable && !isOpen
   $: taggedStories = stories.filter(s => s.tags?.includes(epic.tag))
   $: acceptedCount = taggedStories.filter(s => s.status === StoryStatus.ACCEPTED).length
   $: finishedCount = taggedStories.filter(s => s.status === StoryStatus.FINISHED || s.status === StoryStatus.DELIVERED).length
@@ -46,9 +47,19 @@
     }
   }
 
+  async function open() {
+    isOpen = true
+    await tick()
+    initialJson = JSON.stringify(epic)
+  }
+
   async function save() {
+    isOpen = false
+    const json = JSON.stringify(epic)
+    if (json === initialJson) return
     epic.tag ||= epic.name.toLowerCase()
-    epic = await api.post(`projects/${epic.projectId}/epics`, epic)
+    epic = await api.post(`projects/${epic.projectId}/epics`, json)
+    initialJson = json
     project.epicTags.add(epic.tag)
     onSaved(epic)
   }
@@ -65,7 +76,7 @@
   }
 
   onMount(() => {
-    if (open) {
+    if (isOpen) {
       scrollIntoView();
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
@@ -74,18 +85,18 @@
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view}
-  class="{open ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'} transition-all flex flex-col border-b"
+  class="{isOpen ? 'bg-stone-200 shadow-inner' : 'bg-purple-100 hover:bg-purple-200'} transition-all flex flex-col border-b"
   use:draggable={{id: epic.id, type: 'epic', onDrop}} draggable={reallyMovable}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" class:cursor-move={reallyMovable}
-       on:click={() => open = !open} role="button" tabindex="0">
+       on:click={() => isOpen ? save() : open()} role="button" tabindex="0">
     <span title={t.panels.epics} class="max-sm:float-left mr-1">
       <Icon name="epics" class="text-purple-600"/>
     </span>
 
     <div class="flex-grow">
-      {#if open}
+      {#if isOpen}
         <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={epic.name}
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!epic.name}></div>
@@ -99,19 +110,19 @@
     </div>
 
     <div class="flex items-center gap-3 max-sm:float-right">
-      {#if open && project.canEdit}
-        <Button size="sm" variant="solid" on:click={() => save()}>{t.general.save}</Button>
+      {#if isOpen && project.canEdit}
+        <Button size="sm" variant="solid">{t.general.save}</Button>
       {/if}
-      <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
+      <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
-  {#if !open && taggedStories.length}
+  {#if !isOpen && taggedStories.length}
     <div class="h-[2px] w-full bg-purple-100 flex">
       <div class="h-full bg-purple-600 transition-all duration-500" style="width: {acceptedPercent}%" title="{acceptedCount} {t.stories.statuses.ACCEPTED}"></div>
       <div class="h-full bg-purple-300 transition-all duration-500" style="width: {finishedPercent}%" title="{finishedCount} {t.stories.statuses.FINISHED}"></div>
     </div>
   {/if}
-  {#if open}
+  {#if isOpen}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">
         <div class="flex items-center">

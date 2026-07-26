@@ -105,6 +105,7 @@
 
   onMount(() => {
     if (isOpen) {
+      open()
       scrollIntoView();
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
