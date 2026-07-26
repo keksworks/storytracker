@@ -7,7 +7,7 @@
 
   export let story: Story
   export let save: (move?: boolean) => void
-  export let open: boolean
+  export let isOpen: boolean
   export let disabled: boolean
   export let onLocate: ((story: Story) => void) | undefined = undefined
 
@@ -50,7 +50,7 @@
 </script>
 
 <div title={t.stories.statuses[story.status]} class="status">
-  {#if open}
+  {#if isOpen}
     <Button {size} color="primary" variant="soft" on:click={justSave} {disabled}>{t.general.save}</Button>
   {:else if onLocate}
     <Button label="⌖" variant="ghost" size="sm" class="!text-2xl" on:click={e => {e.stopPropagation(); onLocate!(story)}} title={t.stories.locate}/>

@@ -28,8 +28,10 @@
   export let highlight: StoryHighlight = {}
 
   let view: HTMLElement
-  let open = story.isNew || location.hash.substring(1) == story.id?.toString()
+  let isOpen = story.isNew || location.hash.substring(1) == story.id?.toString()
   let highlighted = false
+
+  let initialJson = ''
 
   export async function triggerHighlight(scroll = false) {
     highlighted = true
@@ -54,11 +56,20 @@
     if (type === 'story') onDrag({id, beforeId})
   }
 
-  $: reallyMovable = movable && !open
+  $: reallyMovable = movable && !isOpen
+
+  async function open() {
+    isOpen = true
+    await tick()
+    initialJson = JSON.stringify(story)
+  }
 
   async function save(move?: boolean) {
-    open = false
-    story = await api.post(`projects/${story.projectId}/stories`, story)
+    isOpen = false
+    const json = JSON.stringify(story)
+    if (json === initialJson) return
+    story = await api.post(`projects/${story.projectId}/stories`, json)
+    initialJson = json
     if (story.assignedTo && !project.members[story.assignedTo]) {
       api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members[m.user.id] = m)
     }
@@ -93,7 +104,7 @@
   }
 
   onMount(() => {
-    if (open) {
+    if (isOpen) {
       scrollIntoView();
       (view?.querySelector('[autofocus]') as HTMLInputElement)?.focus()
     }
@@ -101,14 +112,14 @@
 </script>
 
 <!--svelte-ignore a11y-no-static-element-interactions -->
-<div bind:this={view} class="{open ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
+<div bind:this={view} class="{isOpen ? 'bg-stone-200 shadow-inner' : story.type == StoryType.RELEASE ? 'bg-blue-300 hover:bg-blue-400' : story.acceptedAt ? 'bg-green-100 hover:bg-success-200' : 'bg-stone-50 hover:bg-yellow-100'}
   flex flex-col border-b"
   use:draggable={{id: story.id, type: 'story', onDrop}} draggable={reallyMovable}
   class:highlight={highlighted}
 >
   <!--svelte-ignore a11y-click-events-have-key-events -->
   <div class="sm:flex justify-between items-center gap-x-2 gap-y-0.5 px-3 py-2" class:cursor-move={reallyMovable}
-       on:click={() => open = !open} role="button" tabindex="0">
+       on:click={() => isOpen ? save() : open()} role="button" tabindex="0">
     <span title={t.stories.types[story.type]} class="max-sm:float-left mr-1">
       {#if story.type == StoryType.FEATURE}
         <Icon name="star-filled" class="text-yellow-500"/>
@@ -122,7 +133,7 @@
     </span>
 
     <div class="flex-grow">
-      {#if open}
+      {#if isOpen}
         <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={story.name}
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.name}></div>
@@ -142,12 +153,12 @@
     </div>
 
     <div class="flex items-center gap-3 max-sm:float-right">
-      <StoryActions {story} {save} {open} onLocate={story.iteration ? undefined : handlers.onLocate} disabled={!project.canEdit}/>
+      <StoryActions {story} {save} {isOpen} onLocate={story.iteration ? undefined : handlers.onLocate} disabled={!project.canEdit}/>
       <StoryPointsSelect bind:points={story.points} onchange={() => save()} disabled={project.currentIterationNum > story.iteration!}/>
-      <Icon name={open ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
+      <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} class="cursor-pointer"/>
     </div>
   </div>
-  {#if open}
+  {#if isOpen}
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">
         <div class="flex items-center gap-3">
