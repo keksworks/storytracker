@@ -39,7 +39,7 @@ class ProjectRoutes(
   private val projectImporter: ProjectImporter,
   private val emailSender: EmailSender,
 ): AssetsHandler(attachmentRepository.path), Before {
-  override suspend fun before(e: HttpExchange) {
+  override fun before(e: HttpExchange) {
     e.path<Id<Project>>("id")?.let { id ->
       val role = if (e.user.isAdmin) ADMIN else projectMemberRepository.role(id, e.user.id)
       val allowedRoles = e.route.findAnnotation<Access>()?.roles?.toList() ?: emptyList()
@@ -53,6 +53,8 @@ class ProjectRoutes(
     else projectRepository.listForMember(user.id)
 
   @GET("/:id") fun get(@PathParam id: Id<Project>) = projectRepository.get(id)
+
+  @POST("/new-id") fun newId() = Id<Story>()
 
   @GET("/:id/export")
   fun export(@PathParam id: Id<Project>, e: HttpExchange): ProjectExport {

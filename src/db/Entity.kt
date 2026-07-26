@@ -1,9 +1,7 @@
 package db
 
 import klite.Converter
-import klite.i18n.Lang
 import klite.jdbc.*
-import klite.json.parse
 import java.sql.ResultSet
 import java.util.Random
 import java.util.concurrent.atomic.AtomicLong
@@ -30,10 +28,6 @@ abstract class CrudRepository<T: Entity<T>>(db: DataSource, table: String): Base
     db.insert(table, entity.persister())
   }
 }
-
-fun jsonb(value: Any) = klite.jdbc.jsonb(Lang.jsonMapper.render(value))
-inline fun <reified T: Any> ResultSet.getJsonOrNull(column: String): T? = getString(column)?.let { Lang.jsonMapper.parse<T>(it) }
-inline fun <reified T: Any> ResultSet.getJson(column: String): T = getJsonOrNull(column) ?: error("$column is null")
 
 inline fun <reified T: Entity<T>> ResultSet.getIdOrNull(column: String): Id<T>? = getLongOrNull(column)?.let { Id(it) }
 inline fun <reified T: Entity<T>> ResultSet.getId(column: String): Id<T> = getIdOrNull(column) ?: error("$column is null")

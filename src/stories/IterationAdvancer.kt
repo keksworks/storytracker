@@ -18,7 +18,7 @@ class IterationAdvancer(
 ): Job {
   private val log = logger()
 
-  override suspend fun run() {
+  override fun run() {
     advance(today)
   }
 

@@ -63,6 +63,8 @@ export interface ChangeLangRequest {lang: string}
 export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
 export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
+// class klite.jdbc.UpdatableEntity
+export interface UpdatableEntity {updatedAt?: Instant}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`

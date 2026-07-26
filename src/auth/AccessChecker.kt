@@ -20,7 +20,7 @@ import kotlin.reflect.full.hasAnnotation
 @Target(FUNCTION, CLASS) annotation class Access(vararg val roles: Role)
 
 class AccessChecker(private val userRepository: UserRepository): Before {
-  override suspend fun before(exchange: HttpExchange) {
+  override fun before(exchange: HttpExchange) {
     if (exchange.method == OPTIONS) return
     val user = exchange.session["userId"]?.let { userRepository.get(Id(it.toLong())) }
     exchange.attr("user", user)
