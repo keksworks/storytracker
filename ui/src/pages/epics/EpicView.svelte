@@ -55,9 +55,9 @@
 
   async function save() {
     isOpen = false
+    epic.tag ||= epic.name.toLowerCase()
     const json = JSON.stringify(epic)
     if (json === initialJson) return
-    epic.tag ||= epic.name.toLowerCase()
     epic = await api.post(`projects/${epic.projectId}/epics`, json)
     initialJson = json
     project.epicTags.add(epic.tag)
