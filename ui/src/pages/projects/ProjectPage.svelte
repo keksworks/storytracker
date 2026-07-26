@@ -136,9 +136,10 @@
     stories[toIndex] = await api.post<Story>(`projects/${id}/stories`, story)
   }
 
-  let nextAddIndex: Partial<Record<StoryStatus, number>> = {}
+  let lastAddedStory: Partial<Record<StoryStatus, Id<Story>>> = {}
   async function addStory(panel: Story[], status: StoryStatus) {
-    let index = nextAddIndex[status] ?? stories.findIndex(s => s.type == StoryType.FEATURE && s.status == status)
+    const lastAddedId = lastAddedStory[status]
+    let index = lastAddedId ? stories.findIndex(s => s.id == lastAddedId) + 1 : stories.findIndex(s => s.type == StoryType.FEATURE && s.status == status)
     if (index < 0) index = panel.length
     const prev = stories[index - 1]
     const next = stories[index]
@@ -150,9 +151,8 @@
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
       points: project!.defaultStoryPoints
     } as Story
-    stories.splice(index, 0, newStory)
-    nextAddIndex[status] = index + 1
-    stories = stories
+    stories = stories.toSpliced(index, 0, newStory)
+    lastAddedStory[status] = newStory.id
   }
 
   function newOrder(prev?: Story, next?: Story) {
