@@ -102,7 +102,7 @@
       </div>
     {/if}
 
-    {#each activeStories as story, i (story.id ?? i)}
+    {#each activeStories as story (story.id)}
       {@const iteration = storyIterations[story.id]}
       <IterationHeader {iteration}
         canEdit={project.canEdit && (iteration?.number ?? 0) >= project.currentIterationNum - project.velocityAveragedOver}

@@ -28,7 +28,7 @@
   export let highlight: StoryHighlight = {}
 
   let view: HTMLElement
-  let open = !story.id || location.hash.substring(1) === story.id?.toString()
+  let open = story.isNew || location.hash.substring(1) == story.id?.toString()
   let highlighted = false
 
   export async function triggerHighlight(scroll = false) {
@@ -125,7 +125,7 @@
       {#if open}
         <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={story.name}
-             on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.id}></div>
+             on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.name}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
         {#if story.assignedTo}
@@ -151,9 +151,7 @@
     <div class="bg-stone-200 p-2" transition:slide>
       <div class="flex justify-between items-center text-sm text-muted pb-2 -mt-2">
         <div class="flex items-center gap-3">
-          {#if story.id}
-            <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
-          {/if}
+          <button on:click|stopPropagation={copyToClipboard} title={t.general.copy}>#{story.id}</button>
           <Button icon="copy" variant="ghost" size="sm" title={t.general.copyLink} on:click={copyToClipboard} data-copy="{location.origin}/projects/{story.projectId}#{story.id}"/>
           <Button icon="trash" title={t.stories.delete} variant="ghost" size="sm" on:click={() => handlers.onDelete(story)}/>
         </div>

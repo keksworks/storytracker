@@ -20,8 +20,10 @@
   export let onSearch = (tag: string) => {}
   export let onStorySaved: (story: Story) => void = () => {}
 
-  function addEpic() {
+  async function addEpic() {
     epics = [{
+      isNew: true,
+      id: await api.post('projects/new-id'),
       projectId: project!.id, createdBy: $user.id,
       order: newOrder(undefined, epics?.[0]),
       comments: [] as StoryComment[],

@@ -24,7 +24,7 @@
   export let onDrag: (detail: {id: number, beforeId?: number}) => void = () => {}
 
   let view: HTMLElement
-  let open = !epic.id
+  let open = epic.isNew
 
   $: reallyMovable = movable && !open
   $: taggedStories = stories.filter(s => s.tags?.includes(epic.tag))
@@ -88,7 +88,7 @@
       {#if open}
         <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={epic.name}
-             on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!epic.id}></div>
+             on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!epic.name}></div>
       {:else}
         <span class="title flex-1">{epic.name}</span>
         {#if epic.tag}

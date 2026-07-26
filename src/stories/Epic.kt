@@ -1,8 +1,8 @@
 package stories
 
-import db.*
 import db.CrudRepository
 import db.Entity
+import db.Id
 import klite.jdbc.*
 import klite.toValues
 import stories.Story.Comment
@@ -23,7 +23,9 @@ data class Epic(
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
   val deleted: Boolean = false,
-): Entity<Epic>, UpdatableEntity
+): Entity<Epic>, UpdatableEntity {
+  val isNew: Boolean? get() = null // for frontend
+}
 
 class EpicRepository(db: DataSource): CrudRepository<Epic>(db, "epics") {
   override val defaultOrder get() = "order by ord"

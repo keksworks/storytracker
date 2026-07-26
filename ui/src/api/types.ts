@@ -12,7 +12,7 @@ export interface EmailRequest {email: Email}
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class stories.Epic
-export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; isNew?: boolean; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.GitHubAuthor
 export interface GitHubAuthor {email?: Email; name?: string}
 // class stories.GitHubCommit
@@ -54,7 +54,7 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 // class stories.Story$Type
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
-export interface Story {acceptedAt?: Instant; assignedTo?: Id<User>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+export interface Story {acceptedAt?: Instant; assignedTo?: Id<User>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; isNew?: boolean; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
 // class stories.TeamStrengthRequest
 export interface TeamStrengthRequest {teamStrength: number}
 // class users.ChangeLangRequest

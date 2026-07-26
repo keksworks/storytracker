@@ -34,6 +34,8 @@ data class Story(
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
 ): Entity<Story>, UpdatableEntity {
+  val isNew: Boolean? get() = null // for frontend
+
   enum class Type {
     FEATURE, BUG, CHORE, RELEASE
   }

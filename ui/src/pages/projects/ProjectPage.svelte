@@ -137,12 +137,14 @@
   }
 
   let nextAddIndex: Partial<Record<StoryStatus, number>> = {}
-  function addStory(panel: Story[], status: StoryStatus) {
+  async function addStory(panel: Story[], status: StoryStatus) {
     let index = nextAddIndex[status] ?? stories.findIndex(s => s.type == StoryType.FEATURE && s.status == status)
     if (index < 0) index = panel.length
     const prev = stories[index - 1]
     const next = stories[index]
     const newStory = {
+      isNew: true,
+      id: await api.post('projects/new-id'),
       status, projectId: project!.id, createdBy: $user.id,
       order: newOrder(prev, next),
       type: StoryType.FEATURE, tags: [] as string[], blockers: [] as StoryBlocker[], comments: [] as StoryComment[],
@@ -159,24 +161,18 @@
   }
 
   function onSaved(story: Story) {
-    const placeholderIndex = stories.findIndex(s => !s.id)
     let index = stories.findIndex(s => s.id == story.id)
-    if (index < 0) index = placeholderIndex
+    if (index < 0) index = stories.findIndex(s => !s.id)
     if (index >= 0) stories[index] = story
-    if (placeholderIndex >= 0 && placeholderIndex !== index) {
-      stories.splice(placeholderIndex, 1)
-      stories = stories
-    }
   }
 
   async function onDelete(story: Story) {
-    if (story.id) {
+    if (!story.isNew) {
       if (!confirm(replaceValues(t.stories.deleteConfirm, story))) return
       await api.delete(`projects/${id}/stories/${story.id}`)
     }
     let index = stories.findIndex(s => s.id == story.id)
-    stories.splice(index, 1)
-    stories = stories
+    stories = stories.toSpliced(index, 1)
   }
 
   async function onDoneIterationTeamStrengthSave(iterationNum: number, teamStrength: number) {
