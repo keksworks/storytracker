@@ -9,6 +9,7 @@ import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
 import klite.json.JsonBody
+import klite.json.parse
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
@@ -34,20 +35,16 @@ class McpRoutes(
     while (true) { Thread.sleep(30_000); e.send(Event("", "ping")) }
   }
 
-  @POST("/rpc") fun rpc(e: HttpExchange): Any {
+  @POST("/rpc") fun rpc(e: HttpExchange): JsonRpcResponse {
     val user = authenticate(e) ?: throw UnauthorizedException()
-    val body = e.body<Map<String, Any?>>()
-    val id = body["id"]
-    val method = body["method"] as String
-    val params = (body["params"] as? Map<String, Any?>) ?: emptyMap()
+    val request = jsonBody.json.parse<JsonRpcRequest>(e.body<String>())
 
-    if (method == "notifications/initialized") return mapOf("jsonrpc" to "2.0", "id" to id)
+    if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
 
     return try {
-      val result = handleRequest(user.id, method, params)
-      mapOf("jsonrpc" to "2.0", "id" to id, "result" to result)
+      JsonRpcResponse(id = request.id, result = handleRequest(user.id, request.method, request.params))
     } catch (e: Exception) {
-      jsonRpcError(id, -32603, e.message ?: "Internal error")
+      JsonRpcResponse(id = request.id, error = JsonRpcError(-32603, e.message ?: "Internal error"))
     }
   }
 
@@ -61,12 +58,8 @@ class McpRoutes(
   }
 
   private fun handleRequest(userId: Id<User>, method: String, params: Map<String, Any?>): Any = when (method) {
-    "initialize" -> mapOf(
-      "protocolVersion" to "2024-11-05",
-      "capabilities" to mapOf("tools" to emptyMap<String, Any>()),
-      "serverInfo" to mapOf("name" to "StoryTracker", "version" to "1.0.0")
-    )
-    "tools/list" -> mapOf("tools" to listOf(
+    "initialize" -> InitializeResult()
+    "tools/list" -> ToolsListResult(listOf(
       toolDef("list_projects", "List all projects you have access to", emptyMap()),
       toolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", mapOf(
         "project_id" to mapOf("type" to "number", "description" to "Project ID"),
@@ -80,22 +73,23 @@ class McpRoutes(
       ), required = listOf("project_id", "story_id")),
     ))
     "tools/call" -> handleToolCall(userId, params)
-    "resources/list" -> mapOf("resources" to emptyList<Any>())
+    "resources/list" -> ResourcesListResult()
     else -> throw IllegalArgumentException("Unknown method: $method")
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun handleToolCall(userId: Id<User>, params: Map<String, Any?>): Any {
+  private fun handleToolCall(userId: Id<User>, params: Map<String, Any?>): ToolCallResult {
     val toolName = params["name"] as String
     val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
+    val argsJson = jsonBody.json.render(args)
     val result = when (toolName) {
       "list_projects" -> listProjects(userId)
-      "list_stories" -> listStories(userId, args)
-      "get_story" -> getStory(userId, args)
+      "list_stories" -> listStories(userId, jsonBody.json.parse<ListStoriesArgs>(argsJson))
+      "get_story" -> getStory(userId, jsonBody.json.parse<GetStoryArgs>(argsJson))
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
     val json = jsonBody.json.render(result)
-    return mapOf("content" to listOf(mapOf("type" to "text", "text" to json)))
+    return ToolCallResult(listOf(ToolContent(text = json)))
   }
 
   private fun listProjects(userId: Id<User>): List<Project> {
@@ -104,21 +98,18 @@ class McpRoutes(
     return projects.filter { it.status != Project.Status.DELETED }
   }
 
-  private fun listStories(userId: Id<User>, args: Map<String, Any?>): List<Story> {
-    val projectId = Id<Project>((args["project_id"] as Number).toLong())
+  private fun listStories(userId: Id<User>, args: ListStoriesArgs): List<Story> {
+    val projectId = Id<Project>(args.projectId)
     requireAccess(userId, projectId)
-    val status = args["status"] as? String
-    val type = args["type"] as? String
-    val q = args["q"] as? String
-    var stories = storyRepository.list(projectId, q = q)
-    if (status != null) stories = stories.filter { it.status.name == status }
+    var stories = storyRepository.list(projectId, q = args.q)
+    if (args.status != null) stories = stories.filter { it.status.name == args.status }
     else stories = stories.filter { it.status != ACCEPTED }
-    if (type != null) stories = stories.filter { it.type.name == type }
+    if (args.type != null) stories = stories.filter { it.type.name == args.type }
     return stories
   }
 
-  private fun getStory(userId: Id<User>, args: Map<String, Any?>): Story {
-    val storyId = Id<Story>((args["story_id"] as Number).toLong())
+  private fun getStory(userId: Id<User>, args: GetStoryArgs): Story {
+    val storyId = Id<Story>(args.storyId)
     val story = storyRepository.get(storyId)
     requireAccess(userId, story.projectId)
     return story
@@ -132,9 +123,5 @@ class McpRoutes(
   }
 
   private fun toolDef(name: String, description: String, properties: Map<String, Any>, required: List<String> = emptyList()) =
-    mapOf("name" to name, "description" to description,
-      "inputSchema" to mapOf("type" to "object", "properties" to properties, "required" to required))
-
-  private fun jsonRpcError(id: Any?, code: Int, message: String) =
-    mapOf("jsonrpc" to "2.0", "id" to id, "error" to mapOf("code" to code, "message" to message))
+    Tool(name, description, ToolSchema(properties = properties, required = required))
 }

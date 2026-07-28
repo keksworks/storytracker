@@ -13,6 +13,32 @@ export interface EmailRequest {email: Email}
 
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
+// class mcp.GetStoryArgs
+export interface GetStoryArgs {project_id: number; story_id: number}
+// class mcp.InitializeResult
+export interface InitializeResult {capabilities: Record<string, any>; protocolVersion: string; serverInfo: ServerInfo}
+// class mcp.JsonRpcError
+export interface JsonRpcError {code: number; message: string}
+// class mcp.JsonRpcRequest
+export interface JsonRpcRequest {id?: any; jsonrpc: string; method: string; params: Record<string, any>}
+// class mcp.JsonRpcResponse
+export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: string; result?: any}
+// class mcp.ListStoriesArgs
+export interface ListStoriesArgs {project_id: number; q?: string; status?: string; type?: string}
+// class mcp.ResourcesListResult
+export interface ResourcesListResult {resources: Array<any>}
+// class mcp.ServerInfo
+export interface ServerInfo {name: string; version: string}
+// class mcp.Tool
+export interface Tool {description: string; inputSchema: ToolSchema; name: string}
+// class mcp.ToolCallResult
+export interface ToolCallResult {content: Array<ToolContent>}
+// class mcp.ToolContent
+export interface ToolContent {text: string; type: string}
+// class mcp.ToolSchema
+export interface ToolSchema {properties: Record<string, any>; required: Array<string>; type: string}
+// class mcp.ToolsListResult
+export interface ToolsListResult {tools: Array<Tool>}
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; isNew?: boolean; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.GitHubAuthor
