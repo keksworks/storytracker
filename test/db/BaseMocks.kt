@@ -1,6 +1,8 @@
 package db
 
+import auth.ApiKeyRepository
 import db.TestData.admin
+import db.TestData.apiKey
 import db.TestData.change
 import db.TestData.epic
 import db.TestData.iteration
@@ -42,6 +44,7 @@ abstract class BaseMocks {
     val changeHistoryRepository = mock<ChangeHistoryRepository>(relaxed = true)
     val projectEvents = mock<ProjectEvents>(relaxed = true)
     val emailSender = mock<EmailSender>(relaxed = true)
+    val apiKeyRepository = mock<ApiKeyRepository>(relaxed = true)
 
     inline fun <reified T: Any> create() = registry.create(T::class)
 
@@ -92,6 +95,11 @@ abstract class BaseMocks {
 
     projectMemberRepository.apply {
       every { listWithUsers(project.id) } returns listOf(projectMemberUser)
+    }
+
+    apiKeyRepository.apply {
+      every { byKey(apiKey.key) } returns apiKey
+      every { listForUser(user.id) } returns listOf(apiKey)
     }
   }
 }

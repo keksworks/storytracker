@@ -3,6 +3,8 @@ export type Id<T extends Entity<T>> = number & {_of?: T}
 export type Entity<T extends Entity<T>> = {id: Id<T>}
 export interface UpdatableEntity extends Entity<any> {updatedAt?: Instant}
 
+// class auth.ApiKey
+export interface ApiKey {createdAt: Instant; id: Id<ApiKey>; key: string; lastUsedAt?: Instant; name: string; updatedAt?: Instant; userId: Id<User>}
 // class auth.EmailCodeRequest
 export interface EmailCodeRequest {code: string; email: Email}
 // class auth.EmailRequest
@@ -79,6 +81,7 @@ export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDN
 
 // db.TestData
 export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User
+export const apiKey = {"createdAt":"2025-03-03T00:00:00Z","id":200000007,"key":"sk-st-test-key","name":"MCP","userId":200000002} as ApiKey
 export const change = {"changedAt":"2025-03-03T00:00:00Z","changedBy":200000002,"new":{"status":"DONE"},"old":{"status":"TODO"},"rowId":200000004,"table":"stories"} as Change
 export const date = "2025-03-03" as LocalDate
 export const epic = {"comments":[],"createdAt":"2025-03-03T00:00:00Z","deleted":false,"id":200000003,"name":"Epic 1","order":0.0,"projectId":1,"tag":"epic1"} as Epic

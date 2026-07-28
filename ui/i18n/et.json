@@ -279,5 +279,11 @@
     "networkUnavailable": "Serveriga ei saa ühendust, proovige hiljem uuesti",
     "notJson": "Side serveriga on blokeeritud, kontrollige oma võrguühendust",
     "tooLong": "Tekst on liiga pikk"
+  },
+  "settings": {
+    "mcp": "AI agendi ligipääs",
+    "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks. Kopeeri allolev konfiguratsioon ja kleebi oma agendi MCP seadetesse.",
+    "mcpConfig": "MCP konfiguratsioon",
+    "mcpNote": "See võti annab ainult lugemisõiguse sinu projektidele. Vajadusel saad sellelt lehelt uue genereerida."
   }
 }

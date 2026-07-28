@@ -12,6 +12,7 @@ import klite.oauth.OAuthRoutes
 import klite.oauth.OAuthUserProvider
 import klite.smtp.FakeEmailSender
 import klite.smtp.SmtpEmailSender
+import mcp.McpRoutes
 import stories.GitHubWebhookRoutes
 import stories.IterationAdvancer
 import stories.ProjectEvents
@@ -62,7 +63,13 @@ fun startServer() = Server(
     annotated<UserRoutes>("/users")
     register<ProjectEvents>()
     annotated<ProjectRoutes>("/projects")
+    annotated<ApiKeyRoutes>("/api-keys")
     annotated<GitHubWebhookRoutes>()
+  }
+
+  context("/mcp") {
+    useOnly<JsonBody>()
+    annotated<McpRoutes>()
   }
 
   start()

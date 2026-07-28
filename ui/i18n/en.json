@@ -263,5 +263,11 @@
     "networkUnavailable": "Cannot connect to the server, please try again later",
     "notJson": "Communication with server is blocked, please check your network connection",
     "tooLong": "Text is too long"
+  },
+  "settings": {
+    "mcp": "AI Agent Access",
+    "mcpDescription": "Connect your AI agent to read stories from StoryTracker. Copy the configuration below and paste it into your agent's MCP settings.",
+    "mcpConfig": "MCP Configuration",
+    "mcpNote": "This key gives read-only access to your projects. You can regenerate it from this page if needed."
   }
 }

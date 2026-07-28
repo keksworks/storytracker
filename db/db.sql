@@ -9,3 +9,4 @@
 --include project_members.sql
 --include epics.sql
 --include stories.sql
+--include api_keys.sql

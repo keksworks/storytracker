@@ -5,6 +5,7 @@
   import Dropdown from 'src/components/Dropdown.svelte'
   import Button from 'src/components/Button.svelte'
   import LoginButton from 'src/pages/login/LoginButton.svelte'
+  import McpSettingsButton from 'src/pages/settings/McpSettingsButton.svelte'
   import {isMobile} from 'src/pages/projects/context'
   import {activePath} from '@keksworks/svelte-tiny-router'
 
@@ -22,6 +23,7 @@
     </Button>
     <svelte:fragment slot="open">
       <div class="py-0.5 px-1">
+        <McpSettingsButton/>
         <Button label={t.login.logout} variant="ghost" size="sm" icon="logout" on:click={logout}/>
       </div>
     </svelte:fragment>
