@@ -1,6 +1,7 @@
 package mcp
 
 import db.Id
+import klite.Config
 import klite.Converter
 import users.User
 import kotlin.reflect.KClass
@@ -16,12 +17,12 @@ data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result
 data class JsonRpcError(val code: Int, val message: String)
 
 data class InitializeResult(
-  val protocolVersion: String = "2024-11-05",
+  val protocolVersion: String = "2025-03-26",
   val capabilities: Map<String, Any> = mapOf("tools" to emptyMap<String, Any>()),
   val serverInfo: ServerInfo = ServerInfo(),
 )
 
-data class ServerInfo(val name: String = "StoryTracker", val version: String = "1.0.0")
+data class ServerInfo(val name: String = "StoryTracker", val version: String = Config.optional("VERSION", "dev"))
 
 data class ToolsListResult(val tools: List<Tool>)
 

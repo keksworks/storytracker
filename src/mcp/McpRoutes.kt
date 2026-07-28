@@ -2,18 +2,14 @@ package mcp
 
 import auth.ApiKeyRepository
 import db.Id
-import klite.ForbiddenException
-import klite.HttpExchange
-import klite.UnauthorizedException
+import klite.*
+import klite.StatusCode.Companion.MethodNotAllowed
 import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
 import klite.jdbc.nowSec
 import klite.json.JsonMapper
 import klite.nodes.text
-import klite.sse.Event
-import klite.sse.send
-import klite.sse.startEventStream
 import stories.*
 import stories.Story.Status.ACCEPTED
 import users.User
@@ -29,6 +25,7 @@ class McpRoutes(
   private val projectMemberRepository: ProjectMemberRepository,
 ) {
   private val jsonMapper = JsonMapper()
+  private val log = logger()
 
   private val tools = listOf(
     ::listProjects to "List all projects you have access to",
@@ -39,16 +36,14 @@ class McpRoutes(
     ::changeStoryStatus to "Change the status of a user story. Finished should be set when implementaion is complete. Add #storyId to commit messages.",
   )
 
-  @GET fun sse(e: HttpExchange) {
-    authenticate(e) ?: throw UnauthorizedException()
-    e.startEventStream()
-    e.send(Event("/mcp/rpc", "endpoint"), dataRenderer = null)
-    while (true) { Thread.sleep(30_000); e.send(Event("", "ping")) }
+  @GET fun get(e: HttpExchange) {
+    e.send(MethodNotAllowed)
   }
 
-  @POST("/rpc") fun rpc(e: HttpExchange, request: JsonRpcRequest): JsonRpcResponse {
+  @POST fun rpc(e: HttpExchange, request: JsonRpcRequest): JsonRpcResponse {
     val user = authenticate(e) ?: throw UnauthorizedException()
     if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
+    log.info(request.toString())
     return try {
       JsonRpcResponse(id = request.id, result = handleRequest(user, request.method, request.params))
     } catch (e: Exception) {
