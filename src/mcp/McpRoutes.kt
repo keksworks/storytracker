@@ -33,7 +33,7 @@ class McpRoutes(
 
   private val tools = listOf(
     ToolDef("listProjects", "List all projects you have access to", NoArgs::class),
-    ToolDef("listStories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class),
+    ToolDef("listStories", "List stories in a project (excludes done/accepted stories by default). In order of priority.", ListStoriesArgs::class),
     ToolDef("getStory", "Get full details of a story by ID", GetStoryArgs::class),
     ToolDef("listEpics", "List epics in a project", ListEpicsArgs::class),
   )
@@ -102,6 +102,7 @@ class McpRoutes(
 
   private fun getStory(user: User, args: GetStoryArgs): Story {
     val story = storyRepository.get(args.storyId)
+    require(args.projectId == null || story.projectId == args.projectId) { "Story does not belong to the specified project" }
     requireAccess(user, story.projectId)
     return story
   }
@@ -122,6 +123,6 @@ internal data class ListedStory(val id: Id<Story>, val name: String, val type: S
 
 internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
 
-internal data class GetStoryArgs(val projectId: Id<Project>, val storyId: Id<Story>)
+internal data class GetStoryArgs(val storyId: Id<Story>, val projectId: Id<Project>?)
 
 internal data class ListEpicsArgs(val projectId: Id<Project>)
