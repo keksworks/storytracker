@@ -30,14 +30,16 @@ class McpRoutesTest: BaseMocks() {
     expect(resp.result).toEqual(InitializeResult())
   }
 
-  @Test fun `tools list returns 4 tools`() {
+  @Test fun `tools list returns 6 tools`() {
     val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/list"))
     val result = resp.result as ToolsListResult
-    expect(result.tools.size).toEqual(4)
+    expect(result.tools.size).toEqual(6)
     expect(result.tools.map { it.name }).toContain("listProjects")
     expect(result.tools.map { it.name }).toContain("listStories")
     expect(result.tools.map { it.name }).toContain("getStory")
     expect(result.tools.map { it.name }).toContain("listEpics")
+    expect(result.tools.map { it.name }).toContain("addStoryComment")
+    expect(result.tools.map { it.name }).toContain("changeStoryStatus")
   }
 
   @Test fun `tools list generates schema from data class`() {
@@ -111,6 +113,30 @@ class McpRoutesTest: BaseMocks() {
     )))
     val result = resp.result as ToolCallResult
     expect(result.content.first().text).toContain("Epic 1")
+  }
+
+  @Test fun `add story comment`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
+    every { storyRepository.get(story.id) } returns story
+    every { storyRepository.save(any(), any()) } returns 1
+    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf(
+      "name" to "addStoryComment",
+      "arguments" to mapOf("storyId" to story.id.value, "text" to "New comment")
+    )))
+    val result = resp.result as ToolCallResult
+    expect(result.content.first().text).toContain("New comment")
+  }
+
+  @Test fun `change story status`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
+    every { storyRepository.get(story.id) } returns story
+    every { storyRepository.save(any(), any()) } returns 1
+    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf(
+      "name" to "changeStoryStatus",
+      "arguments" to mapOf("storyId" to story.id.value, "status" to "STARTED")
+    )))
+    val result = resp.result as ToolCallResult
+    expect(result.content.first().text).toContain("STARTED")
   }
 
   @Test fun `unauthorized when no bearer token`() {

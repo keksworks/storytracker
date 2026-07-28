@@ -62,7 +62,7 @@ fun KFunction<*>.callWith(user: User, args: Map<String, Any?>): Any? {
     val value = args[param.name] ?: continue
     params[param] = when {
       value is String -> Converter.from(value, param.type)
-      value is Number && param.type.jvmErasure == Id::class -> Id<Nothing>(value.toLong())
+      value is Number && param.type.jvmErasure == Id::class -> Id<Any>(value.toLong())
       else -> value
     }
   }

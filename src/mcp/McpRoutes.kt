@@ -8,6 +8,7 @@ import klite.UnauthorizedException
 import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
+import klite.jdbc.nowSec
 import klite.json.JsonMapper
 import klite.nodes.text
 import klite.sse.Event
@@ -31,9 +32,11 @@ class McpRoutes(
 
   private val tools = listOf(
     ::listProjects to "List all projects you have access to",
-    ::listStories to "List user stories in a project (excludes done/accepted stories by default), in order of priority",
+    ::listStories to "List user stories in a project (excludes accepted stories by default), in order of priority",
     ::getStory to "Get full details of a user story by ID",
     ::listEpics to "Get all epics in a project by ID. Stories belong to epics via matching tags",
+    ::addStoryComment to "Add a comment to a user story",
+    ::changeStoryStatus to "Change the status of a user story. Finished should be set when implementaion is complete. Add #storyId to commit messages.",
   )
 
   @GET fun sse(e: HttpExchange) {
@@ -104,6 +107,23 @@ class McpRoutes(
   fun listEpics(user: User, projectId: Id<Project>): List<Epic> {
     requireAccess(user, projectId)
     return epicRepository.list(projectId)
+  }
+
+  fun addStoryComment(user: User, storyId: Id<Story>, text: String): Story {
+    val story = storyRepository.get(storyId)
+    requireAccess(user, story.projectId)
+    val comment = Story.Comment(text = text, createdBy = user.id)
+    val updated = story.copy(comments = story.comments + comment, updatedAt = nowSec())
+    storyRepository.save(updated, skipUpdate = setOf(Story::projectId, Story::createdAt))
+    return updated
+  }
+
+  fun changeStoryStatus(user: User, storyId: Id<Story>, status: Story.Status): Story {
+    val story = storyRepository.get(storyId)
+    requireAccess(user, story.projectId)
+    val updated = story.copy(status = status, updatedAt = nowSec())
+    storyRepository.save(updated, skipUpdate = setOf(Story::projectId, Story::createdAt))
+    return updated
   }
 
   private fun requireAccess(user: User, projectId: Id<Project>) {
