@@ -48,6 +48,22 @@ class McpRoutesTest: BaseMocks() {
     expect(result.tools.map { it.name }).toContain("get_story")
   }
 
+  @Test fun `tools list generates schema from data class`() {
+    val resp = routes.rpc(rpcExchange("tools/list"))
+    val result = resp.result as ToolsListResult
+
+    val listStories = result.tools.first { it.name == "list_stories" }
+    expect(listStories.inputSchema.properties.keys).toContain("project_id")
+    expect(listStories.inputSchema.properties.keys).toContain("status")
+    expect(listStories.inputSchema.required).toContain("project_id")
+
+    val getStory = result.tools.first { it.name == "get_story" }
+    expect(getStory.inputSchema.properties.keys).toContain("project_id")
+    expect(getStory.inputSchema.properties.keys).toContain("story_id")
+    expect(getStory.inputSchema.required).toContain("project_id")
+    expect(getStory.inputSchema.required).toContain("story_id")
+  }
+
   @Test fun `list projects for admin`() {
     every { userRepository.get(user.id) } returns user.copy(isAdmin = true)
     every { projectRepository.list() } returns listOf(project)

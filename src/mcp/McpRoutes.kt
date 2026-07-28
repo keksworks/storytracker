@@ -4,11 +4,12 @@ import auth.ApiKeyRepository
 import db.Id
 import klite.ForbiddenException
 import klite.HttpExchange
+import klite.SnakeCase
 import klite.UnauthorizedException
 import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
-import klite.json.JsonBody
+import klite.json.JsonMapper
 import klite.json.parse
 import klite.sse.Event
 import klite.sse.send
@@ -26,8 +27,15 @@ class McpRoutes(
   private val storyRepository: StoryRepository,
   private val epicRepository: EpicRepository,
   private val projectMemberRepository: ProjectMemberRepository,
-  private val jsonBody: JsonBody,
 ) {
+  private val jsonMapper = JsonMapper(keys = SnakeCase)
+
+  private val tools = listOf(
+    ToolDef("list_projects", "List all projects you have access to", NoArgs::class),
+    ToolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class, required = listOf("project_id")),
+    ToolDef("get_story", "Get full details of a story by ID", GetStoryArgs::class, required = listOf("project_id", "story_id")),
+  )
+
   @GET fun sse(e: HttpExchange) {
     authenticate(e) ?: throw UnauthorizedException()
     e.startEventStream()
@@ -37,7 +45,7 @@ class McpRoutes(
 
   @POST("/rpc") fun rpc(e: HttpExchange): JsonRpcResponse {
     val user = authenticate(e) ?: throw UnauthorizedException()
-    val request = jsonBody.json.parse<JsonRpcRequest>(e.body<String>())
+    val request = jsonMapper.parse<JsonRpcRequest>(e.body<String>())
 
     if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
 
@@ -59,19 +67,7 @@ class McpRoutes(
 
   private fun handleRequest(userId: Id<User>, method: String, params: Map<String, Any?>): Any = when (method) {
     "initialize" -> InitializeResult()
-    "tools/list" -> ToolsListResult(listOf(
-      toolDef("list_projects", "List all projects you have access to", emptyMap()),
-      toolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", mapOf(
-        "project_id" to mapOf("type" to "number", "description" to "Project ID"),
-        "status" to mapOf("type" to "string", "description" to "Filter by status: ${Story.Status.entries.joinToString()}"),
-        "type" to mapOf("type" to "string", "description" to "Filter by type: ${Story.Type.entries.joinToString()}"),
-        "q" to mapOf("type" to "string", "description" to "Search in story name, description, tags, comments"),
-      ), required = listOf("project_id")),
-      toolDef("get_story", "Get full details of a story by ID", mapOf(
-        "project_id" to mapOf("type" to "number", "description" to "Project ID"),
-        "story_id" to mapOf("type" to "number", "description" to "Story ID"),
-      ), required = listOf("project_id", "story_id")),
-    ))
+    "tools/list" -> ToolsListResult(tools.map { it.toTool() })
     "tools/call" -> handleToolCall(userId, params)
     "resources/list" -> ResourcesListResult()
     else -> throw IllegalArgumentException("Unknown method: $method")
@@ -81,14 +77,14 @@ class McpRoutes(
   private fun handleToolCall(userId: Id<User>, params: Map<String, Any?>): ToolCallResult {
     val toolName = params["name"] as String
     val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
-    val argsJson = jsonBody.json.render(args)
+    val argsJson = jsonMapper.render(args)
     val result = when (toolName) {
       "list_projects" -> listProjects(userId)
-      "list_stories" -> listStories(userId, jsonBody.json.parse<ListStoriesArgs>(argsJson))
-      "get_story" -> getStory(userId, jsonBody.json.parse<GetStoryArgs>(argsJson))
+      "list_stories" -> listStories(userId, jsonMapper.parse<ListStoriesArgs>(argsJson))
+      "get_story" -> getStory(userId, jsonMapper.parse<GetStoryArgs>(argsJson))
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
-    val json = jsonBody.json.render(result)
+    val json = jsonMapper.render(result)
     return ToolCallResult(listOf(ToolContent(text = json)))
   }
 
@@ -121,7 +117,4 @@ class McpRoutes(
       projectMemberRepository.role(projectId, userId) ?: throw ForbiddenException("Not a member of this project")
     }
   }
-
-  private fun toolDef(name: String, description: String, properties: Map<String, Any>, required: List<String> = emptyList()) =
-    Tool(name, description, ToolSchema(properties = properties, required = required))
 }

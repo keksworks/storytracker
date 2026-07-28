@@ -1,6 +1,9 @@
 package mcp
 
 import klite.json.JsonProperty
+import klite.publicProperties
+import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 
 data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result: Any? = null, val error: JsonRpcError? = null)
 
@@ -28,6 +31,34 @@ data class ResourcesListResult(val resources: List<Any> = emptyList())
 
 data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any?, val method: String, val params: Map<String, Any?> = emptyMap())
 
-data class ListStoriesArgs(@JsonProperty("project_id") val projectId: Long, val status: String? = null, val type: String? = null, val q: String? = null)
+data class ToolDef<T : Any>(
+  val name: String,
+  val description: String,
+  val inputClass: KClass<T>,
+  val required: List<String> = emptyList(),
+)
 
-data class GetStoryArgs(@JsonProperty("project_id") val projectId: Long, @JsonProperty("story_id") val storyId: Long)
+fun ToolDef<*>.toTool() = Tool(name, description, inputClass.toToolSchema(required))
+
+private fun KClass<*>.toToolSchema(required: List<String>): ToolSchema {
+  val properties = publicProperties.values.associate { prop ->
+    val jsonName = prop.findAnnotation<JsonProperty>()?.value?.trimToNull() ?: prop.name
+    jsonName to mapOf("type" to prop.returnType.toJsonSchemaType())
+  }
+  return ToolSchema(properties = properties, required = required)
+}
+
+private fun kotlin.reflect.KType.toJsonSchemaType(): String = when (classifier) {
+  Long::class, Int::class, Short::class, Byte::class -> "number"
+  Double::class, Float::class -> "number"
+  Boolean::class -> "boolean"
+  else -> "string"
+}
+
+private fun String.trimToNull() = trim().ifEmpty { null }
+
+internal object NoArgs
+
+internal data class ListStoriesArgs(@JsonProperty("project_id") val projectId: Long, val status: String? = null, val type: String? = null, val q: String? = null)
+
+internal data class GetStoryArgs(@JsonProperty("project_id") val projectId: Long, @JsonProperty("story_id") val storyId: Long)
