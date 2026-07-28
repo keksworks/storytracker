@@ -14,9 +14,9 @@
 
   async function loadKey() {
     loading = true
-    const keys = await api.get<ApiKey[]>('users/api-keys')
+    const keys = await api.get<ApiKey[]>('api-keys')
     key = keys[0]
-    if (!key) key = await api.post<ApiKey>('users/api-keys')
+    if (!key) key = await api.post<ApiKey>('api-keys')
     loading = false
   }
 
@@ -24,8 +24,10 @@
   $: mcpConfig = key ? JSON.stringify({
     mcpServers: {
       storytracker: {
+        type: 'remote',
         url: mcpUrl,
-        headers: {Authorization: `Bearer ${key.key}`}
+        headers: {Authorization: `Bearer ${key.key}`},
+        enabled: false
       }
     }
   }, null, 2) : ''
@@ -37,6 +39,7 @@
 </script>
 
 <Button icon="settings-automation" label={t.settings.mcp} variant="ghost" size="sm" on:click={() => show = true}/>
+
 <Modal bind:show title={t.settings.mcp}>
   {#if loading}
     <p class="text-sm text-gray-500">{t.general.loading}</p>
@@ -46,13 +49,11 @@
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">{t.settings.mcpConfig}</label>
       <div class="relative">
-        <pre class="bg-gray-50 border rounded-md p-3 text-xs overflow-x-auto whitespace-pre-wrap">{mcpConfig}</pre>
+        <pre class="bg-gray-50 border rounded-md p-3 text-xs w-full overflow-x-auto whitespace-pre-wrap">{mcpConfig}</pre>
         <div class="absolute top-2 right-2">
           <Button label={t.general.copy} size="xs" on:click={() => copy(mcpConfig)}/>
         </div>
       </div>
     </div>
-
-    <p class="text-xs text-gray-400">{t.settings.mcpNote}</p>
   {/if}
 </Modal>

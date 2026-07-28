@@ -27,5 +27,5 @@ object TestData {
   val projectMember = ProjectMember(project.id, user.id, Role.MEMBER, createdAt = now)
   val projectMemberUser = ProjectMemberUser(projectMember, user)
   val change = Change("stories", story.id as Id<Any>, old = mapOf("status" to "TODO"), new = mapOf("status" to "DONE"), changedAt = now, changedBy = user.id)
-  val apiKey = ApiKey(user.id, "sk-st-test-key", "MCP", createdAt = now)
+  val apiKey = ApiKey(user.id, "st-test-key", "MCP", createdAt = now)
 }

@@ -42,7 +42,7 @@ class McpRoutes(
   @GET fun sse(e: HttpExchange) {
     authenticate(e) ?: throw UnauthorizedException()
     e.startEventStream()
-    e.send(Event("/mcp/rpc", "endpoint"))
+    e.send(Event("/mcp/rpc", "endpoint"), dataRenderer = null)
     while (true) { Thread.sleep(30_000); e.send(Event("", "ping")) }
   }
 

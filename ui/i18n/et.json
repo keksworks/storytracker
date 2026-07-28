@@ -282,8 +282,7 @@
   },
   "settings": {
     "mcp": "AI agendi ligipääs",
-    "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks. Kopeeri allolev konfiguratsioon ja kleebi oma agendi MCP seadetesse.",
-    "mcpConfig": "MCP konfiguratsioon",
-    "mcpNote": "See võti annab ainult lugemisõiguse sinu projektidele. Vajadusel saad sellelt lehelt uue genereerida."
+    "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks ja redigeerimiseks. Kopeeri allolev konfiguratsioon ja kleebi oma agendi MCP seadetesse.",
+    "mcpConfig": "MCP konfiguratsioon"
   }
 }

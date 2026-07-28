@@ -22,7 +22,7 @@
       </div>
     </Button>
     <svelte:fragment slot="open">
-      <div class="py-0.5 px-1">
+      <div class="py-0.5 px-1 whitespace-nowrap flex flex-col gap-2">
         <McpSettingsButton/>
         <Button label={t.login.logout} variant="ghost" size="sm" icon="logout" on:click={logout}/>
       </div>

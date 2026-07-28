@@ -61,9 +61,9 @@ fun startServer() = Server(
     annotated<AuthRoutes>(annotations = listOf(Public()))
     annotated<EmailAuthRoutes>("/auth", listOf(Public()))
     annotated<UserRoutes>("/users")
+    annotated<ApiKeyRoutes>("/api-keys")
     register<ProjectEvents>()
     annotated<ProjectRoutes>("/projects")
-    annotated<ApiKeyRoutes>("/api-keys")
     annotated<GitHubWebhookRoutes>()
   }
 

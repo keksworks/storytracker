@@ -13,7 +13,7 @@ class ApiKeyRoutes(private val apiKeyRepository: ApiKeyRepository) {
   @POST fun create(@AttrParam user: User): ApiKey {
     val existing = apiKeyRepository.listForUser(user.id).firstOrNull()
     if (existing != null) return existing
-    return ApiKey(userId = user.id, key = "sk-st-${UUID.randomUUID()}").also { apiKeyRepository.create(it) }
+    return ApiKey(userId = user.id, key = "st-${UUID.randomUUID()}").also { apiKeyRepository.create(it) }
   }
 
   @DELETE("/:id") fun delete(@PathParam id: Id<ApiKey>, @AttrParam user: User) {

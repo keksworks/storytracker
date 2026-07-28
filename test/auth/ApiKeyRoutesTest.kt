@@ -27,7 +27,7 @@ class ApiKeyRoutesTest: BaseMocks() {
   @Test fun `create generates new key when none exists`() {
     every { apiKeyRepository.listForUser(user.id) } returns emptyList()
     val result = routes.create(user)
-    expect(result.key).toContain("sk-st-")
+    expect(result.key).toContain("st-")
     expect(result.userId).toEqual(user.id)
     verify { apiKeyRepository.create(any()) }
   }
