@@ -89,13 +89,13 @@ class McpRoutes(
   private fun listProjects(user: User): List<Project> =
     if (user.isAdmin) projectRepository.list() else projectRepository.listForMember(user.id)
 
-  private fun listStories(user: User, args: ListStoriesArgs): List<Story> {
+  private fun listStories(user: User, args: ListStoriesArgs): List<ListedStory> {
     requireAccess(user, args.projectId)
     var stories = storyRepository.list(args.projectId, q = args.q)
     if (args.status != null) stories = stories.filter { it.status == args.status }
     else stories = stories.filter { it.status != ACCEPTED }
     if (args.type != null) stories = stories.filter { it.type == args.type }
-    return stories
+    return stories.map { ListedStory(it.id, it.name, it.type, it.status, it.points, it.tags) }
   }
 
   private fun getStory(user: User, args: GetStoryArgs): Story {
@@ -115,6 +115,8 @@ class McpRoutes(
     }
   }
 }
+
+internal data class ListedStory(val id: Id<Story>, val name: String, val type: Story.Type, val status: Story.Status, val points: Int?, val tags: Set<String>)
 
 internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
 
