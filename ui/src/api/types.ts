@@ -27,6 +27,8 @@ export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: strin
 export interface ListEpicsArgs {projectId: Id<Project>}
 // class mcp.ListStoriesArgs
 export interface ListStoriesArgs {projectId: Id<Project>; q?: string; status?: StoryStatus; type?: StoryType}
+// class mcp.ListedStory
+export interface ListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
 // class mcp.ResourcesListResult
 export interface ResourcesListResult {resources: Array<any>}
 // class mcp.ServerInfo

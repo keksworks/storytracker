@@ -1,12 +1,10 @@
 package mcp
 
-import klite.SnakeCase
-import klite.json.JsonMapper
+import klite.json.JsonProperty
 import klite.publicProperties
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-
-internal val jsonMapper = JsonMapper(keys = SnakeCase)
+import kotlin.reflect.full.findAnnotation
 
 data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result: Any? = null, val error: JsonRpcError? = null)
 
@@ -32,7 +30,7 @@ data class ToolContent(val type: String = "text", val text: String)
 
 data class ResourcesListResult(val resources: List<Any> = emptyList())
 
-data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any?, val method: String, val params: Map<String, Any?> = emptyMap())
+data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any? = null, val method: String, val params: Map<String, Any?> = emptyMap())
 
 data class ToolDef<T: Any>(
   val name: String,
@@ -45,7 +43,7 @@ fun ToolDef<*>.toTool() = Tool(name, description, inputClass.toToolSchema())
 private fun KClass<*>.toToolSchema(): ToolSchema {
   val required = mutableListOf<String>()
   val properties = publicProperties.values.associate { prop ->
-    val jsonName = jsonMapper.keys.to(prop.name)
+    val jsonName = prop.findAnnotation<JsonProperty>()?.value ?: prop.name
     if (!prop.returnType.isMarkedNullable) required += jsonName
     jsonName to mapOf("type" to prop.returnType.toJsonSchemaType())
   }

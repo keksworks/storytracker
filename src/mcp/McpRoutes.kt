@@ -7,8 +7,11 @@ import klite.HttpExchange
 import klite.UnauthorizedException
 import klite.annotations.GET
 import klite.annotations.POST
+import klite.create
 import klite.jdbc.NoTransaction
-import klite.json.parse
+import klite.json.JsonMapper
+import klite.nodes.Node
+import klite.nodes.text
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
@@ -26,11 +29,13 @@ class McpRoutes(
   private val epicRepository: EpicRepository,
   private val projectMemberRepository: ProjectMemberRepository,
 ) {
+  private val jsonMapper = JsonMapper()
+
   private val tools = listOf(
-    ToolDef("list_projects", "List all projects you have access to", NoArgs::class),
-    ToolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class),
-    ToolDef("get_story", "Get full details of a story by ID", GetStoryArgs::class),
-    ToolDef("list_epics", "List epics in a project", ListEpicsArgs::class),
+    ToolDef("listProjects", "List all projects you have access to", NoArgs::class),
+    ToolDef("listStories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class),
+    ToolDef("getStory", "Get full details of a story by ID", GetStoryArgs::class),
+    ToolDef("listEpics", "List epics in a project", ListEpicsArgs::class),
   )
 
   @GET fun sse(e: HttpExchange) {
@@ -40,12 +45,9 @@ class McpRoutes(
     while (true) { Thread.sleep(30_000); e.send(Event("", "ping")) }
   }
 
-  @POST("/rpc") fun rpc(e: HttpExchange): JsonRpcResponse {
+  @POST("/rpc") fun rpc(e: HttpExchange, request: JsonRpcRequest): JsonRpcResponse {
     val user = authenticate(e) ?: throw UnauthorizedException()
-    val request = jsonMapper.parse<JsonRpcRequest>(e.body<String>())
-
     if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
-
     return try {
       JsonRpcResponse(id = request.id, result = handleRequest(user, request.method, request.params))
     } catch (e: Exception) {
@@ -72,14 +74,13 @@ class McpRoutes(
 
   @Suppress("UNCHECKED_CAST")
   private fun handleToolCall(user: User, params: Map<String, Any?>): ToolCallResult {
-    val toolName = params["name"] as String
-    val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
-    val argsJson = jsonMapper.render(args)
+    val toolName = params.text("name")
+    val args = (params["arguments"] as? Node) ?: emptyMap()
     val result = when (toolName) {
-      "list_projects" -> listProjects(user)
-      "list_stories" -> listStories(user, jsonMapper.parse<ListStoriesArgs>(argsJson))
-      "get_story" -> getStory(user, jsonMapper.parse<GetStoryArgs>(argsJson))
-      "list_epics" -> listEpics(user, jsonMapper.parse<ListEpicsArgs>(argsJson))
+      "listProjects" -> listProjects(user)
+      "listStories" -> listStories(user, args.create<ListStoriesArgs>())
+      "getStory" -> getStory(user, args.create<GetStoryArgs>())
+      "listEpics" -> listEpics(user, args.create<ListEpicsArgs>())
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
     val json = jsonMapper.render(result)
