@@ -30,6 +30,7 @@ class McpRoutes(
     ToolDef("list_projects", "List all projects you have access to", NoArgs::class),
     ToolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class),
     ToolDef("get_story", "Get full details of a story by ID", GetStoryArgs::class),
+    ToolDef("list_epics", "List epics in a project", ListEpicsArgs::class),
   )
 
   @GET fun sse(e: HttpExchange) {
@@ -78,6 +79,7 @@ class McpRoutes(
       "list_projects" -> listProjects(user)
       "list_stories" -> listStories(user, jsonMapper.parse<ListStoriesArgs>(argsJson))
       "get_story" -> getStory(user, jsonMapper.parse<GetStoryArgs>(argsJson))
+      "list_epics" -> listEpics(user, jsonMapper.parse<ListEpicsArgs>(argsJson))
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
     val json = jsonMapper.render(result)
@@ -102,9 +104,20 @@ class McpRoutes(
     return story
   }
 
+  private fun listEpics(user: User, args: ListEpicsArgs): List<Epic> {
+    requireAccess(user, args.projectId)
+    return epicRepository.list(args.projectId)
+  }
+
   private fun requireAccess(user: User, projectId: Id<Project>) {
     if (!user.isAdmin) {
       projectMemberRepository.role(projectId, user.id) ?: throw ForbiddenException("Not a member of this project")
     }
   }
 }
+
+internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
+
+internal data class GetStoryArgs(val projectId: Id<Project>, val storyId: Id<Story>)
+
+internal data class ListEpicsArgs(val projectId: Id<Project>)

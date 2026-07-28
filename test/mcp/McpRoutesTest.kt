@@ -5,6 +5,7 @@ import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import db.BaseMocks
 import db.TestData.apiKey
+import db.TestData.epic
 import db.TestData.project
 import db.TestData.story
 import db.TestData.story2
@@ -40,13 +41,14 @@ class McpRoutesTest: BaseMocks() {
     expect(result.serverInfo.name).toEqual("StoryTracker")
   }
 
-  @Test fun `tools list returns 3 tools`() {
+  @Test fun `tools list returns 4 tools`() {
     val resp = routes.rpc(rpcExchange("tools/list"))
     val result = resp.result as ToolsListResult
-    expect(result.tools.size).toEqual(3)
+    expect(result.tools.size).toEqual(4)
     expect(result.tools.map { it.name }).toContain("list_projects")
     expect(result.tools.map { it.name }).toContain("list_stories")
     expect(result.tools.map { it.name }).toContain("get_story")
+    expect(result.tools.map { it.name }).toContain("list_epics")
   }
 
   @Test fun `tools list generates schema from data class`() {
@@ -95,6 +97,17 @@ class McpRoutesTest: BaseMocks() {
     val result = resp.result as ToolCallResult
     expect(result.content.first().text).toContain("Story 1")
     expect(result.content.first().text).toContain("\"status\"")
+  }
+
+  @Test fun `list epics`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns Role.MEMBER
+    every { epicRepository.list(project.id) } returns listOf(epic)
+    val resp = routes.rpc(rpcExchange("tools/call", mapOf(
+      "name" to "list_epics",
+      "arguments" to mapOf("project_id" to project.id.value)
+    )))
+    val result = resp.result as ToolCallResult
+    expect(result.content.first().text).toContain("Epic 1")
   }
 
   @Test fun `unauthorized when no bearer token`() {

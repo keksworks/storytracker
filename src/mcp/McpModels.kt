@@ -1,11 +1,8 @@
 package mcp
 
-import db.Id
 import klite.SnakeCase
 import klite.json.JsonMapper
 import klite.publicProperties
-import stories.Project
-import stories.Story
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -63,7 +60,3 @@ private fun KType.toJsonSchemaType(): String = when (classifier) {
 }
 
 internal object NoArgs
-
-internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
-
-internal data class GetStoryArgs(val projectId: Id<Project>, val storyId: Id<Story>)

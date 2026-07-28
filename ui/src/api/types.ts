@@ -23,6 +23,8 @@ export interface JsonRpcError {code: number; message: string}
 export interface JsonRpcRequest {id?: any; jsonrpc: string; method: string; params: Record<string, any>}
 // class mcp.JsonRpcResponse
 export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: string; result?: any}
+// class mcp.ListEpicsArgs
+export interface ListEpicsArgs {projectId: Id<Project>}
 // class mcp.ListStoriesArgs
 export interface ListStoriesArgs {projectId: Id<Project>; q?: string; status?: StoryStatus; type?: StoryType}
 // class mcp.ResourcesListResult
