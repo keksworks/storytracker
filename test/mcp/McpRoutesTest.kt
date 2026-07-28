@@ -1,5 +1,6 @@
 package mcp
 
+import ch.tutteli.atrium.api.fluent.en_GB.notToContain
 import ch.tutteli.atrium.api.fluent.en_GB.toContain
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
@@ -52,8 +53,8 @@ class McpRoutesTest: BaseMocks() {
     val getStory = result.tools.first { it.name == "getStory" }
     expect(getStory.inputSchema.properties.keys).toContain("projectId")
     expect(getStory.inputSchema.properties.keys).toContain("storyId")
-    expect(getStory.inputSchema.required).toContain("projectId")
     expect(getStory.inputSchema.required).toContain("storyId")
+    expect(getStory.inputSchema.required).notToContain("projectId")
   }
 
   @Test fun `list projects for admin`() {

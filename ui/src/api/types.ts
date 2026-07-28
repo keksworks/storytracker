@@ -14,7 +14,7 @@ export interface EmailRequest {email: Email}
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class mcp.GetStoryArgs
-export interface GetStoryArgs {projectId: Id<Project>; storyId: Id<Story>}
+export interface GetStoryArgs {projectId?: Id<Project>; storyId: Id<Story>}
 // class mcp.InitializeResult
 export interface InitializeResult {capabilities: Record<string, any>; protocolVersion: string; serverInfo: ServerInfo}
 // class mcp.JsonRpcError
@@ -39,8 +39,6 @@ export interface Tool {description: string; inputSchema: ToolSchema; name: strin
 export interface ToolCallResult {content: Array<ToolContent>}
 // class mcp.ToolContent
 export interface ToolContent {text: string; type: string}
-// class mcp.ToolDef
-export interface ToolDef<T> {description: string; inputClass: KClass<any>; name: string}
 // class mcp.ToolSchema
 export interface ToolSchema {properties: Record<string, any>; required: Array<string>; type: string}
 // class mcp.ToolsListResult
@@ -97,28 +95,8 @@ export interface ChangeLangRequest {lang: string}
 export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
 export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
-// class kotlin.reflect.KClass
-export interface KClass<T> {constructors: Array<KFunction<any>>; isAbstract: boolean; isCompanion: boolean; isData: boolean; isFinal: boolean; isFun: boolean; isInner: boolean; isOpen: boolean; isSealed: boolean; isValue: boolean; members: Array<KCallable<any>>; nestedClasses: Array<KClass<any>>; objectInstance?: any; qualifiedName?: string; sealedSubclasses: Array<KClass<any>>; simpleName?: string; supertypes: Array<KType>; typeParameters: Array<KTypeParameter>; visibility?: KVisibility; annotations: Array<Annotation>}
 // class klite.jdbc.UpdatableEntity
 export interface UpdatableEntity {updatedAt?: Instant}
-// class kotlin.reflect.KFunction
-export interface KFunction<out R> {isExternal: boolean; isInfix: boolean; isInline: boolean; isOperator: boolean; isSuspend: boolean; annotations: Array<Annotation>; isAbstract: boolean; isFinal: boolean; isOpen: boolean; name: string; parameters: Array<KParameter>; returnType: KType; typeParameters: Array<KTypeParameter>; visibility?: KVisibility}
-// class kotlin.reflect.KCallable
-export interface KCallable<out R> {isAbstract: boolean; isFinal: boolean; isOpen: boolean; isSuspend: boolean; name: string; parameters: Array<KParameter>; returnType: KType; typeParameters: Array<KTypeParameter>; visibility?: KVisibility; annotations: Array<Annotation>}
-// class kotlin.reflect.KType
-export interface KType {arguments: Array<KTypeProjection>; classifier?: KClassifier; isMarkedNullable: boolean; annotations: Array<Annotation>}
-// class kotlin.reflect.KTypeParameter
-export interface KTypeParameter {isReified: boolean; name: string; upperBounds: Array<KType>; variance: KVariance}
-// class kotlin.reflect.KVisibility
-export enum KVisibility {PUBLIC = 'PUBLIC', PROTECTED = 'PROTECTED', INTERNAL = 'INTERNAL', PRIVATE = 'PRIVATE'}
-// class kotlin.reflect.KParameter
-export interface KParameter {index: number; isOptional: boolean; isVararg: boolean; kind: KParameterKind; name?: string; type: KType; annotations: Array<Annotation>}
-// class kotlin.reflect.KTypeProjection
-export interface KTypeProjection {type?: KType; variance?: KVariance}
-// class kotlin.reflect.KVariance
-export enum KVariance {INVARIANT = 'INVARIANT', IN = 'IN', OUT = 'OUT'}
-// class kotlin.reflect.KParameter$Kind
-export enum KParameterKind {INSTANCE = 'INSTANCE', CONTEXT = 'CONTEXT', EXTENSION_RECEIVER = 'EXTENSION_RECEIVER', VALUE = 'VALUE'}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`

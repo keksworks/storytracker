@@ -32,10 +32,10 @@ class McpRoutes(
   private val jsonMapper = JsonMapper()
 
   private val tools = listOf(
-    ToolDef("listProjects", "List all projects you have access to", NoArgs::class),
-    ToolDef("listStories", "List stories in a project (excludes done/accepted stories by default). In order of priority.", ListStoriesArgs::class),
-    ToolDef("getStory", "Get full details of a story by ID", GetStoryArgs::class),
-    ToolDef("listEpics", "List epics in a project", ListEpicsArgs::class),
+    ::listProjects to "List all projects you have access to",
+    ::listStories to "List stories in a project (excludes done/accepted stories by default), in order of priority",
+    ::getStory to "Get full details of a story by ID",
+    ::listEpics to "Get all epics in a project by ID. Stories belong to epics via matching tags",
   )
 
   @GET fun sse(e: HttpExchange) {

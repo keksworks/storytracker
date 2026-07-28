@@ -3,8 +3,10 @@ package mcp
 import klite.json.JsonProperty
 import klite.publicProperties
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.valueParameters
 
 data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result: Any? = null, val error: JsonRpcError? = null)
 
@@ -32,13 +34,11 @@ data class ResourcesListResult(val resources: List<Any> = emptyList())
 
 data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any? = null, val method: String, val params: Map<String, Any?> = emptyMap())
 
-data class ToolDef<T: Any>(
-  val name: String,
-  val description: String,
-  val inputClass: KClass<T>,
-)
-
-fun ToolDef<*>.toTool() = Tool(name, description, inputClass.toToolSchema())
+fun Pair<KFunction<*>, String>.toTool(): Tool {
+  val (f, description) = this
+  val inputClass = f.valueParameters.lastOrNull()?.type?.classifier as? KClass<*>
+  return Tool(f.name, description, inputClass?.toToolSchema() ?: ToolSchema(properties = emptyMap()))
+}
 
 private fun KClass<*>.toToolSchema(): ToolSchema {
   val required = mutableListOf<String>()
@@ -56,5 +56,3 @@ private fun KType.toJsonSchemaType(): String = when (classifier) {
   Boolean::class -> "boolean"
   else -> "string"
 }
-
-internal object NoArgs
