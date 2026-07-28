@@ -59,7 +59,7 @@ class McpRoutesTest: BaseMocks() {
   @Test fun `list projects for admin`() {
     every { userRepository.get(user.id) } returns user.copy(isAdmin = true)
     every { projectRepository.list() } returns listOf(project)
-    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf("name" to "list_projects")))
+    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf("name" to "listProjects")))
     val result = resp.result as ToolCallResult
     expect(result.content.first().type).toEqual("text")
     expect(result.content.first().text).toContain("\"name\"")

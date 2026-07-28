@@ -7,9 +7,9 @@ import klite.HttpExchange
 import klite.UnauthorizedException
 import klite.annotations.GET
 import klite.annotations.POST
-import klite.create
 import klite.jdbc.NoTransaction
 import klite.json.JsonMapper
+import klite.json.parse
 import klite.nodes.Node
 import klite.nodes.text
 import klite.sse.Event
@@ -76,11 +76,12 @@ class McpRoutes(
   private fun handleToolCall(user: User, params: Map<String, Any?>): ToolCallResult {
     val toolName = params.text("name")
     val args = (params["arguments"] as? Node) ?: emptyMap()
+    val argsJson = jsonMapper.render(args)
     val result = when (toolName) {
       "listProjects" -> listProjects(user)
-      "listStories" -> listStories(user, args.create<ListStoriesArgs>())
-      "getStory" -> getStory(user, args.create<GetStoryArgs>())
-      "listEpics" -> listEpics(user, args.create<ListEpicsArgs>())
+      "listStories" -> listStories(user, jsonMapper.parse<ListStoriesArgs>(argsJson))
+      "getStory" -> getStory(user, jsonMapper.parse<GetStoryArgs>(argsJson))
+      "listEpics" -> listEpics(user, jsonMapper.parse<ListEpicsArgs>(argsJson))
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
     val json = jsonMapper.render(result)
