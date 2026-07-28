@@ -15,7 +15,6 @@ import io.mockk.every
 import klite.UnauthorizedException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import stories.Story.Status.UNSTARTED
 import users.Role.MEMBER
 
 class McpRoutesTest: BaseMocks() {
@@ -71,7 +70,7 @@ class McpRoutesTest: BaseMocks() {
     every { storyRepository.list(project.id, q = any()) } returns listOf(story, story2)
     val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf(
       "name" to "listStories",
-      "arguments" to mapOf("projectId" to project.id.value, "status" to UNSTARTED)
+      "arguments" to mapOf("projectId" to project.id.value, "status" to "UNSTARTED")
     )))
     val result = resp.result as ToolCallResult
     expect(result.content.first().text).toContain("Story 1")

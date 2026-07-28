@@ -13,8 +13,6 @@ export interface EmailRequest {email: Email}
 
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
-// class mcp.GetStoryArgs
-export interface GetStoryArgs {projectId?: Id<Project>; storyId: Id<Story>}
 // class mcp.InitializeResult
 export interface InitializeResult {capabilities: Record<string, any>; protocolVersion: string; serverInfo: ServerInfo}
 // class mcp.JsonRpcError
@@ -23,12 +21,8 @@ export interface JsonRpcError {code: number; message: string}
 export interface JsonRpcRequest {id?: any; jsonrpc: string; method: string; params: Record<string, any>}
 // class mcp.JsonRpcResponse
 export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: string; result?: any}
-// class mcp.ListEpicsArgs
-export interface ListEpicsArgs {projectId: Id<Project>}
-// class mcp.ListStoriesArgs
-export interface ListStoriesArgs {projectId: Id<Project>; q?: string; status?: StoryStatus; type?: StoryType}
-// class mcp.ListedStory
-export interface ListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
+// class mcp.McpRoutes$ListedStory
+export interface McpRoutesListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
 // class mcp.ResourcesListResult
 export interface ResourcesListResult {resources: Array<any>}
 // class mcp.ServerInfo

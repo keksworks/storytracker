@@ -1,12 +1,13 @@
 package mcp
 
-import klite.json.JsonProperty
-import klite.publicProperties
-import kotlin.reflect.KClass
+import db.Id
+import klite.Converter
+import users.User
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result: Any? = null, val error: JsonRpcError? = null)
 
@@ -36,18 +37,29 @@ data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any? = null, val 
 
 fun Pair<KFunction<*>, String>.toTool(): Tool {
   val (f, description) = this
-  val inputClass = f.valueParameters.lastOrNull()?.type?.classifier as? KClass<*>
-  return Tool(f.name, description, inputClass?.toToolSchema() ?: ToolSchema(properties = emptyMap()))
+  val params = f.valueParameters.drop(1) // skip User parameter
+  val required = mutableListOf<String>()
+  val properties = mutableMapOf<String, Any>()
+  for (param in params) {
+    val name = param.name!!
+    if (!param.type.isMarkedNullable) required += name
+    properties[name] = mapOf("type" to param.type.toJsonSchemaType())
+  }
+  return Tool(f.name, description, ToolSchema(properties = properties, required = required))
 }
 
-private fun KClass<*>.toToolSchema(): ToolSchema {
-  val required = mutableListOf<String>()
-  val properties = publicProperties.values.associate { prop ->
-    val jsonName = prop.findAnnotation<JsonProperty>()?.value ?: prop.name
-    if (!prop.returnType.isMarkedNullable) required += jsonName
-    jsonName to mapOf("type" to prop.returnType.toJsonSchemaType())
+fun KFunction<*>.callWith(user: User, args: Map<String, Any?>): Any? {
+  val params = mutableMapOf<KParameter, Any?>()
+  params[valueParameters.first()] = user
+  for (param in valueParameters.drop(1)) {
+    val value = args[param.name] ?: continue
+    params[param] = when {
+      value is String -> Converter.from(value, param.type)
+      value is Number && param.type.jvmErasure == Id::class -> Id<Nothing>(value.toLong())
+      else -> value
+    }
   }
-  return ToolSchema(properties = properties, required = required)
+  return callBy(params)
 }
 
 private fun KType.toJsonSchemaType(): String = when (classifier) {

@@ -9,8 +9,6 @@ import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
 import klite.json.JsonMapper
-import klite.json.parse
-import klite.nodes.Node
 import klite.nodes.text
 import klite.sse.Event
 import klite.sse.send
@@ -33,8 +31,8 @@ class McpRoutes(
 
   private val tools = listOf(
     ::listProjects to "List all projects you have access to",
-    ::listStories to "List stories in a project (excludes done/accepted stories by default), in order of priority",
-    ::getStory to "Get full details of a story by ID",
+    ::listStories to "List user stories in a project (excludes done/accepted stories by default), in order of priority",
+    ::getStory to "Get full details of a user story by ID",
     ::listEpics to "Get all epics in a project by ID. Stories belong to epics via matching tags",
   )
 
@@ -75,41 +73,37 @@ class McpRoutes(
   @Suppress("UNCHECKED_CAST")
   private fun handleToolCall(user: User, params: Map<String, Any?>): ToolCallResult {
     val toolName = params.text("name")
-    val args = (params["arguments"] as? Node) ?: emptyMap()
-    val argsJson = jsonMapper.render(args)
-    val result = when (toolName) {
-      "listProjects" -> listProjects(user)
-      "listStories" -> listStories(user, jsonMapper.parse<ListStoriesArgs>(argsJson))
-      "getStory" -> getStory(user, jsonMapper.parse<GetStoryArgs>(argsJson))
-      "listEpics" -> listEpics(user, jsonMapper.parse<ListEpicsArgs>(argsJson))
-      else -> throw IllegalArgumentException("Unknown tool: $toolName")
-    }
+    val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
+    val func = tools.firstOrNull { it.first.name == toolName }?.first ?: throw IllegalArgumentException("Unknown tool: $toolName")
+    val result = func.callWith(user, args)
     val json = jsonMapper.render(result)
     return ToolCallResult(listOf(ToolContent(text = json)))
   }
 
-  private fun listProjects(user: User): List<Project> =
+  fun listProjects(user: User): List<Project> =
     if (user.isAdmin) projectRepository.list() else projectRepository.listForMember(user.id)
 
-  private fun listStories(user: User, args: ListStoriesArgs): List<ListedStory> {
-    requireAccess(user, args.projectId)
-    var stories = storyRepository.list(args.projectId, q = args.q)
-    if (args.status != null) stories = stories.filter { it.status == args.status }
+  fun listStories(user: User, projectId: Id<Project>, status: Story.Status? = null, type: Story.Type? = null, q: String? = null): List<ListedStory> {
+    requireAccess(user, projectId)
+    var stories = storyRepository.list(projectId, q = q)
+    if (status != null) stories = stories.filter { it.status == status }
     else stories = stories.filter { it.status != ACCEPTED }
-    if (args.type != null) stories = stories.filter { it.type == args.type }
+    if (type != null) stories = stories.filter { it.type == type }
     return stories.map { ListedStory(it.id, it.name, it.type, it.status, it.points, it.tags) }
   }
 
-  private fun getStory(user: User, args: GetStoryArgs): Story {
-    val story = storyRepository.get(args.storyId)
-    require(args.projectId == null || story.projectId == args.projectId) { "Story does not belong to the specified project" }
+  data class ListedStory(val id: Id<Story>, val name: String, val type: Story.Type, val status: Story.Status, val points: Int?, val tags: Set<String>)
+
+  fun getStory(user: User, storyId: Id<Story>, projectId: Id<Project>? = null): Story {
+    val story = storyRepository.get(storyId)
+    require(projectId == null || story.projectId == projectId) { "Story does not belong to the specified project" }
     requireAccess(user, story.projectId)
     return story
   }
 
-  private fun listEpics(user: User, args: ListEpicsArgs): List<Epic> {
-    requireAccess(user, args.projectId)
-    return epicRepository.list(args.projectId)
+  fun listEpics(user: User, projectId: Id<Project>): List<Epic> {
+    requireAccess(user, projectId)
+    return epicRepository.list(projectId)
   }
 
   private fun requireAccess(user: User, projectId: Id<Project>) {
@@ -118,11 +112,3 @@ class McpRoutes(
     }
   }
 }
-
-internal data class ListedStory(val id: Id<Story>, val name: String, val type: Story.Type, val status: Story.Status, val points: Int?, val tags: Set<String>)
-
-internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
-
-internal data class GetStoryArgs(val storyId: Id<Story>, val projectId: Id<Project>?)
-
-internal data class ListEpicsArgs(val projectId: Id<Project>)
