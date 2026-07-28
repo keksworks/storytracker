@@ -12,18 +12,19 @@ import db.TestData.user
 import io.mockk.every
 import io.mockk.mockk
 import klite.HttpExchange
+import klite.SnakeCase
 import klite.UnauthorizedException
-import klite.json.JsonBody
+import klite.json.JsonMapper
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role
 
 class McpRoutesTest: BaseMocks() {
-  val jsonBody = JsonBody()
-  val routes = McpRoutes(apiKeyRepository, userRepository, projectRepository, storyRepository, epicRepository, projectMemberRepository, jsonBody)
+  val jsonMapper = JsonMapper(keys = SnakeCase)
+  val routes = McpRoutes(apiKeyRepository, userRepository, projectRepository, storyRepository, epicRepository, projectMemberRepository)
 
   fun rpcBody(method: String, params: Map<String, Any?> = emptyMap(), id: Long = 1): String =
-    jsonBody.json.render(mapOf("jsonrpc" to "2.0", "method" to method, "id" to id, "params" to params))
+    jsonMapper.render(mapOf("jsonrpc" to "2.0", "method" to method, "id" to id, "params" to params))
 
   fun rpcExchange(method: String, params: Map<String, Any?> = emptyMap(), id: Long = 1): HttpExchange =
     mockk<HttpExchange>(relaxed = true) {

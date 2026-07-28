@@ -50,7 +50,7 @@ class McpRoutes(
     if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
 
     return try {
-      JsonRpcResponse(id = request.id, result = handleRequest(user.id, request.method, request.params))
+      JsonRpcResponse(id = request.id, result = handleRequest(user, request.method, request.params))
     } catch (e: Exception) {
       JsonRpcResponse(id = request.id, error = JsonRpcError(-32603, e.message ?: "Internal error"))
     }
@@ -65,56 +65,50 @@ class McpRoutes(
     return userRepository.get(apiKey.userId)
   }
 
-  private fun handleRequest(userId: Id<User>, method: String, params: Map<String, Any?>): Any = when (method) {
+  private fun handleRequest(user: User, method: String, params: Map<String, Any?>): Any = when (method) {
     "initialize" -> InitializeResult()
     "tools/list" -> ToolsListResult(tools.map { it.toTool() })
-    "tools/call" -> handleToolCall(userId, params)
+    "tools/call" -> handleToolCall(user, params)
     "resources/list" -> ResourcesListResult()
     else -> throw IllegalArgumentException("Unknown method: $method")
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun handleToolCall(userId: Id<User>, params: Map<String, Any?>): ToolCallResult {
+  private fun handleToolCall(user: User, params: Map<String, Any?>): ToolCallResult {
     val toolName = params["name"] as String
     val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
     val argsJson = jsonMapper.render(args)
     val result = when (toolName) {
-      "list_projects" -> listProjects(userId)
-      "list_stories" -> listStories(userId, jsonMapper.parse<ListStoriesArgs>(argsJson))
-      "get_story" -> getStory(userId, jsonMapper.parse<GetStoryArgs>(argsJson))
+      "list_projects" -> listProjects(user)
+      "list_stories" -> listStories(user, jsonMapper.parse<ListStoriesArgs>(argsJson))
+      "get_story" -> getStory(user, jsonMapper.parse<GetStoryArgs>(argsJson))
       else -> throw IllegalArgumentException("Unknown tool: $toolName")
     }
     val json = jsonMapper.render(result)
     return ToolCallResult(listOf(ToolContent(text = json)))
   }
 
-  private fun listProjects(userId: Id<User>): List<Project> {
-    val user = userRepository.get(userId)
-    val projects = if (user.isAdmin) projectRepository.list() else projectRepository.listForMember(userId)
-    return projects.filter { it.status != Project.Status.DELETED }
-  }
+  private fun listProjects(user: User): List<Project> =
+    if (user.isAdmin) projectRepository.list() else projectRepository.listForMember(user.id)
 
-  private fun listStories(userId: Id<User>, args: ListStoriesArgs): List<Story> {
-    val projectId = Id<Project>(args.projectId)
-    requireAccess(userId, projectId)
-    var stories = storyRepository.list(projectId, q = args.q)
-    if (args.status != null) stories = stories.filter { it.status.name == args.status }
+  private fun listStories(user: User, args: ListStoriesArgs): List<Story> {
+    requireAccess(user, args.projectId)
+    var stories = storyRepository.list(args.projectId, q = args.q)
+    if (args.status != null) stories = stories.filter { it.status == args.status }
     else stories = stories.filter { it.status != ACCEPTED }
-    if (args.type != null) stories = stories.filter { it.type.name == args.type }
+    if (args.type != null) stories = stories.filter { it.type == args.type }
     return stories
   }
 
-  private fun getStory(userId: Id<User>, args: GetStoryArgs): Story {
-    val storyId = Id<Story>(args.storyId)
-    val story = storyRepository.get(storyId)
-    requireAccess(userId, story.projectId)
+  private fun getStory(user: User, args: GetStoryArgs): Story {
+    val story = storyRepository.get(args.storyId)
+    requireAccess(user, story.projectId)
     return story
   }
 
-  private fun requireAccess(userId: Id<User>, projectId: Id<Project>) {
-    val user = userRepository.get(userId)
+  private fun requireAccess(user: User, projectId: Id<Project>) {
     if (!user.isAdmin) {
-      projectMemberRepository.role(projectId, userId) ?: throw ForbiddenException("Not a member of this project")
+      projectMemberRepository.role(projectId, user.id) ?: throw ForbiddenException("Not a member of this project")
     }
   }
 }

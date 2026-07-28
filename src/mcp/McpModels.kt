@@ -1,9 +1,12 @@
 package mcp
 
-import klite.json.JsonProperty
+import db.Id
+import klite.SnakeCase
 import klite.publicProperties
+import stories.Project
+import stories.Story
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.KType
 
 data class JsonRpcResponse(val jsonrpc: String = "2.0", val id: Any?, val result: Any? = null, val error: JsonRpcError? = null)
 
@@ -31,7 +34,7 @@ data class ResourcesListResult(val resources: List<Any> = emptyList())
 
 data class JsonRpcRequest(val jsonrpc: String = "2.0", val id: Any?, val method: String, val params: Map<String, Any?> = emptyMap())
 
-data class ToolDef<T : Any>(
+data class ToolDef<T: Any>(
   val name: String,
   val description: String,
   val inputClass: KClass<T>,
@@ -42,23 +45,21 @@ fun ToolDef<*>.toTool() = Tool(name, description, inputClass.toToolSchema(requir
 
 private fun KClass<*>.toToolSchema(required: List<String>): ToolSchema {
   val properties = publicProperties.values.associate { prop ->
-    val jsonName = prop.findAnnotation<JsonProperty>()?.value?.trimToNull() ?: prop.name
+    val jsonName = SnakeCase.to(prop.name)
     jsonName to mapOf("type" to prop.returnType.toJsonSchemaType())
   }
   return ToolSchema(properties = properties, required = required)
 }
 
-private fun kotlin.reflect.KType.toJsonSchemaType(): String = when (classifier) {
+private fun KType.toJsonSchemaType(): String = when (classifier) {
   Long::class, Int::class, Short::class, Byte::class -> "number"
   Double::class, Float::class -> "number"
   Boolean::class -> "boolean"
   else -> "string"
 }
 
-private fun String.trimToNull() = trim().ifEmpty { null }
-
 internal object NoArgs
 
-internal data class ListStoriesArgs(@JsonProperty("project_id") val projectId: Long, val status: String? = null, val type: String? = null, val q: String? = null)
+internal data class ListStoriesArgs(val projectId: Id<Project>, val status: Story.Status? = null, val type: Story.Type? = null, val q: String? = null)
 
-internal data class GetStoryArgs(@JsonProperty("project_id") val projectId: Long, @JsonProperty("story_id") val storyId: Long)
+internal data class GetStoryArgs(val projectId: Id<Project>, val storyId: Id<Story>)
