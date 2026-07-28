@@ -4,12 +4,10 @@ import auth.ApiKeyRepository
 import db.Id
 import klite.ForbiddenException
 import klite.HttpExchange
-import klite.SnakeCase
 import klite.UnauthorizedException
 import klite.annotations.GET
 import klite.annotations.POST
 import klite.jdbc.NoTransaction
-import klite.json.JsonMapper
 import klite.json.parse
 import klite.sse.Event
 import klite.sse.send
@@ -28,12 +26,10 @@ class McpRoutes(
   private val epicRepository: EpicRepository,
   private val projectMemberRepository: ProjectMemberRepository,
 ) {
-  private val jsonMapper = JsonMapper(keys = SnakeCase)
-
   private val tools = listOf(
     ToolDef("list_projects", "List all projects you have access to", NoArgs::class),
-    ToolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class, required = listOf("project_id")),
-    ToolDef("get_story", "Get full details of a story by ID", GetStoryArgs::class, required = listOf("project_id", "story_id")),
+    ToolDef("list_stories", "List stories in a project (excludes done/accepted stories by default)", ListStoriesArgs::class),
+    ToolDef("get_story", "Get full details of a story by ID", GetStoryArgs::class),
   )
 
   @GET fun sse(e: HttpExchange) {

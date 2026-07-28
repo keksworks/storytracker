@@ -14,7 +14,7 @@ export interface EmailRequest {email: Email}
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
 // class mcp.GetStoryArgs
-export interface GetStoryArgs {project_id: number; story_id: number}
+export interface GetStoryArgs {projectId: Id<Project>; storyId: Id<Story>}
 // class mcp.InitializeResult
 export interface InitializeResult {capabilities: Record<string, any>; protocolVersion: string; serverInfo: ServerInfo}
 // class mcp.JsonRpcError
@@ -24,7 +24,7 @@ export interface JsonRpcRequest {id?: any; jsonrpc: string; method: string; para
 // class mcp.JsonRpcResponse
 export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: string; result?: any}
 // class mcp.ListStoriesArgs
-export interface ListStoriesArgs {project_id: number; q?: string; status?: string; type?: string}
+export interface ListStoriesArgs {projectId: Id<Project>; q?: string; status?: StoryStatus; type?: StoryType}
 // class mcp.ResourcesListResult
 export interface ResourcesListResult {resources: Array<any>}
 // class mcp.ServerInfo
@@ -36,7 +36,7 @@ export interface ToolCallResult {content: Array<ToolContent>}
 // class mcp.ToolContent
 export interface ToolContent {text: string; type: string}
 // class mcp.ToolDef
-export interface ToolDef<T> {description: string; inputClass: KClass<any>; name: string; required: Array<string>}
+export interface ToolDef<T> {description: string; inputClass: KClass<any>; name: string}
 // class mcp.ToolSchema
 export interface ToolSchema {properties: Record<string, any>; required: Array<string>; type: string}
 // class mcp.ToolsListResult
