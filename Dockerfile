@@ -8,14 +8,14 @@ RUN npm run build
 RUN npm run check
 RUN npm test
 
-FROM eclipse-temurin:21-alpine AS build-server
+FROM eclipse-temurin:25-alpine AS build-server
 WORKDIR /app
 
 COPY . ./
 RUN --mount=type=cache,target=/root/.gradle ./gradlew testClasses jar --info
 
 # The final image
-FROM eclipse-temurin:21-jre-alpine AS final
+FROM eclipse-temurin:25-jre-alpine AS final
 RUN adduser -S user
 RUN rm -fr /usr/sbin /bin/ch*
 
