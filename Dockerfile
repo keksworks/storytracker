@@ -32,7 +32,7 @@ RUN gzip -k9 ui/public/assets/*
 USER user
 
 ENV TZ=Europe/Tallinn
-ENV JAVA_TOOL_OPTIONS="-Xss256k -Xmx1G -XX:+ExitOnOutOfMemoryError"
+ENV JAVA_TOOL_OPTIONS="-Xss256k -Xmx1G -XX:+ExitOnOutOfMemoryError -XX:+UseCompactObjectHeaders"
 CMD java -jar *.jar
 
 ENV PORT=8080
