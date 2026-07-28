@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
@@ -61,7 +61,7 @@ tasks.register<Test>("e2eTest") {
 
 tasks.withType<KotlinCompile> {
   compilerOptions {
-    jvmTarget = JVM_21
+    jvmTarget = JVM_25
   }
   if (System.getProperty("user.name") != "root") finalizedBy("types.ts")
 }
