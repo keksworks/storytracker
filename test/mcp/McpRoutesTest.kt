@@ -56,6 +56,20 @@ class McpRoutesTest: BaseMocks() {
     expect(getStory.inputSchema.required).notToContain("projectId")
   }
 
+  @Test fun `enum parameters include values in schema`() {
+    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/list"))
+    val result = resp.result as ToolsListResult
+
+    val listStories = result.tools.first { it.name == "listStories" }
+    val statusProp = listStories.inputSchema.properties["status"] as Map<*, *>
+    expect(statusProp["enum"] as List<*>).toContain("UNSTARTED")
+    expect(statusProp["enum"] as List<*>).toContain("ACCEPTED")
+
+    val typeProp = listStories.inputSchema.properties["type"] as Map<*, *>
+    expect(typeProp["enum"] as List<*>).toContain("FEATURE")
+    expect(typeProp["enum"] as List<*>).toContain("BUG")
+  }
+
   @Test fun `list projects for admin`() {
     every { userRepository.get(user.id) } returns user.copy(isAdmin = true)
     every { projectRepository.list() } returns listOf(project)

@@ -3,9 +3,11 @@ package mcp
 import db.Id
 import klite.Converter
 import users.User
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
@@ -43,10 +45,15 @@ fun Pair<KFunction<*>, String>.toTool(): Tool {
   for (param in params) {
     val name = param.name!!
     if (!param.type.isMarkedNullable) required += name
-    properties[name] = mapOf("type" to param.type.toJsonSchemaType())
+    val prop = mutableMapOf<String, Any>("type" to param.type.toJsonSchemaType())
+    param.type.jvmErasure.enumValues()?.let { prop["enum"] = it }
+    properties[name] = prop
   }
   return Tool(f.name, description, ToolSchema(properties = properties, required = required))
 }
+
+private fun KClass<*>.enumValues(): List<String>? =
+  if (isSubclassOf(Enum::class)) java.enumConstants.map { (it as Enum<*>).name } else null
 
 fun KFunction<*>.callWith(user: User, args: Map<String, Any?>): Any? {
   val params = mutableMapOf<KParameter, Any?>()
