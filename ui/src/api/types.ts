@@ -13,30 +13,8 @@ export interface EmailRequest {email: Email}
 
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
-// class mcp.InitializeResult
-export interface InitializeResult {capabilities: Record<string, any>; protocolVersion: string; serverInfo: ServerInfo}
-// class mcp.JsonRpcError
-export interface JsonRpcError {code: number; message: string}
-// class mcp.JsonRpcRequest
-export interface JsonRpcRequest {id?: any; jsonrpc: string; method: string; params: Record<string, any>}
-// class mcp.JsonRpcResponse
-export interface JsonRpcResponse {error?: JsonRpcError; id?: any; jsonrpc: string; result?: any}
 // class mcp.McpRoutes$ListedStory
 export interface McpRoutesListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
-// class mcp.ResourcesListResult
-export interface ResourcesListResult {resources: Array<any>}
-// class mcp.ServerInfo
-export interface ServerInfo {name: string; version: string}
-// class mcp.Tool
-export interface Tool {description: string; inputSchema: ToolSchema; name: string}
-// class mcp.ToolCallResult
-export interface ToolCallResult {content: Array<ToolContent>}
-// class mcp.ToolContent
-export interface ToolContent {text: string; type: string}
-// class mcp.ToolSchema
-export interface ToolSchema {properties: Record<string, any>; required: Array<string>; type: string}
-// class mcp.ToolsListResult
-export interface ToolsListResult {tools: Array<Tool>}
 // class stories.Epic
 export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; isNew?: boolean; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
 // class stories.GitHubAuthor
@@ -89,6 +67,9 @@ export interface ChangeLangRequest {lang: string}
 export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
 // class users.User
 export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
+// class java.time.DayOfWeek
+export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDNESDAY', THURSDAY = 'THURSDAY', FRIDAY = 'FRIDAY', SATURDAY = 'SATURDAY', SUNDAY = 'SUNDAY'}
+
 // class klite.jdbc.UpdatableEntity
 export interface UpdatableEntity {updatedAt?: Instant}
 
@@ -100,8 +81,6 @@ export type Instant = `${number}-${number}-${number}T${number}:${number}:${numbe
 export type URI = `${string}://${string}`
 // klite.Email
 export type Email = `${string}@${string}`
-// class java.time.DayOfWeek
-export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDNESDAY', THURSDAY = 'THURSDAY', FRIDAY = 'FRIDAY', SATURDAY = 'SATURDAY', SUNDAY = 'SUNDAY'}
 
 // db.TestData
 export const admin = {"createdAt":"2025-03-03T00:00:00Z","email":"admin@azib.net","firstName":"Test","id":200000001,"isAdmin":true,"lang":"en","lastName":"Admin","name":"Test Admin"} as User

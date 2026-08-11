@@ -7,12 +7,13 @@ plugins {
 }
 
 repositories {
+  mavenLocal()
   mavenCentral()
   maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
-  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:2.0.0"
+  fun klite(module: String) = "com.github.keksworks.klite:klite-$module:3201f2ec" // 2.0.1+
   implementation(klite("server"))
   implementation(klite("json"))
   implementation(klite("i18n"))
@@ -22,6 +23,7 @@ dependencies {
   implementation(klite("jobs"))
   implementation(klite("smtp"))
   implementation(klite("csv"))
+  implementation(klite("ai"))
   implementation("org.postgresql:postgresql:42.7.13")
 
   testImplementation(klite("jdbc-test"))

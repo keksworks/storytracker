@@ -2,18 +2,18 @@ package mcp
 
 import auth.ApiKeyRepository
 import db.Id
-import klite.*
-import klite.StatusCode.Companion.MethodNotAllowed
-import klite.annotations.GET
-import klite.annotations.POST
+import klite.ForbiddenException
+import klite.HttpExchange
+import klite.ai.mcp.ServerInfo
 import klite.jdbc.NoTransaction
 import klite.jdbc.nowSec
-import klite.json.JsonMapper
-import klite.nodes.text
 import stories.*
 import stories.Story.Status.ACCEPTED
 import users.User
 import users.UserRepository
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.jvmErasure
+import klite.ai.mcp.McpRoutes as McpRoutesBase
 
 @NoTransaction
 class McpRoutes(
@@ -23,11 +23,8 @@ class McpRoutes(
   private val storyRepository: StoryRepository,
   private val epicRepository: EpicRepository,
   private val projectMemberRepository: ProjectMemberRepository,
-) {
-  private val jsonMapper = JsonMapper()
-  private val log = logger()
-
-  private val tools = listOf(
+): McpRoutesBase(ServerInfo("StoryTracker")) {
+  override val tools = listOf(
     ::listProjects to "List all projects you have access to",
     ::listStories to "List user stories in a project (excludes accepted stories by default), in order of priority",
     ::getStory to "Get full details of a user story by ID",
@@ -36,23 +33,8 @@ class McpRoutes(
     ::changeStoryStatus to "Change the status of a user story. Finished should be set when implementaion is complete. Add #storyId to commit messages.",
   )
 
-  @GET fun get(e: HttpExchange) {
-    e.send(MethodNotAllowed)
-  }
-
-  @POST fun rpc(e: HttpExchange, request: JsonRpcRequest): JsonRpcResponse {
-    val user = authenticate(e) ?: throw UnauthorizedException()
-    if (request.method == "notifications/initialized") return JsonRpcResponse(id = request.id)
-    log.info(request.toString())
-    return try {
-      JsonRpcResponse(id = request.id, result = handleRequest(user, request.method, request.params))
-    } catch (e: Exception) {
-      JsonRpcResponse(id = request.id, error = JsonRpcError(-32603, e.message ?: "Internal error"))
-    }
-  }
-
-  private fun authenticate(e: HttpExchange): User? {
-    val auth = e.header("Authorization") ?: return null
+  override fun authenticate(exchange: HttpExchange): User? {
+    val auth = exchange.header("Authorization") ?: return null
     val key = auth.removePrefix("Bearer ").trim()
     if (key.isBlank()) return null
     val apiKey = apiKeyRepository.byKey(key) ?: return null
@@ -60,22 +42,9 @@ class McpRoutes(
     return userRepository.get(apiKey.userId)
   }
 
-  private fun handleRequest(user: User, method: String, params: Map<String, Any?>): Any = when (method) {
-    "initialize" -> InitializeResult()
-    "tools/list" -> ToolsListResult(tools.map { it.toTool() })
-    "tools/call" -> handleToolCall(user, params)
-    "resources/list" -> ResourcesListResult()
-    else -> throw IllegalArgumentException("Unknown method: $method")
-  }
-
-  @Suppress("UNCHECKED_CAST")
-  private fun handleToolCall(user: User, params: Map<String, Any?>): ToolCallResult {
-    val toolName = params.text("name")
-    val args = (params["arguments"] as? Map<String, Any?>) ?: emptyMap()
-    val func = tools.firstOrNull { it.first.name == toolName }?.first ?: throw IllegalArgumentException("Unknown tool: $toolName")
-    val result = func.callWith(user, args)
-    val json = jsonMapper.render(result)
-    return ToolCallResult(listOf(ToolContent(text = json)))
+  override fun convertValue(value: Any, targetType: KType): Any? = when {
+    value is Number && targetType.jvmErasure == Id::class -> Id<Any>(value.toLong())
+    else -> super.convertValue(value, targetType)
   }
 
   fun listProjects(user: User): List<Project> =

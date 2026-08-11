@@ -13,12 +13,16 @@ import db.TestData.story2
 import db.TestData.user
 import io.mockk.every
 import klite.UnauthorizedException
+import klite.ai.mcp.InitializeResult
+import klite.ai.mcp.JsonRpcRequest
+import klite.ai.mcp.ToolCallResult
+import klite.ai.mcp.ToolsListResult
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import users.Role.MEMBER
 
 class McpRoutesTest: BaseMocks() {
-  val routes = McpRoutes(apiKeyRepository, userRepository, projectRepository, storyRepository, epicRepository, projectMemberRepository)
+  val routes = create<McpRoutes>()
 
   init {
     every { exchange.header("Authorization") } returns "Bearer ${apiKey.key}"
@@ -27,7 +31,8 @@ class McpRoutesTest: BaseMocks() {
   @Test fun `initialize returns protocol info`() {
     val resp = routes.rpc(exchange, JsonRpcRequest(method = "initialize"))
     expect(resp.jsonrpc).toEqual("2.0")
-    expect(resp.result).toEqual(InitializeResult())
+    val result = resp.result as InitializeResult
+    expect(result.serverInfo.name).toEqual("StoryTracker")
   }
 
   @Test fun `tools list returns 6 tools`() {
