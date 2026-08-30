@@ -39,7 +39,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
-    target: 'es2020',
+    target: 'es2023',
     cssCodeSplit: false
   },
   optimizeDeps: {
