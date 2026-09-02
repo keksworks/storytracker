@@ -78,6 +78,7 @@ fun startServer() = Server(
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
     scheduleDaily(require<IterationAdvancer>(), LocalTime.of(0, 1))
+    runOnce(require<IterationAdvancer>())
   })
 }
 
