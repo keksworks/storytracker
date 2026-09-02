@@ -23,6 +23,7 @@ import java.time.LocalTime
 import kotlin.io.path.exists
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 
 val Config.isE2E get() = isActive("e2e")
 
@@ -38,6 +39,9 @@ fun startServer() = Server(
 
   use<JsonBody>()
   use<RequestTransactionHandler>()
+
+  rateLimit(100, 1.minutes)
+  securityBan()
 
   assets("/", AssetsHandler(assetsPath, useIndexForUnknownPaths = true))
 
@@ -78,7 +82,6 @@ fun startServer() = Server(
 fun Server.startJobs() {
   use(require<JobRunner>().apply {
     scheduleDaily(require<IterationAdvancer>(), LocalTime.of(0, 1))
-    runOnce(require<IterationAdvancer>())
   })
 }
 
