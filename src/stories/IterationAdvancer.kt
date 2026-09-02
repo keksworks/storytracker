@@ -19,6 +19,13 @@ class IterationAdvancer(
   private val log = logger()
 
   override fun run() {
+    advance(today.minusDays(7))
+    advance(today.minusDays(6))
+    advance(today.minusDays(5))
+    advance(today.minusDays(4))
+    advance(today.minusDays(3))
+    advance(today.minusDays(2))
+    advance(today.minusDays(1))
     advance(today)
   }
 
