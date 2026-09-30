@@ -1,17 +1,5 @@
 {
-  "addresses": {
-    "country": "Riik",
-    "county": "Maakond",
-    "municipality": "Linn/asula",
-    "area": "Linnaosa",
-    "street": "Tänav",
-    "building": "Maja",
-    "apartment": "Klass",
-    "postalCode": "Indeks",
-    "details": "Lisainfo",
-    "edit": "Muuda aadress",
-    "selectApartment": "Vali korter"
-  },
+  "title": "StoryTracker",
   "contacts": {
     "email": "E-post",
     "phone": "Telefon",
@@ -29,15 +17,6 @@
       "VIEWER": "Vaataja"
     },
     "lastLoginAt": "Viimane sisselogimine"
-  },
-  "person": {
-    "birthDate": "Sünnikuupäev",
-    "personalCode": "Isikukood",
-    "firstName": "Eesnimi",
-    "lastName": "Perekonnanimi",
-    "name": "Nimi",
-    "age": "Vanus",
-    "gender": "Sugu"
   },
   "gender": {
     "male": "Mees",
@@ -81,7 +60,6 @@
     "codeSent": "Kood saadeti aadressile {email}, kontrolli oma e-posti ja sisesta see allpool",
     "code": "Sisselogimiskood",
     "logout": "Välju",
-    "failed": "Sisenemine ebaõnnestus",
     "noUser": "Kasutajat ei leitud"
   },
   "home": {
@@ -164,6 +142,10 @@
     "importForbidden": "Sul puuduvad õigused projekti ülekirjutamiseks",
     "importSuccess": "Project {name} sai imporditud",
     "importExistsConfirm": "Projekt {name} on juba olemas, kas soovid selle uuendada?",
+    "webhookUrl": "GitHub webhook URL",
+    "webhookSecret": "Webhooki saladus",
+    "webhookInstructions": "Lisa see URL webhookina oma GitHubi repol (Settings → Webhooks → Add webhook). Kasuta \"application/json\" sisutüüpi. Commit-id, mille sõnum algab \"#storyId\", lisatakse kommentaaridena.",
+    "webhookCopied": "Kopeeritud lõikelauale",
     "delete": "Kustuta projekt",
     "deleteConfirm": "Kas oled kindel, et soovid projekti {name} kustutada",
     "deleteMessage": "Projekt kustutatud"
@@ -266,7 +248,7 @@
     "projectInvitation": {
       "subject": "Sind on kutsutud projekti {projectName}",
       "bodyHtml": "Tere!\n\n{inviterName} on kutsunud sind StoryTrackeri projekti <b>{projectName}</b>.\n\nKlõpsa alloleval nupul projekti avamiseks.",
-      "actionLabel": "Ava projekt"
+      "action": "Ava projekt"
     }
   },
   "errors": {
