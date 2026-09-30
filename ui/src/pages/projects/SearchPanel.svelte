@@ -36,7 +36,7 @@
 
   $: if (!showSearch) searchQuery = undefined
 
-  function storyMatchesSearch(story: Story, q: string) {
+  export function storyMatchesSearch(story: Story, q: string) {
     return story.id.toString() === q.replace(/^#/, '') ||
            story.name?.toLowerCase().includes(q) ||
            story.description?.toLowerCase().includes(q) ||
@@ -49,8 +49,8 @@
     else await search(q)
   }
 
-  $: if (searchQuery?.length! > 2) {
-    const q = searchQuery!.toLowerCase()
+  $: if (searchQuery) {
+    const q = searchQuery.toLowerCase()
     searchResults = (loadedSearchResults ?? []).concat(stories.filter(s => storyMatchesSearch(s, q)))
   } else {
     searchResults = undefined

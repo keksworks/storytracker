@@ -29,6 +29,17 @@ class StoryRepositoryTest: DBTest() {
     expect(repository.list(project.id, beforeIteration = iteration.number + 1)).toContainExactly(oldStory)
   }
 
+  @Test fun `search by short terms and tags`() {
+    ProjectRepository(db).save(project)
+    val s1 = story.copy(id = Id(), name = "About API", tags = setOf("ab", "?")).also { repository.save(it) }
+    val s2 = story2.copy(id = Id(), name = "Other", tags = setOf("cd")).also { repository.save(it) }
+
+    expect(repository.list(project.id, q = "ab")).toContainExactly(s1)
+    expect(repository.list(project.id, q = "?")).toContainExactly(s1)
+    expect(repository.list(project.id, q = "cd")).toContainExactly(s2)
+    expect(repository.list(project.id, q = "xy")).toBeEmpty()
+  }
+
   @Test fun reindexStoryOrder() {
     ProjectRepository(db).save(project)
     IterationRepository(db).save(iteration)
