@@ -40,6 +40,14 @@ class StoryRepositoryTest: DBTest() {
     expect(repository.list(project.id, q = "xy")).toBeEmpty()
   }
 
+  @Test fun `search sorts tag matches first`() {
+    ProjectRepository(db).save(project)
+    val nameMatch = story.copy(id = Id(), name = "About api").also { repository.save(it) }
+    val tagMatch = story2.copy(id = Id(), name = "Other", tags = setOf("api")).also { repository.save(it) }
+
+    expect(repository.list(project.id, q = "api")).toContainExactly(tagMatch, nameMatch)
+  }
+
   @Test fun reindexStoryOrder() {
     ProjectRepository(db).save(project)
     IterationRepository(db).save(iteration)

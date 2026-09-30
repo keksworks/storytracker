@@ -36,12 +36,20 @@
 
   $: if (!showSearch) searchQuery = undefined
 
+  export function storyMatchesTag(story: Story, q: string) {
+    return story.tags.some(t => t.toLowerCase().includes(q))
+  }
+
   export function storyMatchesSearch(story: Story, q: string) {
     return story.id.toString() === q.replace(/^#/, '') ||
            story.name?.toLowerCase().includes(q) ||
            story.description?.toLowerCase().includes(q) ||
-           story.tags.some(t => t.toLowerCase().includes(q)) ||
+           storyMatchesTag(story, q) ||
            story.comments.some(c => c.text?.toLowerCase().includes(q))
+  }
+
+  export function sortTagMatchesFirst(stories: Story[], q: string) {
+    return [...stories].sort((a, b) => Number(storyMatchesTag(b, q)) - Number(storyMatchesTag(a, q)))
   }
 
   async function triggerSearch(q?: string) {
@@ -51,7 +59,7 @@
 
   $: if (searchQuery) {
     const q = searchQuery.toLowerCase()
-    searchResults = (loadedSearchResults ?? []).concat(stories.filter(s => storyMatchesSearch(s, q)))
+    searchResults = sortTagMatchesFirst((loadedSearchResults ?? []).concat(stories.filter(s => storyMatchesSearch(s, q))), q)
   } else {
     searchResults = undefined
   }

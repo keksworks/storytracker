@@ -42,3 +42,10 @@ it('matches by id with or without hash', () => {
   expect(component.storyMatchesSearch(story, String(story.id))).to.be.true
   expect(component.storyMatchesSearch(story, '#' + story.id)).to.be.true
 })
+
+it('sorts tag matches first', () => {
+  const {component} = renderPanel()
+  const nameMatch = {...story, name: 'About api'}
+  const tagMatch = {...story, name: 'Other', tags: ['api']}
+  expect(component.sortTagMatchesFirst([nameMatch, tagMatch], 'api')).toEqual([tagMatch, nameMatch])
+})

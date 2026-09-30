@@ -43,13 +43,16 @@ class StoryRepository(db: DataSource): CrudRepository<Story>(db, "stories") {
     db.exec("with ordered as (select id, row_number() over (order by ord) as new_ord from $table where projectId = ? and iteration is null) " +
       "update $table set ord = ordered.new_ord from ordered where $table.id = ordered.id", projectId)
 
-  fun list(projectId: Id<Project>, fromIteration: Int? = null, beforeIteration: Int? = null, q: String? = null): List<Story> = db.select(table,
-    Story::projectId to projectId,
-    Story::status to NotIn(DELETED),
-    fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
-    beforeIteration?.let { Story::iteration lt it },
-    q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
-    suffix = defaultOrder) { mapper() }
+  fun list(projectId: Id<Project>, fromIteration: Int? = null, beforeIteration: Int? = null, q: String? = null): List<Story> {
+    val stories = db.select(table,
+      Story::projectId to projectId,
+      Story::status to NotIn(DELETED),
+      fromIteration?.let { Story::iteration to NullOrOp(">=", it) },
+      beforeIteration?.let { Story::iteration lt it },
+      q?.let { "%$q%" }?.let { or(Story::id to q.trimStart('#').toLongOrNull(), Story::tags any q, Story::name ilike it, Story::description ilike it, sql("comments::text ilike ?", it)) },
+      suffix = defaultOrder) { mapper() }
+    return q?.let { query -> stories.sortedByDescending { s -> s.tags.any { it.contains(query, ignoreCase = true) } } } ?: stories
+  }
 
   fun save(story: Story, skipUpdate: Set<KProperty1<Story, *>>) =
     db.upsert(table, story.persister(), skipUpdateFields = skipUpdate.map { it.name }.toSet())
