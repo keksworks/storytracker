@@ -18,6 +18,7 @@
   import {onStatusChanged} from './status'
   import {handleDescriptionClick, linkify} from 'src/shared/linkify'
   import {draggable, type Dragged} from 'src/shared/draggable'
+  import {user} from 'src/stores/auth'
 
   export let project: ProjectContext
   export let story: Story
@@ -57,9 +58,13 @@
   }
 
   $: reallyMovable = movable && !isOpen
+  $: newComments = !isOpen && story.createdByUnread && story.createdBy === $user.id
 
   async function open() {
     isOpen = true
+    if (story.createdByUnread && story.createdBy === $user.id) {
+      story = await api.post(`projects/${story.projectId}/stories`, {...story, createdByUnread: false})
+    }
     await tick()
     initialJson = JSON.stringify(story)
   }
@@ -140,6 +145,9 @@
              on:click|stopPropagation on:keydown={saveOnEnter} autofocus={!story.name}></div>
       {:else}
         <span class="title flex-1">{story.name}</span>
+        {#if newComments}
+          <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" title={t.stories.newComments}></span>
+        {/if}
         {#if story.assignedTo}
           {@const m = project.members?.[story.assignedTo]}
           <span title={m?.user.name}>({m?.user.initials})</span>
@@ -186,7 +194,8 @@
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
 
-      <StoryComments {project} bind:comments={story.comments} urlBase="/api/projects/{story.projectId}/stories/{story.id}" onSave={() => save()}/>
+      <StoryComments {project} bind:comments={story.comments} createdBy={story.createdBy} bind:createdByUnread={story.createdByUnread}
+                     urlBase="/api/projects/{story.projectId}/stories/{story.id}" onSave={() => save()}/>
     </div>
   {/if}
 </div>

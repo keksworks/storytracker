@@ -11,8 +11,11 @@
   export let comments: StoryComment[] | undefined
   export let urlBase: string
   export let onSave: () => void = () => {}
+  export let createdBy: number | undefined = undefined
+  export let createdByUnread: boolean | undefined = undefined
 
   async function addComment() {
+    if (createdBy && createdBy !== $user.id) createdByUnread = true
     comments = [...(comments || []), {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -42,6 +45,7 @@
       <div class="comment bg-white whitespace-pre-line p-2 min-h-8"
            bind:innerHTML={comment.text}
            contenteditable="true"
+           oninput={() => comment.updatedAt = new Date().toISOString() as typeof comment.updatedAt}
            onblur={() => comment.text = linkify(comment.text || '')}
            onclick={handleDescriptionClick}
            onkeydown={handleCommentKeyDown}

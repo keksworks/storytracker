@@ -33,6 +33,7 @@ data class Story(
   override var updatedAt: Instant? = null,
   val createdAt: Instant = nowSec(),
   val createdBy: Id<User>? = null,
+  val createdByUnread: Boolean = false,
 ): Entity<Story>, UpdatableEntity {
   val isNew: Boolean? get() = null // for frontend
 

@@ -182,6 +182,7 @@
     "points": "Points",
     "tags": "Tags",
     "comments": "Comments",
+    "newComments": "New comments from others",
     "deleteCommentConfirm": "Really delete comment?",
     "status": "Status",
     "statuses": {

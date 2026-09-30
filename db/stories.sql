@@ -67,3 +67,6 @@ alter table stories alter column projectId type bigint using projectId::bigint;
 
 --changeset stories.status:drop-PLANNED
 update stories set status = 'UNSTARTED' where status = 'PLANNED';
+
+--changeset stories.createdByUnread
+alter table stories add column createdByUnread boolean not null default false;

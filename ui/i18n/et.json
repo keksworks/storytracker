@@ -199,6 +199,7 @@
     "tags": "Sildid",
     "points": "Punktid",
     "comments": "Kommentaarid",
+    "newComments": "Uued kommentaarid teistelt",
     "deleteCommentConfirm": "Kas kustutada kommentaar?",
     "status": "Olek",
     "statuses": {

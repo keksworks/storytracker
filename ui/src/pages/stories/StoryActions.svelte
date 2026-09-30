@@ -37,6 +37,7 @@
   function reject(e: Event) {
     const reason = prompt(t.stories.rejectionReason)?.trim()
     if (!reason) return
+    if (story.createdBy && story.createdBy !== $user.id) story.createdByUnread = true
     story.comments.push({text: reason, createdBy: $user.id, createdAt: new Date().toISOString()} as StoryComment)
     story.status = StoryStatus.REJECTED
     justSave(e)
