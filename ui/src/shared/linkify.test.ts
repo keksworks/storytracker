@@ -1,4 +1,4 @@
-import {linkify} from './linkify'
+import {handleDescriptionClick, linkify} from './linkify'
 
 describe('linkify', () => {
   it('prefer newlines to <br>', () => {
@@ -38,5 +38,40 @@ describe('linkify', () => {
   it('handle empty or null input', () => {
     expect(linkify('')).toBe('')
     expect(linkify(null as any)).toBe(null)
+  })
+
+  it('linkify story refs', () => {
+    expect(linkify('See #123 and #456')).toBe('See <a href="#123">#123</a> and <a href="#456">#456</a>')
+  })
+
+  it('does not linkify hash in urls', () => {
+    expect(linkify('Go to https://example.com/page#123')).toBe('Go to <a href="https://example.com/page#123">https://example.com/page#123</a>')
+  })
+
+  it('does not linkify already linked refs', () => {
+    const html = '<a href="#123">#123</a>'
+    expect(linkify(html)).toBe(html)
+  })
+})
+
+describe('handleDescriptionClick', () => {
+  it('triggers search for story refs', () => {
+    const onSearch = vi.fn()
+    const a = document.createElement('a')
+    a.setAttribute('href', '#123')
+    const e = {target: a, preventDefault: () => {}} as any
+    handleDescriptionClick(e, onSearch)
+    expect(onSearch).toHaveBeenCalledWith('#123')
+  })
+
+  it('opens other links in a new window', () => {
+    const onSearch = vi.fn()
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const a = document.createElement('a')
+    a.setAttribute('href', 'https://example.com')
+    const e = {target: a, preventDefault: () => {}} as any
+    handleDescriptionClick(e, onSearch)
+    expect(onSearch).not.toHaveBeenCalled()
+    expect(open).toHaveBeenCalled()
   })
 })

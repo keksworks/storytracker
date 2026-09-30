@@ -100,7 +100,7 @@
   }
 
   function handleKeyDown(e: KeyboardEvent) {
-    handleDescriptionClick(e)
+    handleDescriptionClick(e, handlers.onSearch)
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) save()
   }
 
@@ -189,13 +189,13 @@
       <h4>{t.stories.description}</h4>
       <div class="bg-white whitespace-pre-line p-2 min-h-16" bind:innerHTML={story.description} contenteditable="true"
            on:blur={() => story.description = linkify(story.description || '')}
-           on:click={handleDescriptionClick} on:keydown={handleKeyDown} role="textbox" tabindex="0"></div>
+           on:click={e => handleDescriptionClick(e, handlers.onSearch)} on:keydown={handleKeyDown} role="textbox" tabindex="0"></div>
 
       <h4>{t.stories.tags}</h4>
       <StoryTagsEditor {project} bind:story/>
 
       <StoryComments {project} bind:comments={story.comments} createdBy={story.createdBy} bind:createdByUnread={story.createdByUnread}
-                     urlBase="/api/projects/{story.projectId}/stories/{story.id}" onSave={() => save()}/>
+                     urlBase="/api/projects/{story.projectId}/stories/{story.id}" onSave={() => save()} onSearch={handlers.onSearch}/>
     </div>
   {/if}
 </div>

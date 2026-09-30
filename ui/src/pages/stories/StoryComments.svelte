@@ -11,6 +11,7 @@
   export let comments: StoryComment[] | undefined
   export let urlBase: string
   export let onSave: () => void = () => {}
+  export let onSearch: (q: string) => void = () => {}
   export let createdBy: number | undefined = undefined
   export let createdByUnread: boolean | undefined = undefined
 
@@ -33,7 +34,7 @@
   }
 
   function handleCommentKeyDown(e: KeyboardEvent) {
-    handleDescriptionClick(e)
+    handleDescriptionClick(e, onSearch)
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSave()
   }
 </script>
@@ -47,7 +48,7 @@
            contenteditable="true"
            oninput={() => comment.updatedAt = new Date().toISOString() as typeof comment.updatedAt}
            onblur={() => comment.text = linkify(comment.text || '')}
-           onclick={handleDescriptionClick}
+           onclick={e => handleDescriptionClick(e, onSearch)}
            onkeydown={handleCommentKeyDown}
            role="textbox"
            tabindex="0"></div>

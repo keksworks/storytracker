@@ -1,4 +1,4 @@
-const URL_REGEX = /(https?:\/\/[^\s<]+)/g
+const REF_REGEX = /(https?:\/\/[^\s<]+)|#(\d+)\b/g
 
 export function linkify(html: string): string {
   if (!html) return html
@@ -11,10 +11,12 @@ export function linkify(html: string): string {
 
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent || ''
-      if (URL_REGEX.test(text)) {
+      const replaced = text.replace(REF_REGEX, (_, url, id) =>
+        url ? `<a href="${url}">${url}</a>` : `<a href="#${id}">#${id}</a>`)
+      if (replaced !== text) {
         const fragment = doc.createDocumentFragment()
         const temp = doc.createElement('div')
-        temp.innerHTML = text.replace(URL_REGEX, '<a href="$1">$1</a>')
+        temp.innerHTML = replaced
         while (temp.firstChild) {
           fragment.appendChild(temp.firstChild)
         }
@@ -31,12 +33,14 @@ export function linkify(html: string): string {
   return doc.body.innerHTML
 }
 
-export function handleDescriptionClick(e: MouseEvent | KeyboardEvent) {
+export function handleDescriptionClick(e: MouseEvent | KeyboardEvent, onSearch?: (q: string) => void) {
   const a = (e.target as HTMLElement).closest('a')
   if (a) {
     if (e instanceof KeyboardEvent && e.key !== 'Enter') return
     e.preventDefault()
-    window.open(a.href, '_blank')
+    const href = a.getAttribute('href') || ''
+    if (/^#\d+$/.test(href)) onSearch?.(href)
+    else window.open(a.href, '_blank')
   }
 }
 

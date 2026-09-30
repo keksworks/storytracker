@@ -148,9 +148,9 @@
       <h4>{t.stories.description}</h4>
       <div class="bg-white whitespace-pre-line p-2 min-h-16" bind:innerHTML={epic.description} contenteditable="true"
            on:blur={() => epic.description = linkify(epic.description || '')}
-           on:click={handleDescriptionClick} on:keydown={handleDescriptionClick} role="textbox" tabindex="0"></div>
+           on:click={e => handleDescriptionClick(e, onSearch)} on:keydown={e => handleDescriptionClick(e, onSearch)} role="textbox" tabindex="0"></div>
 
-      <StoryComments {project} bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`}/>
+      <StoryComments {project} bind:comments={epic.comments} urlBase={`/api/projects/${epic.projectId}/epics/${epic.id}`} {onSearch}/>
     </div>
   {/if}
 </div>
