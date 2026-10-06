@@ -166,7 +166,7 @@
     if (index >= 0) {
       stories[index] = story
       if (story.status === StoryStatus.STARTED || story.status === StoryStatus.ACCEPTED)
-        highlight.storyId = story.id
+        highlight = {...highlight, storyId: story.id}
       stories = stories
     }
   }
