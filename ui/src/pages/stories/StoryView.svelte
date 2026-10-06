@@ -138,7 +138,7 @@
       {/if}
     </span>
 
-    <div class="flex-grow">
+    <div class="flex-grow max-sm:ml-7">
       {#if isOpen}
         <!-- svelte-ignore a11y-autofocus -->
         <div class="title flex-1 focus:bg-white focus:p-1 focus:-my-1" contenteditable="plaintext-only" bind:innerText={story.name}
