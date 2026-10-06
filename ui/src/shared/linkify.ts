@@ -40,7 +40,6 @@ export function handleDescriptionClick(e: MouseEvent | KeyboardEvent, onSearch?:
     e.preventDefault()
     const href = a.getAttribute('href') || ''
     if (/^#\d+$/.test(href)) onSearch?.(href)
-    else window.open(a.href, '_blank')
+    else window.location.assign(a.href)
   }
 }
-
