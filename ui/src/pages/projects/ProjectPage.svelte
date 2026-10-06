@@ -203,12 +203,16 @@
   <div class="flex px-4 max-sm:flex-col max-sm:!h-auto" style="height: calc(100vh - 56px)">
     <aside class="w-14 max-sm:w-full sm:h-full pt-3 sm:-ml-3">
       <div class="flex sm:flex-col items-center gap-4">
-        {#each Object.keys(show) as key}
-          <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
-                  variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
-        {/each}
+        <div class="flex items-center gap-4">
+          {#each Object.keys(show) as key}
+            <Button icon={key} size={isMobile ? '' : 'lg'} title={t.panels[key]} on:click={() => toggleShow(key)}
+                    variant={show[key] ? 'solid' : 'ghost'} color="secondary"/>
+          {/each}
+        </div>
         {#if isMobile && project}
-          <SearchPanel mode="input" {isMobile} {handlers} {onSearch} {project} {pastLoaded}/>
+          <div class="w-full">
+            <SearchPanel mode="input" {isMobile} {handlers} {onSearch} {project} {pastLoaded}/>
+          </div>
         {/if}
       </div>
     </aside>
