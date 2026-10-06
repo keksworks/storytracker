@@ -64,6 +64,7 @@
   },
   "home": {
     "title": "Avaleht",
+    "description": "StoryTracker on lihtne ja läbipaistev Agiilne projektijuhtimise tööriist meeskondadele.",
     "hero": {
       "tagline": "Tarkprojektide jälgimine, mis toimib",
       "subtitle": "Pivotal Trackeri poolt inspireeritud. Loodud tõeliselt Agile meeskondadele.",

@@ -3,6 +3,11 @@
   import MainPageLayout from 'src/layout/MainPageLayout.svelte'
 </script>
 
+<svelte:head>
+  <title>{t.title} - Agile Project Tracking</title>
+  <meta name="description" content={t.home.description}>
+</svelte:head>
+
 <MainPageLayout title={t.title}>
   <section>
     <div class="border-b border-stone-200 bg-white px-4 py-8 sm:px-6 sm:py-12">
