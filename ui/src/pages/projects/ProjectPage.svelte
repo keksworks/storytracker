@@ -163,7 +163,12 @@
   function onSaved(story: Story) {
     let index = stories.findIndex(s => s.id == story.id)
     if (index < 0) index = stories.findIndex(s => !s.id)
-    if (index >= 0) stories[index] = story
+    if (index >= 0) {
+      stories[index] = story
+      if (story.status === StoryStatus.STARTED || story.status === StoryStatus.ACCEPTED)
+        highlight = {...highlight, storyId: story.id}
+      stories = stories
+    }
   }
 
   async function onDelete(story: Story) {

@@ -79,12 +79,13 @@
       api.post<ProjectMemberUser>(`projects/${story.projectId}/members/me`).then(m => project.members[m.user.id] = m)
     }
     handlers.onSaved(story)
-    if (move) setTimeout(() => {
+    if (move) setTimeout(async () => {
       const sOrd = statusOrd(story.status)
       const before = stories.find(s => statusOrd(s.status) > sOrd)
       if (!before || before.order > story.order) return
-      onDrag({id: story.id, beforeId: before.id})
-      setTimeout(() => scrollIntoView(), 100)
+      await onDrag({id: story.id, beforeId: before.id})
+      await tick()
+      scrollIntoView()
     })
   }
 
