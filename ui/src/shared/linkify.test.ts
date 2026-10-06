@@ -64,14 +64,16 @@ describe('handleDescriptionClick', () => {
     expect(onSearch).toHaveBeenCalledWith('#123')
   })
 
-  it('opens other links in a new window', () => {
+  it('opens other links in the current window', () => {
     const onSearch = vi.fn()
-    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const assign = vi.fn()
+    vi.stubGlobal('location', {assign})
     const a = document.createElement('a')
     a.setAttribute('href', 'https://example.com')
     const e = {target: a, preventDefault: () => {}} as any
     handleDescriptionClick(e, onSearch)
     expect(onSearch).not.toHaveBeenCalled()
-    expect(open).toHaveBeenCalled()
+    expect(assign).toHaveBeenCalledWith('https://example.com/')
+    vi.unstubAllGlobals()
   })
 })

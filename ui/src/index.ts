@@ -8,6 +8,10 @@ import {initSession} from 'src/stores/auth'
 import type {User} from 'src/api/types'
 import {mount} from 'svelte'
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'))
+}
+
 (async function() {
   initErrorHandlers()
 

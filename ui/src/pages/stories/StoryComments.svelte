@@ -55,7 +55,7 @@
       {#if comment.attachments}
         {#each comment.attachments as attachment}
           {@const url = `${urlBase}/attachments/${encodeURIComponent(attachment.filename)}`}
-          <a href={url} target="_blank">
+          <a href={url}>
             {#if attachment.width && attachment.height}
               <img src={url} class="max-h-32 mt-2" alt={attachment.filename}>
             {:else}
