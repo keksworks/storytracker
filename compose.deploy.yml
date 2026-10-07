@@ -12,6 +12,7 @@ services:
       - MAIL_FROM
       - SESSION_SECRET
       - OWN_DOMAIN
+      - OWN_HOST
       - GOOGLE_OAUTH_CLIENT_ID
       - GOOGLE_OAUTH_CLIENT_SECRET
     networks:

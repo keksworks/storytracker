@@ -40,14 +40,13 @@ fun startServer() = Server(
   use<JsonBody>()
   use<RequestTransactionHandler>()
 
+  if (Config.isProd) enforceCanonicalHost(Config["OWN_HOST"])
   rateLimit(100, 1.minutes)
   securityBan()
 
   assets("/", AssetsHandler(assetsPath, useIndexForUnknownPaths = true))
 
   register(if (Config.isProd) SmtpEmailSender::class else FakeEmailSender::class)
-
-  if (Config.isProd) enforceCanonicalHost(Config["OWN_HOST"])
 
   context("/oauth") {
     register<OAuthUserProvider>(AuthUserProvider::class)
