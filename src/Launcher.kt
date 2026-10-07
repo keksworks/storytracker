@@ -47,6 +47,8 @@ fun startServer() = Server(
 
   register(if (Config.isProd) SmtpEmailSender::class else FakeEmailSender::class)
 
+  if (Config.isProd) enforceCanonicalHost(Config["OWN_HOST"])
+
   context("/oauth") {
     register<OAuthUserProvider>(AuthUserProvider::class)
     register<GoogleOAuthClient>()

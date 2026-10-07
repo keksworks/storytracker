@@ -4,6 +4,8 @@
 
 Pivotal Tracker replacement for Agile project management.
 
+Self-hosted or use here for free: [storytracker.dev](https://storytracker.dev)
+
 ![My Sample Project Screenshot](screenshot.png)
 
 ## Features
