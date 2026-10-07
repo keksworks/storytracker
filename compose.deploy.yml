@@ -18,7 +18,7 @@ services:
       - proxy
       - default
     labels:
-      - caddy=${OWN_HOST}
+      - caddy=${OWN_HOST},storytracker.dev
       - caddy.reverse_proxy={{upstreams 8080}}
       - caddy.reverse_proxy.lb_retries=5
       - caddy.reverse_proxy.lb_try_interval=500ms
