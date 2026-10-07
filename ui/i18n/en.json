@@ -67,7 +67,7 @@
     "description": "StoryTracker is a simple, transparent Agile project tracking tool for teams.",
     "hero": {
       "tagline": "Agile Project Tracking Done Right",
-      "subtitle": "Inspired by Pivotal Tracker. Built for truly Agile teams.",
+      "subtitle": "Inspired by PivotalTracker. Built for truly Agile teams.",
       "cta": "Get Started"
     },
     "features": {
