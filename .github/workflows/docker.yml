@@ -84,8 +84,8 @@ jobs:
           OPTS="-i /tmp/deploy_key -o StrictHostKeyChecking=no"
           scp $OPTS deploy.sh compose*.yml .env "$DEPLOY_SSH_HOST":storytracker
           ssh $OPTS "$DEPLOY_SSH_HOST" "cd storytracker && ./deploy.sh"
-          scp $OPTS deploy.sh compose*.yml .env "$DEPLOY_SSH_HOST2":storytracker
-          ssh $OPTS "$DEPLOY_SSH_HOST2" "cd storytracker && ./deploy.sh"
+#          scp $OPTS deploy.sh compose*.yml .env "$DEPLOY_SSH_HOST2":storytracker
+#          ssh $OPTS "$DEPLOY_SSH_HOST2" "cd storytracker && ./deploy.sh"
         env:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_HOST2: ${{ secrets.DEPLOY_SSH_HOST2 }}
