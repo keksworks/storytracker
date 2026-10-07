@@ -53,16 +53,12 @@
     history: false
   }
 
-  if (!isMobile) {
-    try {
-      const saved = JSON.parse(localStorage.getItem('projectPanels:' + id) || '{}')
-      Object.keys(show).forEach(key => {
-        if (typeof saved[key] === 'boolean') show[key] = saved[key]
-      })
-    } catch {}
-  }
+  if (!isMobile)
+    Object.entries(JSON.parse(localStorage['projectPanels:' + id] || '{}')).forEach(e => {
+      if (typeof e[1] === 'boolean') show[e[0]] = e[1]
+    })
 
-  $: if (!isMobile) localStorage.setItem('projectPanels:' + id, JSON.stringify(show))
+  $: if (!isMobile) localStorage['projectPanels:' + id] = JSON.stringify(show)
 
   function hideAll(key?: keyof typeof show) {
     Object.keys(show).forEach(k => k != key && (show[k] = false))
