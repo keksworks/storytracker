@@ -5,7 +5,7 @@ services:
       - /var/tracker/attachments:/app/attachments
     environment:
       - ENV=prod
-      - XFORWARDED_IP_FROM_END=2
+      - XFORWARDED_IP_FROM_END
       - SMTP_HOST
       - SMTP_PORT
       - SMTP_USER
