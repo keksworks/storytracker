@@ -16,6 +16,7 @@
   export let show: boolean
   export let project: ProjectContext
   export let stories: Story[] | undefined
+  export let loading = false
   export let movable = project.canEdit
   export let velocity = 0
   export let status: StoryStatus | undefined = undefined
@@ -78,7 +79,7 @@
 <Panel bind:show {name} class="stories">
   <slot slot="left" name="left"/>
   <slot slot="right" name="right"/>
-  {#if !stories}
+  {#if loading || !stories}
     <Spinner/>
   {:else}
     {#if collapsedStories.length}
@@ -111,7 +112,7 @@
     {/each}
 
     {#if movable}
-      <div class="min-h-16 {isDropTarget ? 'drop-order' : ''}" draggable={movable} {ondrop}
+      <div class="min-h-32 {isDropTarget ? 'drop-order' : ''}" draggable={movable} {ondrop}
            ondragover={e => {e.preventDefault(); isDropTarget = true}}
            ondragleave={() => {isDropTarget = false; stopAutoscroll()}}
            role="region" aria-label={t.stories.actions.move}>

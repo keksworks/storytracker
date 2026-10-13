@@ -32,6 +32,8 @@
   let iterations: Iteration[] = []
   let highlight: StoryHighlight = {}
   let searchPanel: SearchPanel | undefined
+  let loadingStories = true
+  let storyLoads = 0
 
   function changeVelocity() {
     const v = parseInt(prompt(t.projects.velocityOverride, velocity.toString())!)
@@ -39,8 +41,15 @@
   }
 
   async function loadStories(fromIteration: number) {
-    stories = await api.get(`projects/${id}/stories?fromIteration=${fromIteration}`)
-    if (!fromIteration) pastLoaded = true
+    storyLoads++
+    loadingStories = true
+    try {
+      stories = await api.get(`projects/${id}/stories?fromIteration=${fromIteration}`)
+      if (!fromIteration) pastLoaded = true
+    } finally {
+      storyLoads--
+      loadingStories = storyLoads > 0
+    }
   }
 
   let show: Record<string, boolean> = {
@@ -219,22 +228,22 @@
         </div>
       {/if}
     </aside>
-    {#if !project || !project.members || !stories}
+    {#if !project || !project.members}
       <Spinner/>
     {:else}
       <ProjectUpdatesListener {project} bind:stories bind:epics onStoryUpdated={s => highlight.flashId = s.id}/>
 
       <div class="flex gap-2 ml-1 mt-3 w-full">
-        <StoryPanel name="done" bind:show={show.done} {project} stories={done} movable={false}
+        <StoryPanel name="done" bind:show={show.done} {project} stories={done} loading={loadingStories} movable={false}
                     {handlers} {highlight}
                     {iterations} onTeamStrengthSave={onDoneIterationTeamStrengthSave}
                     collapseStory={s => s.iteration! < project!.currentIterationNum - project!.velocityAveragedOver && s.id !== initialOpenStoryId}/>
 
-        <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} movable={false} {handlers} {highlight}>
+        <StoryPanel name="myWork" bind:show={show.myWork} {project} stories={myWork} loading={loadingStories} movable={false} {handlers} {highlight}>
           <span slot="right"></span>
         </StoryPanel>
 
-        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} status={StoryStatus.UNSTARTED} {onDrag} {handlers} {highlight}>
+        <StoryPanel name="backlog" bind:show={show.backlog} {project} {velocity} stories={backlog} loading={loadingStories} status={StoryStatus.UNSTARTED} {onDrag} {handlers} {highlight}>
           <svelte:fragment slot="left">
             <button title={t.projects.velocity} class="flex items-center px-2 hover:bg-stone-200 rounded" on:click={changeVelocity}>⚡{velocity}</button>
             <TeamStrengthButton bind:teamStrength={currentTeamStrength} canEdit={project.canEdit}
@@ -247,7 +256,7 @@
           </span>
        </StoryPanel>
 
-        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} status={StoryStatus.UNSCHEDULED} {onDrag} {handlers} {highlight}>
+        <StoryPanel name="icebox" bind:show={show.icebox} {project} stories={icebox} loading={loadingStories} status={StoryStatus.UNSCHEDULED} {onDrag} {handlers} {highlight}>
           <span slot="right">
             {#if project.canEdit}
               <Button slot="right" label="＋ {t.stories.add}" on:click={() => addStory(icebox, StoryStatus.UNSCHEDULED)} variant="outlined"/>
