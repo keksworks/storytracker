@@ -5,6 +5,10 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     environment:
       - ENV=demo
       - DB_URL=jdbc:postgresql://db/$DB_USER
