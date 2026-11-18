@@ -3,50 +3,28 @@ export type Id<T extends Entity<T>> = number & {_of?: T}
 export type Entity<T extends Entity<T>> = {id: Id<T>}
 export interface UpdatableEntity extends Entity<any> {updatedAt?: Instant}
 
+// class db.Id
+
+// class users.User
+export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
 // class auth.ApiKey
 export interface ApiKey {createdAt: Instant; id: Id<ApiKey>; key: string; lastUsedAt?: Instant; name: string; updatedAt?: Instant; userId: Id<User>}
 // class auth.EmailCodeRequest
 export interface EmailCodeRequest {code: string; email: Email}
 // class auth.EmailRequest
 export interface EmailRequest {email: Email}
-// class db.Id
-
 // class history.Change
 export interface Change {changedAt: Instant; changedBy?: Id<User>; new: Record<string, string>; old: Record<string, string>; rowId: Id<any>; table: string}
-// class mcp.McpRoutes$ListedStory
-export interface McpRoutesListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
-// class stories.Epic
-export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; isNew?: boolean; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
-// class stories.GitHubAuthor
-export interface GitHubAuthor {email?: Email; name?: string}
-// class stories.GitHubCommit
-export interface GitHubCommit {added?: Array<string>; author?: GitHubAuthor; id: string; message: string; modified?: Array<string>; removed?: Array<string>; timestamp?: string; url?: string}
-// class stories.GitHubPushPayload
-export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: string; ref?: string; repository?: GitHubRepository}
-// class stories.GitHubRepository
-export interface GitHubRepository {fullName: string}
-// class stories.Iteration
-export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
+// class stories.Story$Blocker
+export interface StoryBlocker {createdAt: Instant; createdBy: Id<User>; resolvedAt?: Instant; text?: string}
+// class stories.Story$Attachment
+export interface StoryAttachment {filename: string; height?: number; id?: number; size: number; width?: number}
+// class stories.Story$Comment
+export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy?: Id<User>; text?: string; updatedAt: Instant}
 // class stories.Project$Status
 export enum ProjectStatus {ACTIVE = 'ACTIVE', DELETED = 'DELETED'}
 // class stories.Project
 export interface Project {bugsEstimatable: boolean; createdAt: Instant; currentIterationNum: number; defaultStoryPoints?: number; description?: string; id: Id<Project>; iterationWeeks: number; name: string; reviewTypes: Array<string>; startDay: DayOfWeek; status: ProjectStatus; tags: Array<string>; timezone: string; updatedAt?: Instant; velocity: number; velocityAveragedOver: number; webhookSecret: string}
-// class stories.ProjectEvents$Update
-export interface ProjectEventsUpdate {entity: UpdatableEntity; eventType: string; requesterId: string}
-// class stories.ProjectExport
-export interface ProjectExport {epics: Array<Epic>; iterations: Array<Iteration>; memberUsers: Array<ProjectMemberUser>; project: Project; stories: Array<Story>}
-// class stories.ProjectMember
-export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
-// class stories.ProjectMemberRequest
-export interface ProjectMemberRequest {email: Email; id?: Id<ProjectMember>; initials: string; name: string; role: Role}
-// class stories.ProjectMemberUser
-export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
-// class stories.Story$Attachment
-export interface StoryAttachment {filename: string; height?: number; id?: number; size: number; width?: number}
-// class stories.Story$Blocker
-export interface StoryBlocker {createdAt: Instant; createdBy: Id<User>; resolvedAt?: Instant; text?: string}
-// class stories.Story$Comment
-export interface StoryComment {attachments: Array<StoryAttachment>; createdAt: Instant; createdBy?: Id<User>; text?: string; updatedAt: Instant}
 // class stories.Story$Review$Status
 export enum StoryReviewStatus {UNSTARTED = 'UNSTARTED', IN_REVIEW = 'IN_REVIEW', PASS = 'PASS', REVISE = 'REVISE'}
 // class stories.Story$Review
@@ -59,19 +37,40 @@ export interface StoryTask {completedAt?: Instant; createdAt: Instant; text: str
 export enum StoryType {FEATURE = 'FEATURE', BUG = 'BUG', CHORE = 'CHORE', RELEASE = 'RELEASE'}
 // class stories.Story
 export interface Story {acceptedAt?: Instant; assignedTo?: Id<User>; blockers: Array<StoryBlocker>; comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; createdByUnread: boolean; deadline?: LocalDate; description?: string; externalId?: string; id: Id<Story>; isNew?: boolean; iteration?: number; name: string; order: number; points?: number; projectId: Id<Project>; reviews: Array<StoryReview>; status: StoryStatus; tags: Array<string>; tasks: Array<StoryTask>; type: StoryType; updatedAt?: Instant}
+// class mcp.McpRoutes$ListedStory
+export interface McpRoutesListedStory {id: Id<Story>; name: string; points?: number; status: StoryStatus; tags: Array<string>; type: StoryType}
+// class stories.Epic
+export interface Epic {comments: Array<StoryComment>; createdAt: Instant; createdBy?: Id<User>; deleted: boolean; description?: string; id: Id<Epic>; isNew?: boolean; name: string; order: number; projectId: Id<Project>; tag: string; updatedAt?: Instant}
+// class stories.GitHubAuthor
+export interface GitHubAuthor {email?: Email; name?: string}
+// class stories.GitHubCommit
+export interface GitHubCommit {added?: Array<string>; author?: GitHubAuthor; id: string; message: string; modified?: Array<string>; removed?: Array<string>; timestamp?: string; url?: string}
+// class stories.GitHubRepository
+export interface GitHubRepository {fullName: string}
+// class stories.GitHubPushPayload
+export interface GitHubPushPayload {commits: Array<GitHubCommit>; compare?: string; ref?: string; repository?: GitHubRepository}
+// class stories.Iteration
+export interface Iteration {acceptedPoints?: number; endDate: LocalDate; length: number; number: number; projectId: Id<Project>; startDate: LocalDate; teamStrength: number}
+// class klite.jdbc.UpdatableEntity
+export interface UpdatableEntity {updatedAt?: Instant}
+// class stories.ProjectEvents$Update
+export interface ProjectEventsUpdate {entity: UpdatableEntity; eventType: string; requesterId: string}
+// class users.Role
+export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
+// class stories.ProjectMember
+export interface ProjectMember {commentNotifications: boolean; createdAt: Instant; id: Id<ProjectMember>; lastViewedAt?: Instant; mentionNotifications: boolean; projectId: Id<Project>; role: Role; updatedAt?: Instant; userId: Id<User>}
+// class stories.ProjectMemberUser
+export interface ProjectMemberUser {id: Id<ProjectMember>; member: ProjectMember; user: User}
+// class stories.ProjectExport
+export interface ProjectExport {epics: Array<Epic>; iterations: Array<Iteration>; memberUsers: Array<ProjectMemberUser>; project: Project; stories: Array<Story>}
+// class stories.ProjectMemberRequest
+export interface ProjectMemberRequest {email: Email; id?: Id<ProjectMember>; initials: string; name: string; role: Role}
 // class stories.TeamStrengthRequest
 export interface TeamStrengthRequest {teamStrength: number}
 // class users.ChangeLangRequest
 export interface ChangeLangRequest {lang: string}
-// class users.Role
-export enum Role {ADMIN = 'ADMIN', OWNER = 'OWNER', MEMBER = 'MEMBER', VIEWER = 'VIEWER'}
-// class users.User
-export interface User {avatarUrl?: URI; createdAt: Instant; email: Email; firstName: string; id: Id<User>; initials?: string; isAdmin: boolean; lang: string; lastLoginAt?: Instant; lastName: string; name: string; updatedAt?: Instant; username?: string}
 // class java.time.DayOfWeek
 export enum DayOfWeek {MONDAY = 'MONDAY', TUESDAY = 'TUESDAY', WEDNESDAY = 'WEDNESDAY', THURSDAY = 'THURSDAY', FRIDAY = 'FRIDAY', SATURDAY = 'SATURDAY', SUNDAY = 'SUNDAY'}
-
-// class klite.jdbc.UpdatableEntity
-export interface UpdatableEntity {updatedAt?: Instant}
 
 // java.time.LocalDate
 export type LocalDate = `${number}-${number}-${number}`

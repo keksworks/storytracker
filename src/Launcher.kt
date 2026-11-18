@@ -21,7 +21,6 @@ import users.UserRoutes
 import java.nio.file.Path
 import java.time.LocalTime
 import kotlin.io.path.exists
-import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.days
 
 val Config.isE2E get() = isActive("e2e")
@@ -30,7 +29,7 @@ val assetsPath = Path.of("ui/build").takeIf { it.exists() } ?: Path.of("ui/publi
 
 fun startServer() = Server(
   sessionStore = CookieSessionStore(cookie = Cookie("S", "", httpOnly = true, secure = Config.isProd, maxAge = 365.days)),
-  httpExchangeCreator = XForwardedHttpExchange::class.primaryConstructor!!
+  httpExchangeCreator = ::XForwardedHttpExchange
 ).apply {
   initDB()
 

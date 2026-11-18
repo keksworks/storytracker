@@ -7,7 +7,7 @@ import java.util.Random
 import java.util.concurrent.atomic.AtomicLong
 import javax.sql.DataSource
 
-@JvmInline value class Id<T>(val value: Long) {
+@JvmInline value class Id<T>(val value: Long): Comparable<Id<T>> {
   companion object {
     val sequence = AtomicLong(200_000_000 + Random().nextLong(100_000) * 10)
     fun generate(): Id<Any> = Id(sequence.incrementAndGet())
@@ -15,6 +15,7 @@ import javax.sql.DataSource
   }
   constructor(): this(generate().value)
   override fun toString() = value.toString()
+  override fun compareTo(other: Id<T>): Int = value.compareTo(other.value)
 }
 
 typealias Entity<T> = BaseEntity<Id<T>>
