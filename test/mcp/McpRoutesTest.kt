@@ -19,6 +19,10 @@ import klite.ai.mcp.ToolCallResult
 import klite.ai.mcp.ToolsListResult
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import stories.Story.Status.ACCEPTED
+import stories.Story.Status.UNSTARTED
+import stories.Story.Type.BUG
+import stories.Story.Type.FEATURE
 import users.Role.MEMBER
 
 class McpRoutesTest: BaseMocks() {
@@ -69,12 +73,12 @@ class McpRoutesTest: BaseMocks() {
 
     val listStories = result.tools.first { it.name == "listStories" }
     val statusProp = listStories.inputSchema.properties["status"] as Map<*, *>
-    expect(statusProp["enum"] as List<*>).toContain("UNSTARTED")
-    expect(statusProp["enum"] as List<*>).toContain("ACCEPTED")
+    expect(statusProp["enum"] as List<*>).toContain(UNSTARTED)
+    expect(statusProp["enum"] as List<*>).toContain(ACCEPTED)
 
     val typeProp = listStories.inputSchema.properties["type"] as Map<*, *>
-    expect(typeProp["enum"] as List<*>).toContain("FEATURE")
-    expect(typeProp["enum"] as List<*>).toContain("BUG")
+    expect(typeProp["enum"] as List<*>).toContain(FEATURE)
+    expect(typeProp["enum"] as List<*>).toContain(BUG)
   }
 
   @Test fun `list projects for admin`() {
