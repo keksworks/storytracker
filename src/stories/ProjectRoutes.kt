@@ -17,6 +17,10 @@ import klite.smtp.EmailSender
 import klite.sse.Event
 import klite.sse.send
 import klite.sse.startEventStream
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import stories.Story.Status.DELETED
 import users.Role
 import users.Role.*
@@ -24,6 +28,7 @@ import users.User
 import users.UserRepository
 import java.time.Instant
 import kotlin.reflect.full.findAnnotation
+import kotlin.time.Duration.Companion.seconds
 
 @Access(ADMIN, OWNER, MEMBER, VIEWER)
 class ProjectRoutes(
@@ -176,18 +181,20 @@ class ProjectRoutes(
   }
 
   @GET("/:id/updates/:requesterId") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, @QueryParam lastEventId: String? = null, e: HttpExchange) {
-    val flow = projectEvents.flow(id)
+  suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
+    val updates: Flow<ProjectEvents.Update?> = projectEvents.flow(id)
+    val pings: Flow<ProjectEvents.Update?> = flow { while (true) { delay(45.seconds); emit(null) } }
     e.startEventStream()
-    val after = (e.header("Last-Event-ID") ?: lastEventId)?.let { Instant.parse(it) }
+    val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { story -> e.send(Event(story, "story", id = story.updatedAt)) }
       val epicUpdatedSince = epicRepository.list(Epic::projectId to id, Epic::updatedAt gt after)
       epicUpdatedSince.forEach { epic -> e.send(Event(epic, "epic", id = epic.updatedAt)) }
     }
-    flow.collect { (entity, eventName, reqId) ->
-      if (reqId != requesterId) e.send(Event(entity, eventName, id = entity.updatedAt))
+    merge(updates, pings).collect { update ->
+      if (update == null) e.send(Event(name = "ping"))
+      else if (update.requesterId != requesterId) e.send(Event(update.entity, update.eventType, id = update.entity.updatedAt))
     }
   }
 
