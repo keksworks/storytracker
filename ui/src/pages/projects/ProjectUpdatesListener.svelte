@@ -8,12 +8,22 @@
   export let epics: Epic[]
   export let onStoryUpdated: (story: Story) => void = () => {}
 
+  const reconnectDelay = 2_000
+
   let updates: EventSource
+  let lastEventId = ''
+  let reconnectTimer: ReturnType<typeof setTimeout> | undefined
 
   onMount(() => {
     listen()
-    return () => updates?.close()
+    return disconnect
   })
+
+  function disconnect() {
+    clearTimeout(reconnectTimer)
+    reconnectTimer = undefined
+    updates?.close()
+  }
 
   function applyListUpdate<T extends {id: number, updatedAt?: string, order: number}>(
     list: T[], item: T, isDeleted: (i: T) => boolean, onUpdated?: (i: T) => void
@@ -34,17 +44,27 @@
     return true
   }
 
+  function onEvent<T>(source: EventSource, eventName: string, apply: (item: T) => void) {
+    source.addEventListener(eventName, e => {
+      lastEventId = e.lastEventId || lastEventId
+      apply(JSON.parse(e.data))
+    })
+  }
+
   function listen() {
-    updates?.close()
-    updates = new EventSource(`/api/projects/${project.id}/updates/${requesterId}`)
-    updates.addEventListener('story', e => {
-      const story = JSON.parse(e.data) as Story
+    disconnect()
+    const after = lastEventId ? `?lastEventId=${encodeURIComponent(lastEventId)}` : ''
+    updates = new EventSource(`/api/projects/${project.id}/updates/${requesterId}${after}`)
+    const source = updates
+    onEvent<Story>(source, 'story', story => {
       if (applyListUpdate(stories, story, s => s.status == StoryStatus.DELETED, onStoryUpdated)) stories = stories
     })
-    updates.addEventListener('epic', e => {
-      const epic = JSON.parse(e.data) as Epic
+    onEvent<Epic>(source, 'epic', epic => {
       if (applyListUpdate(epics, epic, ep => !!ep.deleted)) epics = epics
     })
+    source.onerror = () => {
+      if (source.readyState === EventSource.CLOSED && !reconnectTimer) reconnectTimer = setTimeout(listen, reconnectDelay)
+    }
   }
 
   let lastHiddenAt = 0

@@ -176,10 +176,10 @@ class ProjectRoutes(
   }
 
   @GET("/:id/updates/:requesterId") @NoTransaction
-  suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, e: HttpExchange) {
+  suspend fun updates(@PathParam id: Id<Project>, @PathParam requesterId: String, @QueryParam lastEventId: String? = null, e: HttpExchange) {
     val flow = projectEvents.flow(id)
     e.startEventStream()
-    val after = e.header("Last-Event-ID")?.let { Instant.parse(it) }
+    val after = (e.header("Last-Event-ID") ?: lastEventId)?.let { Instant.parse(it) }
     if (after != null) {
       val updatedSince = storyRepository.list(Story::projectId to id, Story::updatedAt gt after)
       updatedSince.forEach { story -> e.send(Event(story, "story", id = story.updatedAt)) }
