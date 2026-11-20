@@ -12,6 +12,7 @@ import db.TestData.story
 import db.TestData.story2
 import db.TestData.user
 import io.mockk.every
+import io.mockk.verify
 import klite.UnauthorizedException
 import klite.ai.mcp.InitializeResult
 import klite.ai.mcp.JsonRpcRequest
@@ -39,13 +40,14 @@ class McpRoutesTest: BaseMocks() {
     expect(result.serverInfo.name).toEqual("StoryTracker")
   }
 
-  @Test fun `tools list returns 6 tools`() {
+  @Test fun `tools list returns 7 tools`() {
     val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/list"))
     val result = resp.result as ToolsListResult
-    expect(result.tools.size).toEqual(6)
+    expect(result.tools.size).toEqual(7)
     expect(result.tools.map { it.name }).toContain("listProjects")
     expect(result.tools.map { it.name }).toContain("listStories")
     expect(result.tools.map { it.name }).toContain("getStory")
+    expect(result.tools.map { it.name }).toContain("addStory")
     expect(result.tools.map { it.name }).toContain("listEpics")
     expect(result.tools.map { it.name }).toContain("addStoryComment")
     expect(result.tools.map { it.name }).toContain("changeStoryStatus")
@@ -65,6 +67,13 @@ class McpRoutesTest: BaseMocks() {
     expect(getStory.inputSchema.properties.keys).toContain("storyId")
     expect(getStory.inputSchema.required).toContain("storyId")
     expect(getStory.inputSchema.required).notToContain("projectId")
+
+    val addStory = result.tools.first { it.name == "addStory" }
+    expect(addStory.inputSchema.properties.keys).toContain("description")
+    expect(addStory.inputSchema.properties.keys).toContain("tags")
+    expect(addStory.inputSchema.required).toContain("projectId")
+    expect(addStory.inputSchema.required).toContain("name")
+    expect(addStory.inputSchema.required).notToContain("description")
   }
 
   @Test fun `enum parameters include values in schema`() {
@@ -122,6 +131,24 @@ class McpRoutesTest: BaseMocks() {
     )))
     val result = resp.result as ToolCallResult
     expect(result.content.first().text).toContain("Epic 1")
+  }
+
+  @Test fun `add story`() {
+    every { projectMemberRepository.role(project.id, user.id) } returns MEMBER
+    every { projectRepository.get(project.id) } returns project
+    val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf(
+      "name" to "addStory",
+      "arguments" to mapOf("projectId" to project.id.value, "name" to "New story", "tags" to listOf("api"))
+    )))
+    val result = resp.result as ToolCallResult
+    expect(result.content.first().text).toContain("New story")
+    verify {
+      storyRepository.create(match {
+        it.projectId == project.id && it.name == "New story" && it.tags == setOf("api") &&
+          it.type == FEATURE && it.status == UNSTARTED &&
+          it.points == project.defaultStoryPoints && it.createdBy == user.id
+      })
+    }
   }
 
   @Test fun `add story comment`() {

@@ -9,6 +9,8 @@ import klite.jdbc.NoTransaction
 import klite.jdbc.nowSec
 import stories.*
 import stories.Story.Status.ACCEPTED
+import stories.Story.Status.UNSTARTED
+import stories.Story.Type.FEATURE
 import users.User
 import users.UserRepository
 import kotlin.reflect.KType
@@ -28,6 +30,7 @@ class McpRoutes(
     ::listProjects to "List all projects you have access to",
     ::listStories to "List user stories in a project (excludes accepted stories by default), in order of priority",
     ::getStory to "Get full details of a user story by ID",
+    ::addStory to "Create a new user story in a project",
     ::listEpics to "Get all epics in a project by ID. Stories belong to epics via matching tags",
     ::addStoryComment to "Add a comment to a user story",
     ::changeStoryStatus to "Change the status of a user story. Finished should be set when implementaion is complete. Add #storyId to commit messages.",
@@ -65,6 +68,31 @@ class McpRoutes(
     val story = storyRepository.get(storyId)
     require(projectId == null || story.projectId == projectId) { "Story does not belong to the specified project" }
     requireAccess(user, story.projectId)
+    return story
+  }
+
+  fun addStory(
+    user: User,
+    projectId: Id<Project>,
+    name: String,
+    description: String? = null,
+    type: Story.Type = FEATURE,
+    status: Story.Status = UNSTARTED,
+    points: Int? = null,
+    tags: Set<String> = emptySet(),
+  ): Story {
+    requireAccess(user, projectId)
+    val story = Story(
+      projectId = projectId,
+      name = name,
+      description = description,
+      type = type,
+      status = status,
+      tags = tags,
+      points = points ?: projectRepository.get(projectId).defaultStoryPoints,
+      createdBy = user.id,
+    )
+    storyRepository.create(story)
     return story
   }
 
