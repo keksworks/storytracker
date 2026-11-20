@@ -33,6 +33,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
 
     steps:
       - name: Checkout repository
@@ -88,4 +90,4 @@ jobs:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           REPO: ${{ github.event.repository.name }}
-          DIGEST: ${{ steps.build.outputs.digest }}
+          DIGEST: ${{ needs.build-and-push.outputs.digest }}
