@@ -6,7 +6,6 @@ build
 /Jenkinsfile
 /Dockerfile
 /docker-compose*
-/deploy.sh
 README.*
 .DS_Store
 /attachments
