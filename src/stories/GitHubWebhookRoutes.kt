@@ -8,6 +8,8 @@ import klite.annotations.POST
 import klite.annotations.PathParam
 import klite.jdbc.eq
 import klite.json.JsonMapper
+import stories.Story.Status.STARTED
+import stories.Story.Status.UNSTARTED
 import users.User
 import users.UserRepository
 import javax.crypto.Mac
@@ -57,6 +59,8 @@ class GitHubWebhookRoutes(
       val createdBy = commit.author?.let {
         (userRepository.by(User::email eq it.email) ?: userRepository.by(User::name eq it.name))?.id
       } ?: story.createdBy
+
+      if (story.status == UNSTARTED) story = story.copy(status = STARTED)
 
       val comment = Story.Comment(text, createdBy = createdBy)
       story = story.copy(comments = story.comments + comment)

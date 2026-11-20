@@ -14,6 +14,8 @@ import klite.Email
 import klite.jdbc.eq
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import stories.Story.Status.FINISHED
+import stories.Story.Status.STARTED
 import users.User
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -61,6 +63,24 @@ class GitHubWebhookRoutesTest: BaseMocks() {
           savedStory.comments[0].text!!.contains("Fix the login bug") &&
           savedStory.comments[0].text!!.contains(commitUrl)
       })
+    }
+  }
+
+  @Test fun `starts unstarted story when commit arrives`() {
+    handle()
+
+    verify {
+      storyRepository.save(match { it.status == STARTED && it.comments.size == 1 })
+    }
+  }
+
+  @Test fun `does not change status of already started story`() {
+    every { storyRepository.get(story.id) } returns story.copy(status = FINISHED)
+
+    handle()
+
+    verify {
+      storyRepository.save(match { it.status == FINISHED && it.comments.size == 1 })
     }
   }
 
