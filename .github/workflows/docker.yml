@@ -83,7 +83,7 @@ jobs:
           if [ -z "$DEPLOY_SSH_KEY" ]; then exit 0; fi
           echo "$DEPLOY_SSH_KEY" > /tmp/deploy_key && chmod 600 /tmp/deploy_key
           ssh -i /tmp/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no \
-            "$DEPLOY_SSH_HOST" "storytracker $DIGEST"
+            "$DEPLOY_SSH_HOST" "${{ github.event.repository.name }} $DIGEST"
         env:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
