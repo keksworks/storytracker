@@ -80,6 +80,7 @@ class McpRoutes(
     status: Story.Status = UNSTARTED,
     points: Int? = null,
     tags: Set<String> = emptySet(),
+    order: Double = 0.0,
   ): Story {
     requireAccess(user, projectId)
     val story = Story(
@@ -90,6 +91,7 @@ class McpRoutes(
       status = status,
       tags = tags,
       points = points ?: projectRepository.get(projectId).defaultStoryPoints,
+      order = order,
       createdBy = user.id,
     )
     storyRepository.create(story)

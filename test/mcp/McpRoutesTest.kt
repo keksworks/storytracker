@@ -71,6 +71,7 @@ class McpRoutesTest: BaseMocks() {
     val addStory = result.tools.first { it.name == "addStory" }
     expect(addStory.inputSchema.properties.keys).toContain("description")
     expect(addStory.inputSchema.properties.keys).toContain("tags")
+    expect(addStory.inputSchema.properties.keys).toContain("order")
     expect(addStory.inputSchema.required).toContain("projectId")
     expect(addStory.inputSchema.required).toContain("name")
     expect(addStory.inputSchema.required).notToContain("description")
@@ -138,14 +139,14 @@ class McpRoutesTest: BaseMocks() {
     every { projectRepository.get(project.id) } returns project
     val resp = routes.rpc(exchange, JsonRpcRequest(id = "1", method = "tools/call", params = mapOf(
       "name" to "addStory",
-      "arguments" to mapOf("projectId" to project.id.value, "name" to "New story", "tags" to listOf("api"))
+      "arguments" to mapOf("projectId" to project.id.value, "name" to "New story", "tags" to listOf("api"), "order" to 5.5)
     )))
     val result = resp.result as ToolCallResult
     expect(result.content.first().text).toContain("New story")
     verify {
       storyRepository.create(match {
         it.projectId == project.id && it.name == "New story" && it.tags == setOf("api") &&
-          it.type == FEATURE && it.status == UNSTARTED &&
+          it.type == FEATURE && it.status == UNSTARTED && it.order == 5.5 &&
           it.points == project.defaultStoryPoints && it.createdBy == user.id
       })
     }
