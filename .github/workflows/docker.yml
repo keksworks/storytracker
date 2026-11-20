@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  VERSION: ${{ github.sha }}
 
 jobs:
   test:
@@ -33,8 +34,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      digest: ${{ steps.build.outputs.digest }}
 
     steps:
       - name: Checkout repository
@@ -57,13 +56,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha
+            type=raw,value=${{ env.VERSION }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Build and push Docker image
-        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -71,7 +67,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VERSION=${{ github.sha }}
+            VERSION=${{ env.VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -85,9 +81,8 @@ jobs:
           if [ -z "$DEPLOY_SSH_KEY" ]; then exit 0; fi
           echo "$DEPLOY_SSH_KEY" > /tmp/deploy_key && chmod 600 /tmp/deploy_key
           ssh -i /tmp/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no \
-            "$DEPLOY_SSH_HOST" "$REPO $DIGEST"
+            "$DEPLOY_SSH_HOST" "$REPO $VERSION"
         env:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           REPO: ${{ github.event.repository.name }}
-          DIGEST: ${{ needs.build-and-push.outputs.digest }}

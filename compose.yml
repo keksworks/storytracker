@@ -1,7 +1,7 @@
 services:
   tracker:
     build: .
-    image: ghcr.io/keksworks/storytracker:${DIGEST:-latest}
+    image: ghcr.io/keksworks/storytracker:${VERSION:-latest}
     restart: unless-stopped
     depends_on:
       - db
