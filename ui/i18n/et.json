@@ -265,8 +265,9 @@
     "tooLong": "Tekst on liiga pikk"
   },
   "settings": {
-    "mcp": "AI agendi ligipääs",
-    "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks ja redigeerimiseks. Kopeeri allolev konfiguratsioon ja kleebi oma agendi MCP seadetesse.",
-    "mcpConfig": "MCP konfiguratsioon"
+    "mcp": "MCP: AI agendi ligipääs",
+    "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks ja redigeerimiseks. Kopeeri URL ja päised oma agendi MCP seadetesse.",
+    "mcpUrl": "URL",
+    "mcpHeaders": "Päised"
   }
 }

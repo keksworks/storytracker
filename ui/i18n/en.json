@@ -267,8 +267,9 @@
     "tooLong": "Text is too long"
   },
   "settings": {
-    "mcp": "AI Agent Access",
-    "mcpDescription": "Connect your AI agent to read and update stories in StoryTracker. Copy the configuration below and paste it into your agent's MCP settings.",
-    "mcpConfig": "MCP Configuration"
+    "mcp": "MCP: AI Agent Access",
+    "mcpDescription": "Connect your AI agent to read and update stories in StoryTracker. Copy the URL and headers into your agent's MCP settings.",
+    "mcpUrl": "URL",
+    "mcpHeaders": "Headers"
   }
 }

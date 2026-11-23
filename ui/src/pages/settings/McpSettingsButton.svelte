@@ -2,6 +2,7 @@
   import Modal from 'src/components/Modal.svelte'
   import {t} from 'src/i18n'
   import Button from 'src/components/Button.svelte'
+  import FormField from 'src/forms/FormField.svelte'
   import api from 'src/api/api'
   import {showToast} from 'src/stores/toasts'
   import type {ApiKey} from 'src/api/types'
@@ -21,16 +22,7 @@
   }
 
   $: mcpUrl = key ? `${location.origin}/mcp` : ''
-  $: mcpConfig = key ? JSON.stringify({
-    mcpServers: {
-      storytracker: {
-        type: 'remote',
-        url: mcpUrl,
-        headers: {Authorization: `Bearer ${key.key}`},
-        enabled: false
-      }
-    }
-  }, null, 2) : ''
+  $: mcpHeaders = key ? `Authorization: Bearer ${key.key}` : ''
 
   async function copy(value: string) {
     await navigator.clipboard.writeText(value)
@@ -46,14 +38,12 @@
   {:else if key}
     <p class="text-sm text-gray-500 mb-4">{t.settings.mcpDescription}</p>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">{t.settings.mcpConfig}</label>
-      <div class="relative">
-        <pre class="bg-gray-50 border rounded-md p-3 text-xs w-full overflow-x-auto whitespace-pre-wrap">{mcpConfig}</pre>
-        <div class="absolute top-2 right-2">
-          <Button label={t.general.copy} size="xs" on:click={() => copy(mcpConfig)}/>
-        </div>
-      </div>
-    </div>
+    <FormField label={t.settings.mcpUrl} value={mcpUrl} maxlength={1000} readonly>
+      <Button slot="after" label={t.general.copy} on:click={() => copy(mcpUrl)}/>
+    </FormField>
+
+    <FormField label={t.settings.mcpHeaders} value={mcpHeaders} maxlength={1000} readonly>
+      <Button slot="after" label={t.general.copy} on:click={() => copy(mcpHeaders)}/>
+    </FormField>
   {/if}
 </Modal>
