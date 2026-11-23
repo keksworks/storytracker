@@ -37,6 +37,7 @@
     <p class="text-sm text-gray-500">{t.general.loading}</p>
   {:else if key}
     <p class="text-sm text-gray-500 mb-4">{t.settings.mcpDescription}</p>
+    <p class="text-xs text-muted mb-4">{t.settings.mcpCustomConnector}</p>
 
     <FormField label={t.settings.mcpUrl} value={mcpUrl} maxlength={1000} readonly>
       <Button slot="after" label={t.general.copy} on:click={() => copy(mcpUrl)}/>

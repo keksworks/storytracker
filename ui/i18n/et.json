@@ -267,6 +267,7 @@
   "settings": {
     "mcp": "MCP: AI agendi ligipääs",
     "mcpDescription": "Ühenda oma AI agent StoryTrackeriga lugude lugemiseks ja redigeerimiseks. Kopeeri URL ja päised oma agendi MCP seadetesse.",
+    "mcpCustomConnector": "Mõnes AI tööriistas nimetatakse seda „Custom connector\"iks.",
     "mcpUrl": "URL",
     "mcpHeaders": "Päised"
   }
