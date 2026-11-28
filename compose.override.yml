@@ -1,10 +1,5 @@
 services:
   tracker:
-    logging:
-      # view with `journalctl -t ${COMPOSE_PROJECT_NAME}`
-      driver: journald
-      options:
-        tag: "${COMPOSE_PROJECT_NAME}"
     volumes:
       - ./attachments:/app/attachments
 

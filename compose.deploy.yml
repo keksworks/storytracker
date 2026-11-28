@@ -16,6 +16,11 @@ services:
       - OWN_HOST
       - GOOGLE_OAUTH_CLIENT_ID
       - GOOGLE_OAUTH_CLIENT_SECRET
+    logging:
+      # view with `journalctl -t ${COMPOSE_PROJECT_NAME}`
+      driver: journald
+      options:
+        tag: "${COMPOSE_PROJECT_NAME}"
     networks:
       - proxy
       - default
